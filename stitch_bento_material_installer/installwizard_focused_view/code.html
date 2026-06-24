@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>InstallWizard v2.4.0 - Deployment Suite</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Geist-Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#dae2fd",
+                    "error-container": "#ffdad6",
+                    "background": "#f7f9fb",
+                    "tertiary-container": "#0b1c30",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#565e74",
+                    "surface-bright": "#f7f9fb",
+                    "surface-dim": "#d8dadc",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "secondary-fixed-dim": "#b4c5ff",
+                    "primary": "#000000",
+                    "surface": "#f7f9fb",
+                    "primary-container": "#131b2e",
+                    "inverse-on-surface": "#eff1f3",
+                    "outline-variant": "#c6c6cd",
+                    "on-secondary": "#ffffff",
+                    "surface-variant": "#e0e3e5",
+                    "primary-fixed-dim": "#bec6e0",
+                    "surface-container": "#eceef0",
+                    "on-secondary-fixed-variant": "#003ea8",
+                    "tertiary": "#000000",
+                    "on-background": "#191c1e",
+                    "inverse-surface": "#2d3133",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#45464d",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "secondary-container": "#316bf3",
+                    "surface-container-high": "#e6e8ea",
+                    "on-primary-container": "#7c839b",
+                    "on-tertiary": "#ffffff",
+                    "secondary-fixed": "#dbe1ff",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-container": "#75859d",
+                    "surface-container-highest": "#e0e3e5",
+                    "tertiary-fixed": "#d3e4fe",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "inverse-primary": "#bec6e0",
+                    "outline": "#76777d",
+                    "on-surface": "#191c1e",
+                    "secondary": "#0051d5",
+                    "on-primary-fixed": "#131b2e",
+                    "surface-container-low": "#f2f4f6",
+                    "on-secondary-container": "#fefcff",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed": "#00174b",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#b7c8e1"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "stack-gap": "12px",
+                    "grid-margin": "24px",
+                    "grid-gutter": "16px",
+                    "bento-padding": "24px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "body-md": ["Inter"],
+                    "terminal-sm": ["Geist Mono"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "terminal-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .bento-card {
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0px 4px 12px rgba(15, 23, 42, 0.05);
+            transition: border-color 0.2s ease;
+        }
+        .bento-card:hover {
+            border-color: #2563EB;
+        }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, rgba(49, 107, 243, 0.1) 65%, transparent 65%);
+        }
+        
+        @keyframes fileFly {
+            0% {
+                transform: translateY(-40px) scale(0.5);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 0;
+            }
+        }
+        .file-particle {
+            position: absolute;
+            pointer-events: none;
+            animation: fileFly 1.2s ease-in forwards;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col items-center justify-center">
+<!-- Main Content Canvas -->
+<main class="w-full max-w-7xl mx-auto px-grid-margin py-8">
+<header class="mb-8">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">System Configuration</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Initialize your environment for professional deployment.</p>
+</header>
+<!-- Bento Grid 4x3 Desktop / Stacked Mobile -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-grid-gutter auto-rows-min">
+<!-- Terminal Output (Span 2 Columns, Span 2 Rows) -->
+<div class="md:col-span-2 md:row-span-2 bento-card rounded-xl overflow-hidden flex flex-col">
+<div class="bg-surface-container px-bento-padding py-3 border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">terminal</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">INSTALLATION_LOG</span>
+</div>
+<div class="flex gap-1.5">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<div class="w-3 h-3 rounded-full bg-secondary-container"></div>
+<div class="w-3 h-3 rounded-full bg-outline"></div>
+</div>
+</div>
+<div class="bg-primary-container p-bento-padding flex-grow terminal-scroll overflow-y-auto font-terminal-sm text-terminal-sm text-on-primary-container leading-relaxed h-[300px]">
+<div class="opacity-50 mb-1">$ wizard --init --verbose</div>
+<div class="text-on-primary mb-1">[INFO] Checking system compatibility...</div>
+<div class="text-on-primary mb-1">[INFO] Node.js v18.17.0 detected.</div>
+<div class="text-on-primary mb-1">[INFO] Checking disk space... 1.2GB available.</div>
+<div class="text-on-primary mb-1">[INFO] Fetching core-cli-v2.4.0.tar.gz...</div>
+<div class="text-secondary-fixed-dim mb-1">===&gt; Downloading [################----] 78%</div>
+<div class="text-secondary-fixed-dim mb-1">===&gt; Extracting files...</div>
+<div class="text-on-primary mb-1">[SUCCESS] Core files extracted to /tmp/wizard-cache</div>
+<div class="text-on-primary mb-1">[INFO] Registering CLI Tools...</div>
+<div class="text-on-primary mb-1">[INFO] Symbolic links created.</div>
+<div class="text-on-primary mb-1">[INFO] Pending: IDE Plugin configuration...</div>
+<div class="text-on-primary mb-1 transition-opacity duration-300">[INFO] Checking local cache headers...</div><div class="text-on-primary mb-1 transition-opacity duration-300">[INFO] Validating environment variables...</div><div class="text-on-primary mb-1 transition-opacity duration-300">[WARN] Optional dependency 'python-tools' not found. Skipping...</div><div class="text-on-primary mb-1 transition-opacity duration-300">[INFO] Initializing workspace configuration...</div><div class="text-on-primary mb-1 transition-opacity duration-300">[INFO] Setting up local database templates...</div><div class="text-on-primary mb-1 transition-opacity duration-300">===&gt; Processing [###########---------] 55%</div><div class="text-on-primary mb-1 transition-opacity duration-300">[INFO] Applying security patches...</div><div class="text-on-primary mb-1 transition-opacity duration-300">[INFO] Checking local cache headers...</div><div class="text-on-primary mb-1 transition-opacity duration-300">[INFO] Validating environment variables...</div><div class="text-on-primary mb-1 transition-opacity duration-300">[WARN] Optional dependency 'python-tools' not found. Skipping...</div><div class="text-on-primary mb-1 transition-opacity duration-300">[INFO] Initializing workspace configuration...</div><div class="text-on-primary mb-1 transition-opacity duration-300">[INFO] Setting up local database templates...</div><div class="text-on-primary mb-1 transition-opacity duration-300">===&gt; Processing [###########---------] 55%</div><div class="text-on-primary mb-1 transition-opacity duration-300">[INFO] Applying security patches...</div><div class="animate-pulse border-l-2 border-secondary-container pl-2 ml-1">_</div>
+</div>
+</div>
+<!-- Select IDE (Span 1 Column, Span 2 Rows) -->
+<div class="md:col-span-1 md:row-span-2 bento-card rounded-xl p-bento-padding flex flex-col">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary" style="font-size: 20px;">developer_mode_tv</span>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">SELECT IDE</h3>
+</div>
+<div class="space-y-stack-gap flex-grow">
+<label class="flex items-center justify-between p-3 rounded-lg border border-secondary-container bg-secondary-fixed cursor-pointer transition-all">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md font-semibold text-on-secondary-fixed">Antigravity</span>
+<span class="text-[10px] text-secondary font-bold uppercase tracking-wider">Suggested</span>
+</div>
+<input checked="" class="w-5 h-5 text-secondary border-outline-variant focus:ring-secondary" name="ide" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-secondary transition-all cursor-pointer">
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-on-surface">VSCode</span>
+<span class="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">Suggested</span>
+</div>
+<input class="w-5 h-5 text-secondary border-outline-variant focus:ring-secondary" name="ide" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-secondary transition-all cursor-pointer">
+<span class="font-body-md text-body-md text-on-surface">Cursor</span>
+<input class="w-5 h-5 text-secondary border-outline-variant focus:ring-secondary" name="ide" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-secondary transition-all cursor-pointer">
+<span class="font-body-md text-body-md text-on-surface">Windsurf</span>
+<input class="w-5 h-5 text-secondary border-outline-variant focus:ring-secondary" name="ide" type="radio"/>
+</label>
+<label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-secondary transition-all cursor-pointer">
+<span class="font-body-md text-body-md text-on-surface">Roo Code</span>
+<input class="w-5 h-5 text-secondary border-outline-variant focus:ring-secondary" name="ide" type="radio"/>
+</label>
+</div>
+</div>
+<!-- Target Directory (Span 1 Column) -->
+<div class="md:col-span-1 bento-card rounded-xl p-bento-padding flex flex-col">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">folder_open</span>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">TARGET DIRECTORY</h3>
+</div>
+<div class="flex flex-col gap-3 mb-4">
+<input class="w-full bg-surface-container border border-outline-variant rounded-lg px-4 py-2 font-terminal-sm text-terminal-sm text-on-surface focus:outline-none focus:border-secondary" readonly="" type="text" value="/usr/local/bin/project"/>
+<button class="w-full flex items-center justify-center gap-2 border border-primary text-primary py-2 rounded-lg font-label-caps text-label-caps hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" style="font-size: 16px;">search</span>
+                        Browse
+                    </button>
+</div>
+<!-- Animated Folder Representation -->
+<div class="flex-grow flex flex-col items-center justify-center relative py-4 border-t border-dashed border-outline-variant mt-2" id="folder-container">
+<div class="relative" id="main-folder" style="transform: scale(1);">
+<span class="material-symbols-outlined text-secondary-container" style="font-size: 64px; font-variation-settings: 'FILL' 1;">folder</span>
+<div class="file-particle" style="left: 29.4648px; top: -20px; font-size: 17.2539px;">⚙️</div><div class="file-particle" style="left: 36.4264px; top: -20px; font-size: 17.9466px;">⚙️</div></div>
+<span class="mt-2 font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest">Populating Directory...</span>
+</div>
+</div>
+<!-- Progress & Items (Span 3 Columns) -->
+<div class="md:col-span-3 bento-card rounded-xl p-bento-padding progress-fill relative overflow-hidden">
+<div class="relative z-10 flex flex-col md:flex-row justify-between gap-8">
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-secondary" style="font-size: 20px;">task_alt</span>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">INSTALLED</h3>
+</div>
+<ul class="space-y-2">
+<li class="flex items-center gap-2 font-body-md text-body-md text-on-surface">
+<span class="material-symbols-outlined text-secondary" style="font-size: 18px;">check_circle</span>
+                                Core Files
+                            </li>
+<li class="flex items-center gap-2 font-body-md text-body-md text-on-surface">
+<span class="material-symbols-outlined text-secondary" style="font-size: 18px;">check_circle</span>
+                                CLI Tools
+                            </li>
+</ul>
+</div>
+<div class="w-px bg-outline-variant hidden md:block"></div>
+<div class="flex-1">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">pending</span>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant">REMAINING</h3>
+</div>
+<ul class="space-y-2">
+<li class="flex items-center gap-2 font-body-md text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-outline" style="font-size: 18px;">radio_button_unchecked</span>
+                                IDE Plugins
+                            </li>
+<li class="flex items-center gap-2 font-body-md text-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-outline" style="font-size: 18px;">radio_button_unchecked</span>
+                                Sample Projects
+                            </li>
+</ul>
+</div>
+<div class="flex flex-col items-center justify-center min-w-[120px]">
+<span class="font-headline-lg text-headline-lg text-secondary">65%</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Overall Progress</span>
+</div>
+</div>
+</div>
+<!-- Install Button (Span 1 Column) -->
+<div class="md:col-span-1 bento-card rounded-xl p-bento-padding bg-primary-container border-none flex flex-col justify-center items-center text-center shadow-xl">
+<button class="group w-full h-full min-h-[120px] bg-secondary text-on-secondary rounded-lg flex flex-col items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 shadow-lg">
+<span class="material-symbols-outlined group-hover:animate-bounce" style="font-size: 32px;">bolt</span>
+<span class="font-headline-md text-headline-md">Install Now</span>
+</button>
+</div>
+</div>
+</main>
+<script>
+        // Micro-interaction: Update terminal output with random latency
+        const terminal = document.querySelector('.terminal-scroll');
+        const logs = [
+            "[INFO] Checking local cache headers...",
+            "[INFO] Validating environment variables...",
+            "[WARN] Optional dependency 'python-tools' not found. Skipping...",
+            "[INFO] Initializing workspace configuration...",
+            "[INFO] Setting up local database templates...",
+            "===> Processing [###########---------] 55%",
+            "[INFO] Applying security patches..."
+        ];
+
+        let logIndex = 0;
+        function addLog() {
+            if (logIndex < logs.length) {
+                const div = document.createElement('div');
+                div.className = 'text-on-primary mb-1 opacity-0 transition-opacity duration-300';
+                div.textContent = logs[logIndex];
+                terminal.insertBefore(div, terminal.lastElementChild);
+                
+                // Scroll to bottom
+                terminal.scrollTop = terminal.scrollHeight;
+                
+                setTimeout(() => div.classList.remove('opacity-0'), 10);
+                logIndex++;
+                
+                setTimeout(addLog, Math.random() * 2000 + 1000);
+            }
+        }
+        
+        setTimeout(addLog, 2000);
+
+        // Micro-interaction: Progress bar hover effect
+        const progressCard = document.querySelector('.progress-fill');
+        progressCard.addEventListener('mousemove', (e) => {
+            const rect = progressCard.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            progressCard.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(49, 107, 243, 0.15) 0%, rgba(49, 107, 243, 0.1) 65%, transparent 65%)`;
+        });
+        progressCard.addEventListener('mouseleave', () => {
+            progressCard.style.background = `linear-gradient(90deg, rgba(49, 107, 243, 0.1) 65%, transparent 65%)`;
+        });
+
+        // Folder Animation Logic
+        const folderMain = document.getElementById('main-folder');
+        const emojis = ['📄', '📁', '📝', '⚙️', '📂', '📜'];
+        
+        function spawnFile() {
+            const particle = document.createElement('div');
+            particle.className = 'file-particle';
+            particle.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            
+            // Random horizontal start within folder bounds
+            const rect = folderMain.getBoundingClientRect();
+            const startX = (Math.random() * 40) - 20 + 32; // Center offset
+            
+            particle.style.left = `${startX}px`;
+            particle.style.top = `-20px`;
+            particle.style.fontSize = `${Math.random() * 6 + 14}px`;
+            
+            folderMain.appendChild(particle);
+            
+            // Slight folder "bounce" when receiving file
+            folderMain.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                folderMain.style.transform = 'scale(1)';
+            }, 100);
+
+            // Cleanup
+            particle.addEventListener('animationend', () => {
+                particle.remove();
+            });
+
+            // Random next spawn
+            setTimeout(spawnFile, Math.random() * 800 + 400);
+        }
+
+        // Start animation after a short delay
+        setTimeout(spawnFile, 1000);
+    </script>
+</body></html>
