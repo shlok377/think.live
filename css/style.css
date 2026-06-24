@@ -1,0 +1,161 @@
+/* Base font overrides */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--background);
+}
+
+/* Bento Card styling */
+.bento-card {
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0px 4px 12px rgba(15, 23, 42, 0.04);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-card:hover {
+  border-color: #2563EB;
+  box-shadow: 0px 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+/* Terminal Log Recess and Scrollbars */
+.terminal-scroll {
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.terminal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.terminal-scroll::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+.terminal-scroll::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+.terminal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Radial hover effect for progress bento */
+.progress-fill {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.04) 100%, transparent 100%);
+  transition: background 0.3s;
+}
+
+/* Checkbox resets in bento selectors */
+.btn-preset {
+  border-color: #e2e8f0;
+  transition: all 0.2s;
+  color: #4b5563;
+}
+.btn-preset:hover {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
+}
+.btn-preset.active {
+  background-color: #eff6ff;
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+/* File Particle Emitter Keyframes */
+@keyframes fileFly {
+  0% {
+    transform: translateY(-40px) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) scale(1.1);
+    opacity: 0;
+  }
+}
+
+.file-particle {
+  position: absolute;
+  pointer-events: none;
+  animation: fileFly 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  z-index: 10;
+}
+
+/* Folder Bouncing animations */
+@keyframes folderBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+.folder-active-bounce {
+  animation: folderBounce 0.4s ease-in-out infinite;
+}
+
+/* Departments Items colors and dynamic highlights */
+.dept-item {
+  border-color: #e2e8f0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dept-item:hover {
+  border-color: #cbd5e1;
+  background-color: #f8fafc;
+}
+
+.dept-item.active {
+  border-color: hsla(var(--dept-hsl), 0.5);
+  background: hsla(var(--dept-hsl), 0.06);
+  box-shadow: 0 4px 12px -2px hsla(var(--dept-hsl), 0.12);
+}
+
+.dept-item.active h4 {
+  color: hsla(var(--dept-hsl), 0.9);
+}
+
+.dept-item.dept-starter { --dept-hsl: var(--hsl-slate); }
+.dept-item.dept-architect { --dept-hsl: var(--hsl-blue); }
+.dept-item.dept-task-distributor { --dept-hsl: var(--hsl-purple); }
+.dept-item.dept-ui-designer { --dept-hsl: var(--hsl-pink); }
+.dept-item.dept-pr-safety { --dept-hsl: var(--hsl-amber); }
+.dept-item.dept-coder { --dept-hsl: var(--hsl-green); }
+.dept-item.dept-auditor { --dept-hsl: var(--hsl-red); }
+.dept-item.dept-git-guy { --dept-hsl: var(--hsl-cyan); }
+
+/* Ambient lights backdrop blur elements */
+.background-effects {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.glow-bubble {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(160px);
+  opacity: 0.06;
+}
+
+.glow-blue {
+  top: -15%;
+  left: 15%;
+  width: 500px;
+  height: 500px;
+  background: #3b82f6;
+}
+
+.glow-purple {
+  bottom: -20%;
+  right: 10%;
+  width: 600px;
+  height: 600px;
+  background: #a855f7;
+}
