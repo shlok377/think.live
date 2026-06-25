@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
   <title>think.live Agency - Setup Suite</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Geist-Mono&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Geist+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script id="tailwind-config">
     tailwind.config = {
@@ -15,50 +15,50 @@
           "colors": {
             "primary-fixed": "#dae2fd",
             "error-container": "#ffdad6",
-            "background": "#f7f9fb",
+            "background": "#000000",
             "tertiary-container": "#0b1c30",
             "on-error": "#ffffff",
             "surface-tint": "#565e74",
-            "surface-bright": "#f7f9fb",
-            "surface-dim": "#d8dadc",
+            "surface-bright": "#0a0f1d",
+            "surface-dim": "#060911",
             "on-tertiary-fixed-variant": "#38485d",
             "secondary-fixed-dim": "#b4c5ff",
-            "primary": "#0f172a",
-            "surface": "#f7f9fb",
-            "primary-container": "#0f172a",
-            "inverse-on-surface": "#eff1f3",
-            "outline-variant": "#c6c6cd",
+            "primary": "#f8fafc",
+            "surface": "#0a0f1d",
+            "primary-container": "#0a0f1d",
+            "inverse-on-surface": "#0f172a",
+            "outline-variant": "#1e293b",
             "on-secondary": "#ffffff",
-            "surface-variant": "#e0e3e5",
+            "surface-variant": "#1e293b",
             "primary-fixed-dim": "#bec6e0",
-            "surface-container": "#eceef0",
+            "surface-container": "#050811",
             "on-secondary-fixed-variant": "#003ea8",
             "tertiary": "#64748b",
-            "on-background": "#191c1e",
-            "inverse-surface": "#2d3133",
-            "surface-container-lowest": "#ffffff",
-            "on-surface-variant": "#45464d",
+            "on-background": "#f8fafc",
+            "inverse-surface": "#eff1f3",
+            "surface-container-lowest": "#03050a",
+            "on-surface-variant": "#94a3b8",
             "on-primary-fixed-variant": "#3f465c",
-            "secondary-container": "#e0f2fe",
-            "surface-container-high": "#e6e8ea",
-            "on-primary-container": "#94a3b8",
+            "secondary-container": "#1e293b",
+            "surface-container-high": "#0f172a",
+            "on-primary-container": "#64748b",
             "on-tertiary": "#ffffff",
             "secondary-fixed": "#dbe1ff",
             "on-primary": "#ffffff",
             "on-tertiary-container": "#75859d",
-            "surface-container-highest": "#e0e3e5",
+            "surface-container-highest": "#1e293b",
             "tertiary-fixed": "#d3e4fe",
             "on-tertiary-fixed": "#0b1c30",
             "inverse-primary": "#bec6e0",
-            "outline": "#76777d",
-            "on-surface": "#0f172a",
+            "outline": "#475569",
+            "on-surface": "#f8fafc",
             "secondary": "#2563eb",
             "on-primary-fixed": "#131b2e",
-            "surface-container-low": "#f2f4f6",
-            "on-secondary-container": "#1e40af",
-            "error": "#ba1a1a",
+            "surface-container-low": "#080c14",
+            "on-secondary-container": "#60a5fa",
+            "error": "#ef4444",
             "on-secondary-fixed": "#00174b",
-            "on-error-container": "#93000a",
+            "on-error-container": "#ffdad6",
             "tertiary-fixed-dim": "#b7c8e1"
           },
           "borderRadius": {
@@ -93,15 +93,15 @@
   </script>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="bg-background text-on-surface min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
   <!-- Main Content Canvas -->
   <main class="w-full max-w-7xl mx-auto px-grid-margin py-8">
     <header class="mb-8 flex justify-between items-end">
       <div>
-        <h1 class="font-headline-lg text-headline-lg text-on-surface">think.live Agency</h1>
-        <p class="font-body-md text-body-md text-on-surface-variant">Setup wizard and visual workspace generator.</p>
+        <h1 class="font-headline-lg text-headline-lg text-slate-900">think.live Agency</h1>
+        <p class="font-body-md text-body-md text-slate-500">Setup wizard and visual workspace generator.</p>
       </div>
-      <div class="flex items-center gap-2 border border-outline-variant/30 rounded-full px-4 py-1.5 bg-white text-xs font-semibold text-on-surface-variant">
+      <div class="flex items-center gap-2 border border-slate-200 rounded-full px-4 py-1.5 bg-slate-100 text-xs font-semibold text-slate-700">
         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
         Material Setup Suite
       </div>
@@ -110,11 +110,11 @@
     <!-- Bento Grid 4x3 Desktop / Stacked Mobile -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-grid-gutter auto-rows-min">
       <!-- 1. Terminal Output (Span 2 Columns, Span 2 Rows) -->
-      <div class="md:col-span-2 md:row-span-2 bento-card rounded-xl overflow-hidden flex flex-col">
-        <div class="bg-surface-container px-bento-padding py-3 border-b border-outline-variant flex items-center justify-between">
+      <div id="bento-log" class="md:col-span-2 md:row-span-2 bento-card overflow-hidden flex flex-col">
+        <div class="px-bento-padding py-3 border-b border-black/15 flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 18px;">terminal</span>
-            <span class="font-label-caps text-label-caps text-on-surface-variant">SETUP_LOGS</span>
+            <span class="material-symbols-outlined text-black" style="font-size: 18px;">terminal</span>
+            <span class="font-label-caps text-label-caps text-black">SETUP_LOGS</span>
           </div>
           <div class="flex gap-1.5">
             <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
@@ -130,56 +130,56 @@
       </div>
 
       <!-- 2. Select IDE (Span 1 Column, Span 2 Rows) -->
-      <div class="md:col-span-1 md:row-span-2 bento-card rounded-xl p-bento-padding flex flex-col">
+      <div id="bento-ides" class="md:col-span-1 md:row-span-2 bento-card p-bento-padding flex flex-col">
         <div class="flex items-center gap-2 mb-4">
-          <span class="material-symbols-outlined text-secondary" style="font-size: 20px;">developer_mode_tv</span>
-          <h3 class="font-label-caps text-label-caps text-on-surface-variant">IDE INTEGRATIONS</h3>
+          <span class="material-symbols-outlined text-black" style="font-size: 20px;">developer_mode_tv</span>
+          <h3 class="font-label-caps text-label-caps text-black">IDE INTEGRATIONS</h3>
         </div>
         <div class="space-y-3 flex-grow flex flex-col justify-center">
-          <label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-white group">
+          <label class="flex items-center justify-between p-3 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
             <div class="flex flex-col">
               <span class="text-xs font-semibold text-on-surface">Cursor Rules</span>
               <span class="text-[9px] text-on-surface-variant font-mono">.cursorrules</span>
             </div>
-            <input type="checkbox" id="chk-cursor" checked class="w-4 h-4 text-secondary rounded border-outline-variant focus:ring-secondary"/>
+            <input type="checkbox" id="chk-cursor" checked class="m3-checkbox"/>
           </label>
           
-          <label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-white group">
+          <label class="flex items-center justify-between p-3 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
             <div class="flex flex-col">
               <span class="text-xs font-semibold text-on-surface">Roo Code Rules</span>
               <span class="text-[9px] text-on-surface-variant font-mono">.claudedevrules</span>
             </div>
-            <input type="checkbox" id="chk-roo" checked class="w-4 h-4 text-secondary rounded border-outline-variant focus:ring-secondary"/>
+            <input type="checkbox" id="chk-roo" checked class="m3-checkbox"/>
           </label>
 
-          <label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-white group">
+          <label class="flex items-center justify-between p-3 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
             <div class="flex flex-col">
               <span class="text-xs font-semibold text-on-surface">Windsurf Rules</span>
               <span class="text-[9px] text-on-surface-variant font-mono">.windsurfrules</span>
             </div>
-            <input type="checkbox" id="chk-windsurf" checked class="w-4 h-4 text-secondary rounded border-outline-variant focus:ring-secondary"/>
+            <input type="checkbox" id="chk-windsurf" checked class="m3-checkbox"/>
           </label>
 
-          <label class="flex items-center justify-between p-3 rounded-lg border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-white group">
+          <label class="flex items-center justify-between p-3 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
             <div class="flex flex-col">
               <span class="text-xs font-semibold text-on-surface">VS Code Auto-Launch</span>
               <span class="text-[9px] text-on-surface-variant font-mono">.vscode/tasks.json</span>
             </div>
-            <input type="checkbox" id="chk-vscode-tasks" checked class="w-4 h-4 text-secondary rounded border-outline-variant focus:ring-secondary"/>
+            <input type="checkbox" id="chk-vscode-tasks" checked class="m3-checkbox"/>
           </label>
         </div>
       </div>
 
       <!-- 3. Target Directory (Span 1 Column) -->
-      <div class="md:col-span-1 bento-card rounded-xl p-bento-padding flex flex-col justify-between">
+      <div id="bento-folder" class="md:col-span-1 bento-card p-bento-padding flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-2 mb-3">
-            <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 20px;">folder_open</span>
-            <h3 class="font-label-caps text-label-caps text-on-surface-variant">TARGET DIRECTORY</h3>
+            <span class="material-symbols-outlined text-black" style="font-size: 20px;">folder_open</span>
+            <h3 class="font-label-caps text-label-caps text-black">TARGET DIRECTORY</h3>
           </div>
           <div class="flex flex-col gap-2">
             <input id="txt-dir-path" class="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 font-terminal-sm text-xs text-on-surface focus:outline-none focus:border-secondary" readonly type="text" value="No folder selected"/>
-            <button id="btn-browse" class="w-full flex items-center justify-center gap-2 border border-primary text-primary py-1.5 rounded-lg text-xs font-semibold hover:bg-surface-container transition-colors">
+            <button id="btn-browse" class="btn btn-outlined w-full mt-2 text-xs py-2 font-bold">
               <span class="material-symbols-outlined" style="font-size: 16px;">search</span>
               Browse Folder
             </button>
@@ -187,32 +187,32 @@
         </div>
         
         <!-- Animated Folder Area -->
-        <div class="flex-grow flex flex-col items-center justify-center relative py-2 border-t border-dashed border-outline-variant mt-3" id="folder-container">
+        <div class="flex-grow flex flex-col items-center justify-center relative py-2 border-t border-dashed border-black/15 mt-3" id="folder-container">
           <div class="relative transition-transform duration-300" id="main-folder">
             <span class="material-symbols-outlined text-blue-500/80" style="font-size: 48px; font-variation-settings: 'FILL' 1;">folder</span>
           </div>
-          <span id="folder-anim-label" class="mt-1 font-label-caps text-[9px] text-on-surface-variant uppercase tracking-wider text-center">Standby</span>
+          <span id="folder-anim-label" class="mt-1 font-label-caps text-[9px] text-black uppercase tracking-wider text-center">Standby</span>
         </div>
       </div>
 
       <!-- 4. Install Button (Span 1 Column) -->
-      <div class="md:col-span-1 bento-card rounded-xl p-bento-padding bg-primary-container border-none flex flex-col justify-center items-center text-center shadow-md">
-        <button id="btn-deploy" disabled class="group w-full h-full min-h-[120px] bg-secondary text-on-secondary rounded-lg flex flex-col items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:cursor-not-allowed">
+      <div id="bento-deploy" class="md:col-span-1 bento-card p-bento-padding flex flex-col justify-center items-center text-center">
+        <button id="btn-deploy" disabled class="btn btn-success group w-full h-full min-h-[120px] flex flex-col items-center justify-center gap-2 transition-all">
           <span class="material-symbols-outlined group-hover:animate-bounce" style="font-size: 32px;">bolt</span>
-          <span class="font-headline-md text-lg font-bold">Install Now</span>
+          <span class="text-base font-bold tracking-wide">Install Now</span>
         </button>
       </div>
 
       <!-- 5. Progress & Items (Span 2 Columns) -->
-      <div class="md:col-span-2 bento-card rounded-xl p-bento-padding progress-fill relative overflow-hidden flex flex-col justify-between">
+      <div class="md:col-span-2 bento-card progress-fill relative overflow-hidden flex flex-col justify-between">
         <div class="relative z-10 flex justify-between gap-6 h-full items-center">
           <!-- Installed Column -->
           <div class="flex-1 h-full flex flex-col justify-start">
             <div class="flex items-center gap-1.5 mb-2">
-              <span class="material-symbols-outlined text-secondary" style="font-size: 16px;">task_alt</span>
-              <h3 class="font-label-caps text-[10px] tracking-wider text-on-surface-variant uppercase">INSTALLED</h3>
+              <span class="material-symbols-outlined text-black" style="font-size: 16px;">task_alt</span>
+              <h3 class="font-label-caps text-[10px] tracking-wider text-black uppercase">INSTALLED</h3>
             </div>
-            <ul id="installed-list" class="space-y-1 text-xs max-h-[100px] overflow-y-auto text-on-surface-variant font-medium">
+            <ul id="installed-list" class="space-y-1 text-xs max-h-[100px] overflow-y-auto text-black font-medium">
               <!-- Dynamically populated -->
               <li class="flex items-center gap-1.5 text-muted opacity-40">
                 <span class="material-symbols-outlined text-[14px]">radio_button_unchecked</span>
@@ -221,15 +221,15 @@
             </ul>
           </div>
           
-          <div class="w-[1px] h-full bg-outline-variant"></div>
+          <div class="w-px h-full bg-black/15"></div>
           
           <!-- Remaining Column -->
           <div class="flex-1 h-full flex flex-col justify-start">
             <div class="flex items-center gap-1.5 mb-2">
-              <span class="material-symbols-outlined text-on-surface-variant" style="font-size: 16px;">pending</span>
-              <h3 class="font-label-caps text-[10px] tracking-wider text-on-surface-variant uppercase">PENDING</h3>
+              <span class="material-symbols-outlined text-black" style="font-size: 16px;">pending</span>
+              <h3 class="font-label-caps text-[10px] tracking-wider text-black uppercase">PENDING</h3>
             </div>
-            <ul id="remaining-list" class="space-y-1 text-xs max-h-[100px] overflow-y-auto text-on-surface-variant">
+            <ul id="remaining-list" class="space-y-1 text-xs max-h-[100px] overflow-y-auto text-black">
               <!-- Dynamically populated -->
               <li class="flex items-center gap-1.5">
                 <span class="material-symbols-outlined text-[14px]">radio_button_unchecked</span>
@@ -238,16 +238,16 @@
             </ul>
           </div>
 
-          <div class="flex flex-col items-center justify-center min-w-[90px] border-l border-outline-variant pl-4 h-full">
-            <span id="progress-percentage" class="text-3xl font-bold text-secondary">0%</span>
-            <span class="text-[9px] uppercase font-bold tracking-wider text-on-surface-variant">Progress</span>
+          <div class="flex flex-col items-center justify-center min-w-[90px] border-l border-black/15 pl-4 h-full">
+            <span id="progress-percentage" class="text-3xl font-bold text-black">0%</span>
+            <span class="text-[9px] uppercase font-bold tracking-wider text-black">Progress</span>
           </div>
         </div>
       </div>
 
       <!-- 6. Agency Departments Selector (Span 2 Columns) -->
-      <div class="md:col-span-2 bento-card rounded-xl p-bento-padding flex flex-col">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-outline-variant/30 pb-3 mb-3">
+      <div id="bento-depts" class="md:col-span-2 bento-card p-bento-padding flex flex-col">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3 mb-3">
           <div class="flex items-center gap-2">
             <span class="material-symbols-outlined text-secondary" style="font-size: 20px;">groups</span>
             <h3 class="font-label-caps text-label-caps text-on-surface-variant">AGENCY PERSONAL CONFIGURATION</h3>
@@ -255,81 +255,81 @@
           
           <!-- Presets toggles inside bento -->
           <div class="flex gap-1">
-            <button class="btn-preset px-2.5 py-1 text-[10px] font-bold rounded border bg-white cursor-pointer active" id="preset-full">Full</button>
-            <button class="btn-preset px-2.5 py-1 text-[10px] font-bold rounded border bg-white cursor-pointer" id="preset-coding">Code Flow</button>
-            <button class="btn-preset px-2.5 py-1 text-[10px] font-bold rounded border bg-white cursor-pointer" id="preset-architect">Arch Flow</button>
+            <button class="btn-preset px-2.5 py-1 text-[10px] font-bold rounded border bg-slate-950 cursor-pointer active" id="preset-full">Full</button>
+            <button class="btn-preset px-2.5 py-1 text-[10px] font-bold rounded border bg-slate-950 cursor-pointer" id="preset-coding">Code Flow</button>
+            <button class="btn-preset px-2.5 py-1 text-[10px] font-bold rounded border bg-slate-950 cursor-pointer" id="preset-architect">Arch Flow</button>
           </div>
         </div>
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-grow">
           <!-- Starter -->
-          <div class="dept-item dept-starter active border border-outline-variant p-2 rounded-lg bg-white flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="starter">
+          <div class="dept-item dept-starter active border border-outline-variant p-2.5 rounded-2xl bg-slate-900/40 flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="starter">
             <div class="flex justify-between items-start">
-              <span class="text-[9px] font-bold text-slate-400 bg-slate-100 rounded px-1">C.1</span>
-              <input type="checkbox" id="chk-dept-starter" checked class="w-3.5 h-3.5 text-slate-500 rounded border-outline-variant focus:ring-slate-500"/>
+              <span class="text-[9px] font-bold text-slate-400 bg-slate-950 rounded px-1.5 py-0.5">C.1</span>
+              <input type="checkbox" id="chk-dept-starter" checked class="m3-checkbox"/>
             </div>
-            <h4 class="text-xs font-semibold text-slate-600 mt-2">Starter</h4>
+            <h4 class="text-xs font-semibold text-slate-400 mt-2">Starter</h4>
           </div>
 
           <!-- Architect -->
-          <div class="dept-item dept-architect active border border-outline-variant p-2 rounded-lg bg-white flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="architect">
+          <div class="dept-item dept-architect active border border-outline-variant p-2.5 rounded-2xl bg-slate-900/40 flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="architect">
             <div class="flex justify-between items-start">
-              <span class="text-[9px] font-bold text-blue-400 bg-blue-50 rounded px-1">C.2</span>
-              <input type="checkbox" id="chk-dept-architect" checked class="w-3.5 h-3.5 text-blue-600 rounded border-outline-variant focus:ring-blue-600"/>
+              <span class="text-[9px] font-bold text-blue-400 bg-slate-950 rounded px-1.5 py-0.5">C.2</span>
+              <input type="checkbox" id="chk-dept-architect" checked class="m3-checkbox"/>
             </div>
             <h4 class="text-xs font-semibold text-blue-600 mt-2">Architect</h4>
           </div>
 
           <!-- Task Distributor -->
-          <div class="dept-item dept-task-distributor active border border-outline-variant p-2 rounded-lg bg-white flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="task_distributor">
+          <div class="dept-item dept-task-distributor active border border-outline-variant p-2.5 rounded-2xl bg-slate-900/40 flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="task_distributor">
             <div class="flex justify-between items-start">
-              <span class="text-[9px] font-bold text-purple-400 bg-purple-50 rounded px-1">C.3</span>
-              <input type="checkbox" id="chk-dept-task-distributor" checked class="w-3.5 h-3.5 text-purple-600 rounded border-outline-variant focus:ring-purple-600"/>
+              <span class="text-[9px] font-bold text-purple-400 bg-slate-950 rounded px-1.5 py-0.5">C.3</span>
+              <input type="checkbox" id="chk-dept-task-distributor" checked class="m3-checkbox"/>
             </div>
             <h4 class="text-xs font-semibold text-purple-600 mt-2">Distributor</h4>
           </div>
 
           <!-- UI Designer -->
-          <div class="dept-item dept-ui-designer active border border-outline-variant p-2 rounded-lg bg-white flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="ui_designer">
+          <div class="dept-item dept-ui-designer active border border-outline-variant p-2.5 rounded-2xl bg-slate-900/40 flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="ui_designer">
             <div class="flex justify-between items-start">
-              <span class="text-[9px] font-bold text-pink-400 bg-pink-50 rounded px-1">A.1</span>
-              <input type="checkbox" id="chk-dept-ui-designer" checked class="w-3.5 h-3.5 text-pink-600 rounded border-outline-variant focus:ring-pink-600"/>
+              <span class="text-[9px] font-bold text-pink-400 bg-slate-950 rounded px-1.5 py-0.5">A.1</span>
+              <input type="checkbox" id="chk-dept-ui-designer" checked class="m3-checkbox"/>
             </div>
             <h4 class="text-xs font-semibold text-pink-600 mt-2">UI Designer</h4>
           </div>
 
           <!-- PR & Safety -->
-          <div class="dept-item dept-pr-safety active border border-outline-variant p-2 rounded-lg bg-white flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="pr_safety">
+          <div class="dept-item dept-pr-safety active border border-outline-variant p-2.5 rounded-2xl bg-slate-900/40 flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="pr_safety">
             <div class="flex justify-between items-start">
-              <span class="text-[9px] font-bold text-amber-500 bg-amber-50 rounded px-1">A.2</span>
-              <input type="checkbox" id="chk-dept-pr-safety" checked class="w-3.5 h-3.5 text-amber-500 rounded border-outline-variant focus:ring-amber-500"/>
+              <span class="text-[9px] font-bold text-amber-500 bg-slate-950 rounded px-1.5 py-0.5">A.2</span>
+              <input type="checkbox" id="chk-dept-pr-safety" checked class="m3-checkbox"/>
             </div>
             <h4 class="text-xs font-semibold text-amber-600 mt-2">PR & Safety</h4>
           </div>
 
           <!-- Coder -->
-          <div class="dept-item dept-coder active border border-outline-variant p-2 rounded-lg bg-white flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="coder">
+          <div class="dept-item dept-coder active border border-outline-variant p-2.5 rounded-2xl bg-slate-900/40 flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="coder">
             <div class="flex justify-between items-start">
-              <span class="text-[9px] font-bold text-emerald-400 bg-emerald-50 rounded px-1">B.1</span>
-              <input type="checkbox" id="chk-dept-coder" checked class="w-3.5 h-3.5 text-emerald-600 rounded border-outline-variant focus:ring-emerald-600"/>
+              <span class="text-[9px] font-bold text-emerald-400 bg-slate-950 rounded px-1.5 py-0.5">B.1</span>
+              <input type="checkbox" id="chk-dept-coder" checked class="m3-checkbox"/>
             </div>
             <h4 class="text-xs font-semibold text-emerald-600 mt-2">Coder</h4>
           </div>
 
           <!-- Auditor -->
-          <div class="dept-item dept-auditor active border border-outline-variant p-2 rounded-lg bg-white flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="auditor">
+          <div class="dept-item dept-auditor active border border-outline-variant p-2.5 rounded-2xl bg-slate-900/40 flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="auditor">
             <div class="flex justify-between items-start">
-              <span class="text-[9px] font-bold text-red-400 bg-red-50 rounded px-1">D</span>
-              <input type="checkbox" id="chk-dept-auditor" checked class="w-3.5 h-3.5 text-red-600 rounded border-outline-variant focus:ring-red-600"/>
+              <span class="text-[9px] font-bold text-red-400 bg-slate-950 rounded px-1.5 py-0.5">D</span>
+              <input type="checkbox" id="chk-dept-auditor" checked class="m3-checkbox"/>
             </div>
             <h4 class="text-xs font-semibold text-red-600 mt-2">Auditor</h4>
           </div>
 
           <!-- Git Guy -->
-          <div class="dept-item dept-git-guy active border border-outline-variant p-2 rounded-lg bg-white flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="git_guy">
+          <div class="dept-item dept-git-guy active border border-outline-variant p-2.5 rounded-2xl bg-slate-900/40 flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="git_guy">
             <div class="flex justify-between items-start">
-              <span class="text-[9px] font-bold text-cyan-400 bg-cyan-50 rounded px-1">B.2</span>
-              <input type="checkbox" id="chk-dept-git-guy" checked class="w-3.5 h-3.5 text-cyan-600 rounded border-outline-variant focus:ring-cyan-600"/>
+              <span class="text-[9px] font-bold text-cyan-400 bg-slate-950 rounded px-1.5 py-0.5">B.2</span>
+              <input type="checkbox" id="chk-dept-git-guy" checked class="m3-checkbox"/>
             </div>
             <h4 class="text-xs font-semibold text-cyan-600 mt-2">Git Guy</h4>
           </div>
