@@ -37,14 +37,14 @@ body {
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.05); /* Softer shadow for light canvas */
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   border: none;                         /* Flat styling */
 }
 
 .bento-card:hover {
-  transform: translateY(-3px) scale(1.005);
-  box-shadow: 0px 16px 40px rgba(0, 0, 0, 0.6);
+  transform: translateY(-6px) scale(1.015); /* Elastic spring pop-up */
+  box-shadow: 0px 20px 40px rgba(0, 0, 0, 0.08); /* Soft hover shadow */
 }
 
 /* 1. Setup Logs Box (Solid Blue Card) */
@@ -102,10 +102,15 @@ body {
   border: 1px solid rgba(0, 0, 0, 0.08) !important;
   border-radius: 16px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.2s, background-color 0.2s;
 }
 #bento-ides label:hover {
   border-color: #000000 !important;
   background-color: #f8fafc !important;
+  transform: scale(1.04) translateY(-1px);
+}
+#bento-ides label:active {
+  transform: scale(0.96);
 }
 
 /* 3. Target Folder Box (Solid Yellow-Orange Card) */
@@ -132,10 +137,15 @@ body {
   color: #ffffff !important;
   border: none !important;
   border-radius: 100px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s, box-shadow 0.2s;
 }
 #btn-browse:hover {
   background-color: #1a1a1a !important;
+  transform: scale(1.04);
+}
+#btn-browse:active {
+  transform: scale(0.96);
 }
 
 /* File spawn animations folder color in dark theme */
@@ -159,16 +169,21 @@ body {
 #btn-deploy {
   background: #000000 !important;
   color: #ffffff !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important;
   border-radius: 100px;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s, box-shadow 0.2s;
 }
 #btn-deploy:hover:not(:disabled) {
   background: #1e1e1e !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+  transform: scale(1.04);
+}
+#btn-deploy:active:not(:disabled) {
+  transform: scale(0.96);
 }
 #btn-deploy:disabled {
-  background: rgba(0, 0, 0, 0.15) !important;
-  color: rgba(0, 0, 0, 0.35) !important;
+  background: rgba(0, 0, 0, 0.08) !important;
+  color: rgba(0, 0, 0, 0.25) !important;
   box-shadow: none !important;
 }
 
@@ -176,6 +191,18 @@ body {
 .progress-fill {
   background-color: var(--solid-pink);
   color: #000000;
+  position: relative;
+  z-index: 1;
+}
+#progress-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  background-color: var(--solid-pink-dark);
+  z-index: 0;
+  transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* bouncy progress slide */
 }
 .progress-fill h3,
 .progress-fill span,
@@ -200,10 +227,15 @@ body {
   background-color: #ffffff;
   border-color: #cbd5e1;
   color: #475569;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s, border-color 0.2s;
 }
 #preset-full:hover, #preset-coding:hover, #preset-architect:hover {
   background-color: #f1f5f9;
   color: #0f172a;
+  transform: scale(1.06);
+}
+#preset-full:active, #preset-coding:active, #preset-architect:active {
+  transform: scale(0.94);
 }
 #preset-full.active, #preset-coding.active, #preset-architect.active {
   background-color: #000000;
@@ -223,7 +255,15 @@ input[type="checkbox"].m3-checkbox {
   border: 2px solid #000000;
   color: #ffffff;
   background-color: transparent;
-  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s, border-color 0.2s;
+}
+
+input[type="checkbox"].m3-checkbox:hover {
+  transform: scale(1.15);
+}
+
+input[type="checkbox"].m3-checkbox:active {
+  transform: scale(0.85);
 }
 
 input[type="checkbox"].m3-checkbox:checked {
@@ -237,7 +277,7 @@ input[type="checkbox"].m3-checkbox:checked {
   border-radius: 20px;
   background-color: #ffffff;
   color: #334155;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s, background-color 0.3s, box-shadow 0.4s;
 }
 
 .dept-item h4 {
@@ -247,14 +287,15 @@ input[type="checkbox"].m3-checkbox:checked {
 .dept-item:hover {
   border-color: #cbd5e1;
   background-color: #f8fafc;
-  transform: scale(1.02);
+  transform: scale(1.06);
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.04);
 }
 
-/* Solid accents for active departments (Inspired by lime bottom items in reference image) */
+/* Solid accents for active departments */
 .dept-item.active {
   border: none;
-  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px) scale(1.03);
   color: #000000 !important;
 }
 
@@ -291,20 +332,21 @@ input[type="checkbox"].m3-checkbox:checked {
    Terminal Console & Visual Animations
    -------------------------------------------------------- */
 
-/* File flying animations */
+/* File flying animations with organic wiggle float path */
 @keyframes fileFly {
   0% {
-    transform: translateY(-40px) scale(0.4);
+    transform: translate(0, -60px) scale(0.3) rotate(0deg);
     opacity: 0;
   }
-  25% {
-    opacity: 0.95;
+  20% {
+    opacity: 1;
+    transform: translate(calc(var(--target-x) * 0.2), -40px) scale(1) rotate(15deg);
   }
-  75% {
-    opacity: 0.95;
+  80% {
+    opacity: 1;
   }
   100% {
-    transform: translateY(0) scale(1.15);
+    transform: translate(var(--target-x), 10px) scale(0.6) rotate(-15deg);
     opacity: 0;
   }
 }
@@ -312,32 +354,34 @@ input[type="checkbox"].m3-checkbox:checked {
 .file-particle {
   position: absolute;
   pointer-events: none;
-  animation: fileFly 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: fileFly 1.2s cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
   z-index: 10;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
 @keyframes folderBounce {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+  0%, 100% { transform: scale(1, 1); }
+  30% { transform: scale(1.15, 0.85); }   /* squash */
+  50% { transform: scale(0.85, 1.15); }   /* stretch */
+  70% { transform: scale(1.05, 0.95); }   /* bounce */
 }
 .folder-active-bounce {
-  animation: folderBounce 0.4s ease-in-out infinite;
+  animation: folderBounce 0.6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
 
 /* List element insertions */
 #installed-list li, #remaining-list li {
-  animation: item-insert 0.25s ease-out;
+  animation: item-insert 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* bouncy drop-in */
 }
 
 @keyframes item-insert {
   from {
     opacity: 0;
-    transform: translateX(-4px);
+    transform: scale(0.8) translateY(12px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: scale(1) translateY(0);
   }
 }
 

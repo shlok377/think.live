@@ -289,6 +289,7 @@ const installedList = document.getElementById('installed-list');
 const remainingList = document.getElementById('remaining-list');
 const progressPercentage = document.getElementById('progress-percentage');
 const progressCard = document.querySelector('.progress-fill');
+const progressBarFill = document.getElementById('progress-bar-fill');
 
 const mainFolder = document.getElementById('main-folder');
 const folderAnimLabel = document.getElementById('folder-anim-label');
@@ -410,19 +411,18 @@ function spawnFileParticle() {
   particle.className = 'file-particle';
   particle.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
   
-  // Random horizontal start within folder boundaries
-  const startX = (Math.random() * 32) - 16 + 24; // center adjust offset
+  // Random horizontal offset around folder center
+  const startX = (Math.random() * 40) - 20;
+  particle.style.left = `calc(50% + ${startX}px)`;
+  particle.style.top = `-10px`;
+  particle.style.fontSize = `${Math.random() * 6 + 14}px`;
   
-  particle.style.left = `${startX}px`;
-  particle.style.top = `-25px`;
-  particle.style.fontSize = `${Math.random() * 5 + 13}px`;
+  // Random translation offset for fluid wiggle path
+  const targetX = (Math.random() * 60) - 30;
+  particle.style.setProperty('--target-x', `${targetX}px`);
   
   mainFolder.appendChild(particle);
   
-  // Slight folder scaling dynamic bounce
-  mainFolder.classList.add('folder-active-bounce');
-  setTimeout(() => mainFolder.classList.remove('folder-active-bounce'), 100);
-
   // Clean elements
   particle.addEventListener('animationend', () => {
     particle.remove();
@@ -432,11 +432,13 @@ function spawnFileParticle() {
 function startVisualEmitter() {
   folderAnimLabel.textContent = 'WRITING';
   folderAnimLabel.classList.add('text-secondary', 'animate-pulse');
+  if (mainFolder) mainFolder.classList.add('folder-active-bounce');
   particleTimer = setInterval(spawnFileParticle, 200);
 }
 
 function stopVisualEmitter(success = true) {
   clearInterval(particleTimer);
+  if (mainFolder) mainFolder.classList.remove('folder-active-bounce');
   folderAnimLabel.classList.remove('text-secondary', 'animate-pulse');
   folderAnimLabel.textContent = success ? 'COMPLETED' : 'ERROR';
   if (success) {
@@ -534,8 +536,8 @@ btnDeploy.addEventListener('click', async () => {
   installedList.innerHTML = '';
   remainingList.innerHTML = '';
   progressPercentage.textContent = '0%';
-  if (progressCard) {
-    progressCard.style.background = 'var(--solid-pink)';
+  if (progressBarFill) {
+    progressBarFill.style.width = '0%';
   }
   
   tasks.forEach(t => {
@@ -584,8 +586,8 @@ btnDeploy.addEventListener('click', async () => {
       completedCount++;
       const percentVal = Math.round((completedCount / totalCount) * 100);
       progressPercentage.textContent = `${percentVal}%`;
-      if (progressCard) {
-        progressCard.style.background = `linear-gradient(to right, var(--solid-pink-dark) ${percentVal}%, var(--solid-pink) ${percentVal}%)`;
+      if (progressBarFill) {
+        progressBarFill.style.width = `${percentVal}%`;
       }
       
       // Artificial delay (50-100ms) for smoother UI transitions
