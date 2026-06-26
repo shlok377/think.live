@@ -374,7 +374,69 @@
       </div>
     </div>
   </main>
+
+  <!-- Success Modal Overlay -->
+  <div id="success-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-surface-dim border border-outline-variant max-w-2xl w-full p-8 mx-4 shadow-2xl relative flex flex-col gap-6" style="border-radius: 24px;">
+      <!-- Close Button -->
+      <button id="btn-close-modal" class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer bg-transparent border-0">
+        <span class="material-symbols-outlined text-[20px] text-slate-400">close</span>
+      </button>
+
+      <!-- Header -->
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-emerald-500 text-4xl" style="font-size: 40px;">check_circle</span>
+        <div>
+          <h2 class="text-xl font-bold text-on-surface">think.live Setup Complete!</h2>
+          <p class="text-xs text-on-surface-variant">Your agency live monitoring workspace is ready.</p>
+        </div>
+      </div>
+
+      <!-- Quick Launch Scripts -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Linux/macOS Command -->
+        <div class="p-4 rounded-xl border border-outline-variant bg-slate-900/40">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-blue-400 text-sm" style="font-size: 16px;">terminal</span>
+            <span class="text-xs font-bold text-on-surface uppercase tracking-wider">Linux / macOS</span>
+          </div>
+          <p class="text-[11px] text-on-surface-variant mb-2">Run in one command without permission edits:</p>
+          <code class="block w-full bg-slate-950 px-3 py-2 rounded text-xs font-mono text-emerald-400 mb-2">node start-monitoring</code>
+          <p class="text-[10px] text-on-surface-variant/70 italic">Or make it executable: <code class="font-mono text-[9px] text-slate-300">chmod +x start-monitoring && ./start-monitoring</code></p>
+        </div>
+
+        <!-- Windows Command -->
+        <div class="p-4 rounded-xl border border-outline-variant bg-slate-900/40">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-cyan-400 text-sm" style="font-size: 16px;">desktop_windows</span>
+            <span class="text-xs font-bold text-on-surface uppercase tracking-wider">Windows</span>
+          </div>
+          <p class="text-[11px] text-on-surface-variant mb-2">Double-click or run in cmd/powershell:</p>
+          <code class="block w-full bg-slate-950 px-3 py-2 rounded text-xs font-mono text-emerald-400 mb-2">start-monitoring.bat</code>
+        </div>
+      </div>
+
+      <!-- IDE Usage Guidelines -->
+      <div class="p-4 rounded-xl border border-outline-variant bg-slate-900/40">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="material-symbols-outlined text-purple-400 text-sm" style="font-size: 16px;">smart_toy</span>
+          <span class="text-xs font-bold text-on-surface uppercase tracking-wider">How to use with AI Agents</span>
+        </div>
+        <ul class="space-y-1.5 text-[11px] text-on-surface-variant list-disc pl-4">
+          <li>Open your IDE (Cursor, VS Code, Windsurf, or Claude Code CLI) in the target directory.</li>
+          <li>Your developer agent will **automatically read the master coordination rules** directly from the embedded IDE rules files.</li>
+          <li>Prompt the agent as normal (e.g., <i>"Create a login feature"</i>).</li>
+          <li>The agent will automatically log transitions and update the TUI dashboard in real-time!</li>
+        </ul>
+      </div>
+
+      <!-- Action Button -->
+      <button id="btn-modal-ok" class="btn btn-success w-full py-2.5 font-bold uppercase tracking-wider text-xs text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+        Got it, let's go!
+      </button>
+    </div>
+  </div>
+
   <script src="js/app.js"></script>
 </body>
-
 </html>
