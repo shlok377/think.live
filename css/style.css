@@ -88,6 +88,7 @@ body {
 #bento-ides {
   background-color: var(--solid-orange-red);
   color: #000000;
+  padding: 18px 26px !important;
 }
 #bento-ides h3,
 #bento-ides span {

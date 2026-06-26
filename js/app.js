@@ -276,9 +276,10 @@ const txtDirPath = document.getElementById('txt-dir-path');
 const terminalOutput = document.getElementById('terminal-output');
 
 const chkCursor = document.getElementById('chk-cursor');
-const chkRoo = document.getElementById('chk-roo');
+const chkVSCode = document.getElementById('chk-vscode');
+const chkAntigravity = document.getElementById('chk-antigravity');
 const chkWindsurf = document.getElementById('chk-windsurf');
-const chkVscodeTasks = document.getElementById('chk-vscode-tasks');
+const chkRoo = document.getElementById('chk-roo');
 
 const presetFull = document.getElementById('preset-full');
 const presetCoding = document.getElementById('preset-coding');
@@ -378,7 +379,21 @@ function setDepartmentsState(states) {
   });
 }
 
-// 6. Directory Picking Handler
+// 6. Deploy button state validator
+function updateDeployButtonState() {
+  const folderSelected = (targetDirectoryHandle !== null);
+  const ideChecked = chkCursor.checked || chkVSCode.checked || chkAntigravity.checked || chkWindsurf.checked || chkRoo.checked;
+  btnDeploy.disabled = !(folderSelected && ideChecked);
+}
+
+// Add change listeners to update deploy button state when IDE selections change
+[chkCursor, chkVSCode, chkAntigravity, chkWindsurf, chkRoo].forEach(chk => {
+  if (chk) {
+    chk.addEventListener('change', updateDeployButtonState);
+  }
+});
+
+// Directory Picking Handler
 btnBrowse.addEventListener('click', async () => {
   try {
     targetDirectoryHandle = await window.showDirectoryPicker({
@@ -386,7 +401,7 @@ btnBrowse.addEventListener('click', async () => {
     });
     
     txtDirPath.value = targetDirectoryHandle.name;
-    btnDeploy.disabled = false;
+    updateDeployButtonState();
     
     logToTerminal(`Target directory set to "${targetDirectoryHandle.name}".`, 'secondary-fixed-dim');
     logToTerminal('Ready for deployment. Press "Install Now" to configure agency.', 'on-primary');
@@ -395,7 +410,7 @@ btnBrowse.addEventListener('click', async () => {
   } catch (err) {
     logToTerminal(`Directory pick aborted: ${err.message}`, 'error');
     targetDirectoryHandle = null;
-    btnDeploy.disabled = true;
+    updateDeployButtonState();
     txtDirPath.value = 'No folder selected';
     folderAnimLabel.textContent = 'STANDBY';
   }
@@ -514,6 +529,9 @@ btnDeploy.addEventListener('click', async () => {
     }});
   }
   if (chkRoo.checked) {
+    tasks.push({ id: 'rules_claudecode', name: 'Write .clauderules', type: 'file', run: async () => {
+      return await writeTextFile(targetDirectoryHandle, '.clauderules', TEMPLATES.ideRule);
+    }});
     tasks.push({ id: 'rules_roo', name: 'Write .claudedevrules', type: 'file', run: async () => {
       return await writeTextFile(targetDirectoryHandle, '.claudedevrules', TEMPLATES.ideRule);
     }});
@@ -523,7 +541,9 @@ btnDeploy.addEventListener('click', async () => {
       return await writeTextFile(targetDirectoryHandle, '.windsurfrules', TEMPLATES.ideRule);
     }});
   }
-  if (chkVscodeTasks.checked) {
+  
+  const needsVSCodeSetup = chkVSCode.checked || chkAntigravity.checked;
+  if (needsVSCodeSetup) {
     tasks.push({ id: 'vscode_dir', name: 'Create .vscode/ folder', type: 'dir', run: async () => {
       return await getOrCreateDir(targetDirectoryHandle, '.vscode');
     }});
@@ -602,7 +622,7 @@ btnDeploy.addEventListener('click', async () => {
     logToTerminal('Installation aborted. Review folders write configurations.', 'error');
     stopVisualEmitter(false);
   } finally {
-    btnDeploy.disabled = false;
     btnBrowse.disabled = false;
+    updateDeployButtonState();
   }
 });
