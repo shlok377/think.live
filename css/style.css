@@ -305,6 +305,7 @@ input[type="checkbox"].m3-checkbox:checked {
 .dept-item.active.dept-architect { background-color: var(--solid-blue); }
 .dept-item.active.dept-task-distributor { background-color: #c084fc; }
 .dept-item.active.dept-ui-designer { background-color: var(--solid-pink); }
+.dept-item.active.dept-ui-tester { background-color: var(--solid-pink); }
 .dept-item.active.dept-pr-safety { background-color: var(--solid-yellow-orange); }
 .dept-item.active.dept-coder { background-color: var(--solid-lime-green); }
 .dept-item.active.dept-auditor { background-color: var(--solid-orange-red); }

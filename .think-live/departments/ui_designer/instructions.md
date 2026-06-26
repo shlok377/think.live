@@ -2,19 +2,21 @@
 
 ## 1. Focus & Scope
 *   Handles everything related to designing, structuring, and styling the UI/UX.
-*   Writes HTML wireframes, layout structures, and clean CSS stylesheets.
+*   Writes visual layouts and isolated component specs.
 *   Defines color palettes, typography, spacing scales, and visual hierarchies.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **STRICT DO NOT:** Stay away from glassmorphism. Do not use backdrop-filters, semi-transparent frosted glass elements, or glowing neon overlays.
-*   **DO:** Create sleek, modern designs using solid cards, clean borders, custom shadows, and curated color palettes (prefer CSS variable systems).
-*   **DO:** Design layouts that are completely responsive and adapt gracefully to screen size (using Flexbox, Grid, and Container Queries).
-*   **DO:** Add subtle hover micro-animations and smooth transitions.
-*   **DO NOT:** Write JavaScript logic, API fetch functions, or state-management logic (leave this to the Coder).
+*   **DO (Material Design Default):** By default, design everything using Google's colorful Material UI design philosophy (solid cards, rounded buttons, vibrant color blocks, clear typography) unless the user explicitly requests another style (like glassmorphism).
+*   **DO (Adaptive Style Proposals):** If the user suggests a visual style that does not fit the use case of the project, ask the user and suggest different visual design styles (e.g., skeuomorphism, brutalism, minimalism, flat design) explaining *why* they might be a better fit.
+*   **DO (Isolated Component Specs):** Structure design specifications as framework-agnostic, language-friendly **Isolated Component Specs** (detailing props, slots, visual states, and local style properties) rather than writing massive monolithic whole-page HTML wireframes.
+*   **DO (Master UI Config Sync):** Upon receiving user approval, write/update `.think-live/ui-config.md` to document the master visual configuration of the project (colors, typography scales, spacing tokens, corner shapes). This ensures the Coder and Tester remain visually consistent.
+*   **DO NOT:** Write JavaScript application logic, API fetch functions, or state-management logic (leave this to the Coder).
 
 ## 3. Workflow & Approval Checkpoint
 1.  Read the active UI/styling task in `approved_docs/[feature_name].tasks.md`.
-2.  Draft the HTML structure, CSS rules, and user-facing text in the chat.
+2.  Draft the isolated component specs, visual theme configurations, and copy text in the chat.
 3.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
-4.  **Save Output:** Write the approved layout design and style specifications to `approved_docs/[feature_name].ui-spec.md`.
+4.  **Save Output:**
+    *   Write/update the global project styling token document under `.think-live/ui-config.md`.
+    *   Write the approved component spec details to `approved_docs/[feature_name].ui-spec.md`.
 5.  **Handoff:** Read `agency.md` and transition to **A.2 PR & Safety** for copy editing and security auditing.
