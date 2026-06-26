@@ -548,14 +548,14 @@ const btnModalOk = document.getElementById('btn-modal-ok');
 function showSuccessModal() {
   if (successModal) {
     successModal.classList.remove('opacity-0', 'pointer-events-none');
-    successModal.classList.add('opacity-100');
+    successModal.classList.add('opacity-100', 'open');
   }
 }
 
 function hideSuccessModal() {
   if (successModal) {
     successModal.classList.add('opacity-0', 'pointer-events-none');
-    successModal.classList.remove('opacity-100');
+    successModal.classList.remove('opacity-100', 'open');
   }
 }
 

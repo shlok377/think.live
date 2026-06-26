@@ -506,3 +506,49 @@ input[type="checkbox"].m3-checkbox:checked {
 #bento-depts .dept-item:nth-of-type(6) { animation-delay: 1.48s; }
 #bento-depts .dept-item:nth-of-type(7) { animation-delay: 1.54s; }
 #bento-depts .dept-item:nth-of-type(8) { animation-delay: 1.6s; }
+
+/* ==========================================================
+   Success Modal Bento Styling & Animations
+   ========================================================== */
+
+.modal-container {
+  box-shadow: 0px 25px 60px rgba(0, 0, 0, 0.15);
+  border: 3px solid #000000 !important;
+}
+
+/* Modal Inner Bento Cards style, hover, and transition */
+.modal-bento-card {
+  border-radius: 24px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.03);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  border: none;
+}
+
+.modal-bento-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0px 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* Bouncy reveal animations when the modal is opened */
+#success-modal.open .modal-container {
+  animation: bentoReveal 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+#success-modal.open .modal-bento-card {
+  animation: bentoContentReveal 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+#success-modal.open .modal-bento-card.bento-header { animation-delay: 0.12s; }
+#success-modal.open .modal-bento-card.bento-unix { animation-delay: 0.24s; }
+#success-modal.open .modal-bento-card.bento-win { animation-delay: 0.34s; }
+#success-modal.open .modal-bento-card.bento-guide { animation-delay: 0.46s; }
+#success-modal.open #btn-modal-ok { 
+  animation: bentoContentReveal 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+  animation-delay: 0.58s;
+}
+
