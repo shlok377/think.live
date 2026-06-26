@@ -9,7 +9,13 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   **Step 1:** Read the user's input.
 *   **Step 2:** Scan \`approved_docs/\` to find the active feature and current task list (\`[feature].tasks.md\`).
 *   **Step 3:** Evaluate the **State Decision Matrix** below to determine which agent persona is needed *right now*.
-*   **Step 4:** If a transition is needed:
+*   **Step 4:** Maintain Live TUI Monitor State:
+    *   On every prompt, update \`.think-live/state.json\` with the following structure:
+        *   \`active_agent\`: Folder name of your active persona (e.g. \`coder\`, \`starter\`, etc. or \`null\` if idle).
+        *   \`last_agent\`: Folder name of the previously active persona (or \`null\`).
+        *   \`active_doc\`: Path of the spec/task document from \`approved_docs/\` currently in use.
+        *   \`modified_files\`: Array of files you have modified in the current step/turn.
+*   **Step 5:** If a transition is needed:
     *   Announce it: \`🔄 [Transition] Adopting persona: [Agent Name] ([Department Name])\`
     *   Read that agent's instruction file under \`.think-live/departments/[agent_folder]/instructions.md\`.
     *   Adopt the persona and execute the request.
@@ -235,30 +241,21 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Agency Dashboard Server",
+      "label": "Launch think.live TUI Monitor",
       "type": "shell",
-      "command": "npm install && npm run dev",
-      "options": {
-        "cwd": "\${workspaceFolder}/.think-live/gui"
-      },
-      "runOptions": {
-        "runOn": "folderOpen"
+      "command": "node .think-live/tui.js",
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": true
       },
       "presentation": {
-        "reveal": "silent",
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Launch Dashboard Web Browser",
-      "type": "shell",
-      "command": "sleep 3 && (xdg-open http://localhost:3770 || open http://localhost:3770 || start http://localhost:3770)",
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "presentation": {
-        "reveal": "never",
-        "panel": "shared"
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
       }
     }
   ]
@@ -276,9 +273,10 @@ const txtDirPath = document.getElementById('txt-dir-path');
 const terminalOutput = document.getElementById('terminal-output');
 
 const chkCursor = document.getElementById('chk-cursor');
-const chkRoo = document.getElementById('chk-roo');
+const chkVSCode = document.getElementById('chk-vscode');
+const chkAntigravity = document.getElementById('chk-antigravity');
 const chkWindsurf = document.getElementById('chk-windsurf');
-const chkVscodeTasks = document.getElementById('chk-vscode-tasks');
+const chkRoo = document.getElementById('chk-roo');
 
 const presetFull = document.getElementById('preset-full');
 const presetCoding = document.getElementById('preset-coding');
@@ -288,6 +286,8 @@ const deptItems = document.querySelectorAll('.dept-item');
 const installedList = document.getElementById('installed-list');
 const remainingList = document.getElementById('remaining-list');
 const progressPercentage = document.getElementById('progress-percentage');
+const progressCard = document.querySelector('.progress-fill');
+const progressBarFill = document.getElementById('progress-bar-fill');
 
 const mainFolder = document.getElementById('main-folder');
 const folderAnimLabel = document.getElementById('folder-anim-label');
@@ -376,7 +376,21 @@ function setDepartmentsState(states) {
   });
 }
 
-// 6. Directory Picking Handler
+// 6. Deploy button state validator
+function updateDeployButtonState() {
+  const folderSelected = (targetDirectoryHandle !== null);
+  const ideChecked = chkCursor.checked || chkVSCode.checked || chkAntigravity.checked || chkWindsurf.checked || chkRoo.checked;
+  btnDeploy.disabled = !(folderSelected && ideChecked);
+}
+
+// Add change listeners to update deploy button state when IDE selections change
+[chkCursor, chkVSCode, chkAntigravity, chkWindsurf, chkRoo].forEach(chk => {
+  if (chk) {
+    chk.addEventListener('change', updateDeployButtonState);
+  }
+});
+
+// Directory Picking Handler
 btnBrowse.addEventListener('click', async () => {
   try {
     targetDirectoryHandle = await window.showDirectoryPicker({
@@ -384,7 +398,7 @@ btnBrowse.addEventListener('click', async () => {
     });
     
     txtDirPath.value = targetDirectoryHandle.name;
-    btnDeploy.disabled = false;
+    updateDeployButtonState();
     
     logToTerminal(`Target directory set to "${targetDirectoryHandle.name}".`, 'secondary-fixed-dim');
     logToTerminal('Ready for deployment. Press "Install Now" to configure agency.', 'on-primary');
@@ -393,7 +407,7 @@ btnBrowse.addEventListener('click', async () => {
   } catch (err) {
     logToTerminal(`Directory pick aborted: ${err.message}`, 'error');
     targetDirectoryHandle = null;
-    btnDeploy.disabled = true;
+    updateDeployButtonState();
     txtDirPath.value = 'No folder selected';
     folderAnimLabel.textContent = 'STANDBY';
   }
@@ -409,19 +423,18 @@ function spawnFileParticle() {
   particle.className = 'file-particle';
   particle.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
   
-  // Random horizontal start within folder boundaries
-  const startX = (Math.random() * 32) - 16 + 24; // center adjust offset
+  // Random horizontal offset around folder center
+  const startX = (Math.random() * 40) - 20;
+  particle.style.left = `calc(50% + ${startX}px)`;
+  particle.style.top = `-10px`;
+  particle.style.fontSize = `${Math.random() * 6 + 14}px`;
   
-  particle.style.left = `${startX}px`;
-  particle.style.top = `-25px`;
-  particle.style.fontSize = `${Math.random() * 5 + 13}px`;
+  // Random translation offset for fluid wiggle path
+  const targetX = (Math.random() * 60) - 30;
+  particle.style.setProperty('--target-x', `${targetX}px`);
   
   mainFolder.appendChild(particle);
   
-  // Slight folder scaling dynamic bounce
-  mainFolder.classList.add('folder-active-bounce');
-  setTimeout(() => mainFolder.classList.remove('folder-active-bounce'), 100);
-
   // Clean elements
   particle.addEventListener('animationend', () => {
     particle.remove();
@@ -431,11 +444,13 @@ function spawnFileParticle() {
 function startVisualEmitter() {
   folderAnimLabel.textContent = 'WRITING';
   folderAnimLabel.classList.add('text-secondary', 'animate-pulse');
+  if (mainFolder) mainFolder.classList.add('folder-active-bounce');
   particleTimer = setInterval(spawnFileParticle, 200);
 }
 
 function stopVisualEmitter(success = true) {
   clearInterval(particleTimer);
+  if (mainFolder) mainFolder.classList.remove('folder-active-bounce');
   folderAnimLabel.classList.remove('text-secondary', 'animate-pulse');
   folderAnimLabel.textContent = success ? 'COMPLETED' : 'ERROR';
   if (success) {
@@ -511,6 +526,9 @@ btnDeploy.addEventListener('click', async () => {
     }});
   }
   if (chkRoo.checked) {
+    tasks.push({ id: 'rules_claudecode', name: 'Write .clauderules', type: 'file', run: async () => {
+      return await writeTextFile(targetDirectoryHandle, '.clauderules', TEMPLATES.ideRule);
+    }});
     tasks.push({ id: 'rules_roo', name: 'Write .claudedevrules', type: 'file', run: async () => {
       return await writeTextFile(targetDirectoryHandle, '.claudedevrules', TEMPLATES.ideRule);
     }});
@@ -520,7 +538,9 @@ btnDeploy.addEventListener('click', async () => {
       return await writeTextFile(targetDirectoryHandle, '.windsurfrules', TEMPLATES.ideRule);
     }});
   }
-  if (chkVscodeTasks.checked) {
+  
+  const needsVSCodeSetup = chkVSCode.checked || chkAntigravity.checked;
+  if (needsVSCodeSetup) {
     tasks.push({ id: 'vscode_dir', name: 'Create .vscode/ folder', type: 'dir', run: async () => {
       return await getOrCreateDir(targetDirectoryHandle, '.vscode');
     }});
@@ -533,6 +553,9 @@ btnDeploy.addEventListener('click', async () => {
   installedList.innerHTML = '';
   remainingList.innerHTML = '';
   progressPercentage.textContent = '0%';
+  if (progressBarFill) {
+    progressBarFill.style.width = '0%';
+  }
   
   tasks.forEach(t => {
     const li = document.createElement('li');
@@ -580,6 +603,9 @@ btnDeploy.addEventListener('click', async () => {
       completedCount++;
       const percentVal = Math.round((completedCount / totalCount) * 100);
       progressPercentage.textContent = `${percentVal}%`;
+      if (progressBarFill) {
+        progressBarFill.style.width = `${percentVal}%`;
+      }
       
       // Artificial delay (50-100ms) for smoother UI transitions
       await new Promise(r => setTimeout(r, 70));
@@ -593,7 +619,7 @@ btnDeploy.addEventListener('click', async () => {
     logToTerminal('Installation aborted. Review folders write configurations.', 'error');
     stopVisualEmitter(false);
   } finally {
-    btnDeploy.disabled = false;
     btnBrowse.disabled = false;
+    updateDeployButtonState();
   }
 });
