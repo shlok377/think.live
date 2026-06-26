@@ -420,3 +420,89 @@ input[type="checkbox"].m3-checkbox:checked {
   height: 600px;
   background: #7c3aed;
 }
+
+/* Staggered Intro Reveal Animations for Bento Cards */
+@keyframes bentoReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.bento-card {
+  animation: bentoReveal 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+}
+
+#bento-log { animation-delay: 0.1s; }
+#bento-ides { animation-delay: 0.28s; }
+#bento-folder { animation-delay: 0.46s; }
+#bento-deploy { animation-delay: 0.64s; }
+.progress-fill { animation-delay: 0.82s; }
+#bento-depts { animation-delay: 1.0s; }
+
+/* Nested Staggered Reveal Animations for Bento Inner Content */
+@keyframes bentoContentReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+#bento-log > div:first-child,
+#terminal-output,
+#bento-ides > div:first-child,
+#bento-ides label,
+#bento-folder > div:first-child > div:first-child,
+#bento-folder > div:first-child > div:nth-child(2),
+#folder-container,
+#btn-deploy,
+.progress-fill > div.relative > div,
+#bento-depts > div:first-child,
+#bento-depts .dept-item {
+  animation: bentoContentReveal 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
+}
+
+/* Card 1 (Logs) content delays */
+#bento-log > div:first-child { animation-delay: 0.2s; }
+#terminal-output { animation-delay: 0.32s; }
+
+/* Card 2 (IDEs) content delays */
+#bento-ides > div:first-child { animation-delay: 0.38s; }
+#bento-ides label:nth-of-type(1) { animation-delay: 0.46s; }
+#bento-ides label:nth-of-type(2) { animation-delay: 0.52s; }
+#bento-ides label:nth-of-type(3) { animation-delay: 0.58s; }
+#bento-ides label:nth-of-type(4) { animation-delay: 0.64s; }
+#bento-ides label:nth-of-type(5) { animation-delay: 0.7s; }
+
+/* Card 3 (Folder Picker) content delays */
+#bento-folder > div:first-child > div:first-child { animation-delay: 0.56s; }
+#bento-folder > div:first-child > div:nth-child(2) { animation-delay: 0.64s; }
+#folder-container { animation-delay: 0.72s; }
+
+/* Card 4 (Deploy Button) content delays */
+#btn-deploy { animation-delay: 0.74s; }
+
+/* Card 5 (Progress Tracker) content delays */
+.progress-fill > div.relative > div:nth-child(1) { animation-delay: 0.9s; }
+.progress-fill > div.relative > div:nth-child(2) { animation-delay: 0.94s; }
+.progress-fill > div.relative > div:nth-child(3) { animation-delay: 0.98s; }
+.progress-fill > div.relative > div:nth-child(4) { animation-delay: 1.04s; }
+
+/* Card 6 (Departments Config) content delays */
+#bento-depts > div:first-child { animation-delay: 1.1s; }
+#bento-depts .dept-item:nth-of-type(1) { animation-delay: 1.18s; }
+#bento-depts .dept-item:nth-of-type(2) { animation-delay: 1.24s; }
+#bento-depts .dept-item:nth-of-type(3) { animation-delay: 1.3s; }
+#bento-depts .dept-item:nth-of-type(4) { animation-delay: 1.36s; }
+#bento-depts .dept-item:nth-of-type(5) { animation-delay: 1.42s; }
+#bento-depts .dept-item:nth-of-type(6) { animation-delay: 1.48s; }
+#bento-depts .dept-item:nth-of-type(7) { animation-delay: 1.54s; }
+#bento-depts .dept-item:nth-of-type(8) { animation-delay: 1.6s; }
