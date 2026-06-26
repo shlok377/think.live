@@ -288,6 +288,7 @@ const deptItems = document.querySelectorAll('.dept-item');
 const installedList = document.getElementById('installed-list');
 const remainingList = document.getElementById('remaining-list');
 const progressPercentage = document.getElementById('progress-percentage');
+const progressCard = document.querySelector('.progress-fill');
 
 const mainFolder = document.getElementById('main-folder');
 const folderAnimLabel = document.getElementById('folder-anim-label');
@@ -533,6 +534,9 @@ btnDeploy.addEventListener('click', async () => {
   installedList.innerHTML = '';
   remainingList.innerHTML = '';
   progressPercentage.textContent = '0%';
+  if (progressCard) {
+    progressCard.style.background = 'var(--solid-pink)';
+  }
   
   tasks.forEach(t => {
     const li = document.createElement('li');
@@ -580,6 +584,9 @@ btnDeploy.addEventListener('click', async () => {
       completedCount++;
       const percentVal = Math.round((completedCount / totalCount) * 100);
       progressPercentage.textContent = `${percentVal}%`;
+      if (progressCard) {
+        progressCard.style.background = `linear-gradient(to right, var(--solid-pink-dark) ${percentVal}%, var(--solid-pink) ${percentVal}%)`;
+      }
       
       // Artificial delay (50-100ms) for smoother UI transitions
       await new Promise(r => setTimeout(r, 70));
