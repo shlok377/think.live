@@ -9,7 +9,13 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   **Step 1:** Read the user's input.
 *   **Step 2:** Scan \`approved_docs/\` to find the active feature and current task list (\`[feature].tasks.md\`).
 *   **Step 3:** Evaluate the **State Decision Matrix** below to determine which agent persona is needed *right now*.
-*   **Step 4:** If a transition is needed:
+*   **Step 4:** Maintain Live TUI Monitor State:
+    *   On every prompt, update \`.think-live/state.json\` with the following structure:
+        *   \`active_agent\`: Folder name of your active persona (e.g. \`coder\`, \`starter\`, etc. or \`null\` if idle).
+        *   \`last_agent\`: Folder name of the previously active persona (or \`null\`).
+        *   \`active_doc\`: Path of the spec/task document from \`approved_docs/\` currently in use.
+        *   \`modified_files\`: Array of files you have modified in the current step/turn.
+*   **Step 5:** If a transition is needed:
     *   Announce it: \`🔄 [Transition] Adopting persona: [Agent Name] ([Department Name])\`
     *   Read that agent's instruction file under \`.think-live/departments/[agent_folder]/instructions.md\`.
     *   Adopt the persona and execute the request.
@@ -235,30 +241,21 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Agency Dashboard Server",
+      "label": "Launch think.live TUI Monitor",
       "type": "shell",
-      "command": "npm install && npm run dev",
-      "options": {
-        "cwd": "\${workspaceFolder}/.think-live/gui"
-      },
-      "runOptions": {
-        "runOn": "folderOpen"
+      "command": "node .think-live/tui.js",
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": true
       },
       "presentation": {
-        "reveal": "silent",
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Launch Dashboard Web Browser",
-      "type": "shell",
-      "command": "sleep 3 && (xdg-open http://localhost:3770 || open http://localhost:3770 || start http://localhost:3770)",
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
-      "presentation": {
-        "reveal": "never",
-        "panel": "shared"
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": true
       }
     }
   ]
