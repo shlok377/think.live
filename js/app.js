@@ -46,6 +46,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 
 ## 3. Strict Operating Rules
 *   **User Approval Gate:** Never modify the codebase or save a file to \`approved_docs/\` without the user's explicit approval ("Approved" or "Yes").
+    *   *Autonomous Override:* If \`.think-live/state.json\` contains \`"autonomous": true\`, you must bypass all approval gates, perform modifications automatically, and proceed with transitions immediately without waiting for user confirmation.
 *   **UI Consistency Gate:** All user interface designs must align with the parameters saved in \`.think-live/ui-config.md\`. If this file exists, agents MUST refer to it for colors, layouts, and style tokens to keep styling consistent.
 *   **Execution Freedom:** Within the scope of your active persona, use your full intelligence and coding capabilities to solve problems. Do not limit your thinking.
 `,
@@ -424,7 +425,8 @@ function checkState() {
         active_agent: null,
         last_agent: null,
         active_doc: 'None',
-        modified_files: []
+        modified_files: [],
+        autonomous: false
       });
       if (defaultState !== lastJsonStr) {
         lastJsonStr = defaultState;
@@ -483,7 +485,20 @@ function renderTUI() {
   
   // Header Panel
   console.log(BOLD + BLUE + '┌' + '─'.repeat(width - 2) + '┐' + RESET);
-  console.log(BOLD + BLUE + '│' + RESET + BOLD + '  think.live AGENCY MONITOR' + ' '.repeat(width - 45) + GREEN + '● LIVE RUNNING ' + RESET + BOLD + BLUE + ' │' + RESET);
+  const leftHeader = '  think.live AGENCY MONITOR';
+  const rightHeader = '● LIVE RUNNING';
+  const modeLabel = activeState.autonomous ? 'AUTONOMOUS ⚡' : 'MANUAL 👤';
+  const modeColor = activeState.autonomous ? GREEN : YELLOW;
+  const centerHeader = \'[\' + modeLabel + \']\';
+  const leftLen = leftHeader.length;
+  const centerLen = activeState.autonomous ? 15 : 11;
+  const rightLen = rightHeader.length;
+  const totalUsed = leftLen + centerLen + rightLen;
+  const totalSpaces = 76 - totalUsed;
+  const halfSpaces = Math.floor(totalSpaces / 2);
+  const leftPadding = ' '.repeat(halfSpaces);
+  const rightPadding = ' '.repeat(totalSpaces - halfSpaces);
+  console.log(BOLD + BLUE + '│' + RESET + BOLD + leftHeader + leftPadding + modeColor + centerHeader + RESET + BOLD + rightPadding + GREEN + rightHeader + ' ' + RESET + BOLD + BLUE + ' │' + RESET);
   console.log(BOLD + BLUE + '└' + '─'.repeat(width - 2) + '┘' + RESET);
 
   // Left Column (Departments) vs Right Column (Status details)
@@ -615,6 +630,7 @@ const chkVSCode = document.getElementById('chk-vscode');
 const chkAntigravity = document.getElementById('chk-antigravity');
 const chkWindsurf = document.getElementById('chk-windsurf');
 const chkRoo = document.getElementById('chk-roo');
+const chkAutonomous = document.getElementById('chk-autonomous');
 
 const presetFull = document.getElementById('preset-full');
 const presetCoding = document.getElementById('preset-coding');
@@ -853,6 +869,16 @@ btnDeploy.addEventListener('click', async () => {
   }});
   tasks.push({ id: 'tui_script', name: 'Write .think-live/tui.js', type: 'file', parent: 'agency_dir', run: async (handles) => {
     return await writeTextFile(handles.agency_dir, 'tui.js', TEMPLATES.tui);
+  }});
+  tasks.push({ id: 'state_json', name: 'Write .think-live/state.json', type: 'file', parent: 'agency_dir', run: async (handles) => {
+    const initialState = {
+      active_agent: null,
+      last_agent: null,
+      active_doc: 'None',
+      modified_files: [],
+      autonomous: chkAutonomous ? chkAutonomous.checked : false
+    };
+    return await writeTextFile(handles.agency_dir, 'state.json', JSON.stringify(initialState, null, 2));
   }});
   tasks.push({ id: 'start_script_unix', name: 'Write start-monitoring (Unix/macOS)', type: 'file', run: async () => {
     return await writeTextFile(targetDirectoryHandle, 'start-monitoring', TEMPLATES.startMonitoringScript);

@@ -7,5 +7,6 @@
     "js/app.js",
     "css/style.css"
   ],
-  "timestamp": "2026-06-26T08:34:32Z"
+  "timestamp": "2026-06-26T08:34:32Z",
+  "autonomous": false
 }

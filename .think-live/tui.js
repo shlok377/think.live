@@ -105,7 +105,8 @@ function checkState() {
         active_agent: null,
         last_agent: null,
         active_doc: 'None',
-        modified_files: []
+        modified_files: [],
+        autonomous: false
       });
       if (defaultState !== lastJsonStr) {
         lastJsonStr = defaultState;
@@ -164,7 +165,20 @@ function renderTUI() {
   
   // Header Panel
   console.log(BOLD + BLUE + '┌' + '─'.repeat(width - 2) + '┐' + RESET);
-  console.log(BOLD + BLUE + '│' + RESET + BOLD + '  think.live AGENCY MONITOR' + ' '.repeat(width - 45) + GREEN + '● LIVE RUNNING ' + RESET + BOLD + BLUE + ' │' + RESET);
+  const leftHeader = '  think.live AGENCY MONITOR';
+  const rightHeader = '● LIVE RUNNING';
+  const modeLabel = activeState.autonomous ? 'AUTONOMOUS ⚡' : 'MANUAL 👤';
+  const modeColor = activeState.autonomous ? GREEN : YELLOW;
+  const centerHeader = `[${modeLabel}]`;
+  const leftLen = leftHeader.length;
+  const centerLen = activeState.autonomous ? 15 : 11;
+  const rightLen = rightHeader.length;
+  const totalUsed = leftLen + centerLen + rightLen;
+  const totalSpaces = 76 - totalUsed;
+  const halfSpaces = Math.floor(totalSpaces / 2);
+  const leftPadding = ' '.repeat(halfSpaces);
+  const rightPadding = ' '.repeat(totalSpaces - halfSpaces);
+  console.log(BOLD + BLUE + '│' + RESET + BOLD + leftHeader + leftPadding + modeColor + centerHeader + RESET + BOLD + rightPadding + GREEN + rightHeader + ' ' + RESET + BOLD + BLUE + ' │' + RESET);
   console.log(BOLD + BLUE + '└' + '─'.repeat(width - 2) + '┘' + RESET);
 
   // Left Column (Departments) vs Right Column (Status details)
