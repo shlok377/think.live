@@ -83,15 +83,21 @@ function findAgentDetails(id) {
   return null;
 }
 
+const HANDOVER_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'handover-context.json');
+
 // Safe read state
+let lastHandoverStr = '';
+let activeHandover = null;
+
 function checkState() {
   try {
+    let stateChanged = false;
     if (fs.existsSync(STATE_FILE_PATH)) {
       const data = fs.readFileSync(STATE_FILE_PATH, 'utf8');
       if (data !== lastJsonStr) {
         lastJsonStr = data;
         activeState = JSON.parse(data);
-        renderTUI();
+        stateChanged = true;
       }
     } else {
       // Default empty state if file not created yet
@@ -104,8 +110,25 @@ function checkState() {
       if (defaultState !== lastJsonStr) {
         lastJsonStr = defaultState;
         activeState = JSON.parse(defaultState);
-        renderTUI();
+        stateChanged = true;
       }
+    }
+
+    if (fs.existsSync(HANDOVER_FILE_PATH)) {
+      const data = fs.readFileSync(HANDOVER_FILE_PATH, 'utf8');
+      if (data !== lastHandoverStr) {
+        lastHandoverStr = data;
+        activeHandover = JSON.parse(data);
+        stateChanged = true;
+      }
+    } else if (lastHandoverStr !== '') {
+      lastHandoverStr = '';
+      activeHandover = null;
+      stateChanged = true;
+    }
+
+    if (stateChanged) {
+      renderTUI();
     }
   } catch (err) {
     // Ignore read/parse errors during write transition
@@ -217,6 +240,32 @@ function renderTUI() {
     const rightPart = rightLines[i] || '';
     console.log(leftPart + separator + rightPart);
   }
+
+  // Handover Context Box
+  console.log(BOLD + MAGENTA + '┌─ LAST HANDOVER CONTEXT ──────────────────────────────────────────────────────┐' + RESET);
+  if (activeHandover) {
+    const fromDetail = findAgentDetails(activeHandover.last_agent);
+    const toDetail = findAgentDetails(activeHandover.next_agent);
+    const fromName = fromDetail ? `${fromDetail.name} (${fromDetail.code})` : (activeHandover.last_agent || 'Unknown');
+    const toName = toDetail ? `${toDetail.name} (${toDetail.code})` : (activeHandover.next_agent || 'Unknown');
+    console.log(`  ${BOLD}Route:${RESET} ${YELLOW}${fromName}${RESET} ➔ ${GREEN}${toName}${RESET}`);
+    
+    if (activeHandover.what_was_tried && activeHandover.what_was_tried.length > 0) {
+      console.log(`  ${BOLD}What was tried:${RESET}`);
+      activeHandover.what_was_tried.slice(0, 3).forEach(item => {
+        console.log(`    • ${item.substring(0, 70)}`);
+      });
+    }
+    if (activeHandover.failures_or_warnings && activeHandover.failures_or_warnings.length > 0) {
+      console.log(`  ${BOLD}${RED}Warnings/Failures:${RESET}`);
+      activeHandover.failures_or_warnings.slice(0, 2).forEach(item => {
+        console.log(`    • ${RED}${item.substring(0, 70)}${RESET}`);
+      });
+    }
+  } else {
+    console.log(`  ${DIM}No active handover context. Waiting for next transition...${RESET}`);
+  }
+  console.log(BOLD + MAGENTA + '└──────────────────────────────────────────────────────────────────────────────┘' + RESET);
 
   // Footer / Keyboard Help
   console.log(BOLD + BLUE + '┌' + '─'.repeat(width - 2) + '┐' + RESET);
