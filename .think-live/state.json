@@ -8,5 +8,19 @@
     "css/style.css"
   ],
   "timestamp": "2026-06-26T08:34:32Z",
-  "autonomous": false
+  "autonomous": false,
+  "context_usage": {
+    "model": "Gemini 2.5 Flash",
+    "total_tokens": 1000000,
+    "used_tokens": 75200,
+    "categories": {
+      "user_messages": 17,
+      "agent_responses": 30500,
+      "tool_calls": 15400,
+      "system_prompt": 9400,
+      "system_tools": 16500,
+      "skills": 2700,
+      "subagents": 653
+    }
+  }
 }

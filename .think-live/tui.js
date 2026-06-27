@@ -13,6 +13,8 @@ if (process.stdin.isTTY) {
   process.stdin.on('keypress', (str, key) => {
     if (key.name === 'q' || (key.ctrl && key.name === 'c')) {
       cleanupAndExit();
+    } else if (key.name === 'a') {
+      toggleAutonomousMode();
     }
   });
 }
@@ -81,6 +83,35 @@ function findAgentDetails(id) {
     if (found) return { ...found, deptName: dept.name };
   }
   return null;
+}
+
+function toggleAutonomousMode() {
+  try {
+    const currentState = { ...activeState };
+    currentState.autonomous = !currentState.autonomous;
+    fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(currentState, null, 2), 'utf8');
+    activeState = currentState;
+    renderTUI();
+  } catch (err) {
+    // Ignore write errors
+  }
+}
+
+function formatTokens(n) {
+  if (n >= 1000000) {
+    return (n / 1000000).toFixed(1) + 'M';
+  }
+  if (n >= 1000) {
+    return (n / 1000).toFixed(1) + 'k';
+  }
+  return n.toString();
+}
+
+function drawCircleBar(percent) {
+  const total = 16;
+  const filled = Math.min(total, Math.max(0, Math.round((percent / 100) * total)));
+  const empty = total - filled;
+  return `${GREEN}${'◉ '.repeat(filled)}${RESET}${DIM}${'□ '.repeat(empty)}${RESET}`;
 }
 
 const HANDOVER_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'handover-context.json');
@@ -247,6 +278,46 @@ function renderTUI() {
   }
   rightLines.push(BOLD + MAGENTA + '└───────────────────────────────────────────┘' + RESET);
 
+  rightLines.push('');
+  rightLines.push(BOLD + MAGENTA + '┌─ CONTEXT & TOKEN USAGE ───────────────────┐' + RESET);
+  if (activeState.context_usage) {
+    const usage = activeState.context_usage;
+    const pct = ((usage.used_tokens / usage.total_tokens) * 100).toFixed(1);
+    rightLines.push(`  ${BOLD}Model:${RESET} ${CYAN}${usage.model || 'Unknown'}${RESET}`);
+    rightLines.push(`  ${BOLD}Usage:${RESET} ${formatTokens(usage.used_tokens)} / ${formatTokens(usage.total_tokens)} (${pct}%)`);
+    rightLines.push(`  ` + drawCircleBar(parseFloat(pct)));
+    rightLines.push(`  ${DIM}Token usage by category:${RESET}`);
+    
+    const cats = usage.categories || {};
+    const total = usage.total_tokens;
+    
+    const addCatLine = (label, val, icon) => {
+      const catPct = ((val / total) * 100).toFixed(1);
+      rightLines.push(`    ${icon} ${label}: ${formatTokens(val)} (${catPct}%)`);
+    };
+    
+    if (cats.user_messages !== undefined) addCatLine('User messages', cats.user_messages, `${GREEN}●${RESET}`);
+    if (cats.agent_responses !== undefined) addCatLine('Agent responses', cats.agent_responses, `${GREEN}●${RESET}`);
+    if (cats.tool_calls !== undefined) addCatLine('Tool calls', cats.tool_calls, `${GREEN}●${RESET}`);
+    if (cats.system_prompt !== undefined) addCatLine('System prompt', cats.system_prompt, `${BLUE}⛁${RESET}`);
+    if (cats.system_tools !== undefined) addCatLine('System tools', cats.system_tools, `${BLUE}⛁${RESET}`);
+    if (cats.skills !== undefined) addCatLine('Skills', cats.skills, `${BLUE}⛁${RESET}`);
+    if (cats.subagents !== undefined) addCatLine('Subagents', cats.subagents, `${BLUE}⛁${RESET}`);
+    
+    const free = usage.total_tokens - usage.used_tokens;
+    const freePct = ((free / total) * 100).toFixed(1);
+    rightLines.push(`    ○ Free space: ${formatTokens(free)} (${freePct}%)`);
+  } else {
+    rightLines.push(`  ${DIM}No active context usage metrics reported.${RESET}`);
+    rightLines.push('  ');
+    rightLines.push('  ');
+    rightLines.push('  ');
+    rightLines.push('  ');
+    rightLines.push('  ');
+    rightLines.push('  ');
+  }
+  rightLines.push(BOLD + MAGENTA + '└───────────────────────────────────────────┘' + RESET);
+
   // Merge columns
   const maxLines = Math.max(deptLines.length, rightLines.length);
   for (let i = 0; i < maxLines; i++) {
@@ -283,7 +354,7 @@ function renderTUI() {
 
   // Footer / Keyboard Help
   console.log(BOLD + BLUE + '┌' + '─'.repeat(width - 2) + '┐' + RESET);
-  console.log(BOLD + BLUE + '│' + RESET + DIM + '  Press [q] to exit live TUI monitor.' + ' '.repeat(width - 41) + RESET + BOLD + BLUE + '│' + RESET);
+  console.log(BOLD + BLUE + '│' + RESET + DIM + '  Press [a] to toggle Autonomous Mode | [q] to exit.' + ' '.repeat(24) + RESET + BOLD + BLUE + '│' + RESET);
   console.log(BOLD + BLUE + '└' + '─'.repeat(width - 2) + '┘' + RESET);
 }
 
