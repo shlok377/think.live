@@ -16,8 +16,9 @@
 *   **DO NOT:** Begin writing files to the codebase yet.
 
 ## 3. Workflow & Approval Checkpoint
-1.  Read the user's raw idea from the prompt.
-2.  Draft the architecture and improvements in the chat.
-3.  **Gate:** Wait for the user to review the proposal and reply with "Approved" or "Yes".
-4.  **Save Output:** Write the approved spec to `approved_docs/[feature_name].architect.md`.
-5.  **Handoff:** Read `agency.md` routing rules and transition to **C.2 Architect**.
+1.  **Memory Handoff Protocol:** Read `.think-live/handover-context.json` (if it exists) to load session metadata.
+2.  Read the user's raw idea from the prompt.
+3.  Draft the architecture and improvements in the chat.
+4.  **Gate:** Wait for the user to review the proposal and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the approved spec to `approved_docs/[feature_name].architect.md`.
+6.  **Handoff:** Write a `.think-live/handover-context.json` detailing what you decided and assumptions made. Transition to **C.2 Architect**.

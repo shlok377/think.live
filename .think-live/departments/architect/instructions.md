@@ -14,8 +14,9 @@
 *   **DO NOT:** Suggest over-engineered frameworks or microservices for simple apps.
 
 ## 3. Workflow & Approval Checkpoint
-1.  Read `approved_docs/[feature_name].architect.md`.
-2.  Draft the refined architecture components, schemas, and folder system.
-3.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
-4.  **Save Output:** Write the approved detailed architecture spec into `approved_docs/[feature_name].tasks.md` (this file acts as the base design that the Task Distributor will append tasks to).
-5.  **Handoff:** Read `agency.md` routing rules and transition to **C.3 Task Distributor**.
+1.  **Memory Handoff Protocol:** Read `.think-live/handover-context.json` (if it exists) to load session metadata.
+2.  Read `approved_docs/[feature_name].architect.md`.
+3.  Draft the refined architecture components, schemas, and folder system.
+4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the approved detailed architecture spec into `approved_docs/[feature_name].tasks.md` (this file acts as the base design that the Task Distributor will append tasks to).
+6.  **Handoff:** Write a `.think-live/handover-context.json` detailing what you decided and assumptions made. Transition to **C.3 Task Distributor**.

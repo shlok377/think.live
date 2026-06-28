@@ -68,10 +68,11 @@ const DEPARTMENTS = [
     ]
   },
   {
-    name: 'Quality Assurance',
+    name: 'Product & Quality',
     icon: '🔍',
     agents: [
-      { id: 'auditor', code: 'D', name: 'Auditor' }
+      { id: 'director', code: 'D.1', name: 'Director' },
+      { id: 'quality_tester', code: 'D.2', name: 'Quality Tester' }
     ]
   }
 ];

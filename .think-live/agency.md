@@ -32,15 +32,16 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 
 | Active Workspace State | Action Needed | Target Agent | Instructions Path |
 | :--- | :--- | :--- | :--- |
-| *   No features planned.<br>*   User is brainstorming new ideas. | Brainstorm, improvements, tech stack. | **C.1 Starter** | `.think-live/departments/starter/instructions.md` |
+| *   No features planned.<br>*   User is brainstorming new ideas. | Define business value, user flow, and product strategy. | **D.1 Director** | `.think-live/departments/director/instructions.md` |
+| *   `[feature].product-alignment.md` approved.<br>*   Need technical architecture. | Brainstorm, improvements, tech stack. | **C.1 Starter** | `.think-live/departments/starter/instructions.md` |
 | *   `[feature].architect.md` approved.<br>*   No detailed architecture plan. | Refine system models, components, schemas. | **C.2 Architect** | `.think-live/departments/architect/instructions.md` |
-| *   `[feature].tasks.md` exists (architecture only).<br>*   No granular task backlog checklist. | Break architecture into small, single-focus tasks. | **C.3 Task Distributor** | `.think-live/departments/task_distributor/instructions.md` |
-| *   `[feature].tasks.md` has uncompleted styling/UI tasks.<br>*   No approved UI spec for the task. | Design layouts, custom CSS, HTML structures. | **A.1 UI Designer** | `.think-live/departments/ui_designer/instructions.md` |
-| *   `[feature].ui-spec.md` created by UI Designer.<br>*   Not yet reviewed for copy or security. | Edit copy for clarity, add safety/security gates. | **A.2 PR & Safety** | `.think-live/departments/pr_safety/instructions.md` |
-| *   `[feature].coder-spec.md` approved.<br>*   Tasks not yet coded/implemented. | Write programming logic, APIs, and fix bugs. | **B.1 Coder** | `.think-live/departments/coder/instructions.md` |
+| *   `[feature].tasks.md` exists (architecture only).<br>*   No granular task backlog checklist. | Break architecture into small, single-focus tasks with `Authorized Files` scoping. | **C.3 Task Distributor** | `.think-live/departments/task_distributor/instructions.md` |
+| *   `[feature].tasks.md` has uncompleted styling/UI tasks.<br>*   No approved UI config/tokens. | Design layouts, custom CSS, HTML structures, and output `ui-config.md`. | **A.1 UI Designer** | `.think-live/departments/ui_designer/instructions.md` |
+| *   `ui-config.md` created by UI Designer.<br>*   Not yet reviewed for copy or security. | Edit copy for clarity, add safety/security gates. | **A.2 PR & Safety** | `.think-live/departments/pr_safety/instructions.md` |
+| *   `[feature].tasks.md` ready to be implemented.<br>*   Tasks not yet coded. | Write programming logic, APIs, and implement UI from tokens. | **B.1 Coder** | `.think-live/departments/coder/instructions.md` |
 | *   Coder has finished coding a UI/UX layout task.<br>*   UI is implemented but not visually verified. | Inspect layout under viewports, check styling config. | **A.3 UI Tester** | `.think-live/departments/ui_tester/instructions.md` |
-| *   Coder has finished coding a non-UI task (or UI Tester passes layout check).<br>*   Code not yet reviewed for Git. | Verify requirements, write commit details & PR request. | **D Auditor** | `.think-live/departments/auditor/instructions.md` |
-| *   `[feature].pr-request.md` approved.<br>*   Code not yet committed/pushed. | Manage branches, commit, push, create PR. | **B.2 Git Guy** | `.think-live/departments/git_guy/instructions.md` |
+| *   Coder has finished coding a task.<br>*   Code not yet reviewed for Git. | Verify requirements, write commit details & PR request. | **D.2 Quality Tester** | `.think-live/departments/quality_tester/instructions.md` |
+| *   `[feature].pr-request.md` approved.<br>*   Code not yet committed/pushed. | Run automated tests, manage branches, commit, push, create PR. | **B.2 Git Guy** | `.think-live/departments/git_guy/instructions.md` |
 
 ---
 
