@@ -15,6 +15,9 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
         *   \`last_agent\`: Folder name of the previously active persona (or \`null\`).
         *   \`active_doc\`: Path of the spec/task document from \`approved_docs/\` currently in use.
         *   \`modified_files\`: Array of files you have modified in the current step/turn.
+        *   \`active_model\`: The model identifier used in this turn (e.g. \`"gemini-2.5-pro"\`, \`"gemini-2.5-flash"\`).
+        *   \`tokens_used\`: The number of tokens consumed by the last query/response.
+        *   \`context_usage\`: An optional breakdown object tracking token usage by categories (e.g. \`model\`, \`total_tokens\`, \`used_tokens\`, and a \`categories\` object mapping \`user_messages\`, \`agent_responses\`, \`tool_calls\`, \`system_prompt\`, \`system_tools\`, \`skills\`, \`subagents\` to their exact token numbers).
 *   **Step 5:** If a transition is needed:
     *   Announce it: \`🔄 [Transition] Adopting persona: [Agent Name] ([Department Name])\`
     *   Write a \`.think-live/handover-context.json\` file detailing:
@@ -32,23 +35,46 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 
 | Active Workspace State | Action Needed | Target Agent | Instructions Path |
 | :--- | :--- | :--- | :--- |
-| *   No features planned.<br>*   User is brainstorming new ideas. | Brainstorm, improvements, tech stack. | **C.1 Starter** | \`.think-live/departments/starter/instructions.md\` |
-| *   \`[feature].architect.md\` approved.<br>*   No detailed architecture plan. | Refine system models, components, schemas. | **C.2 Architect** | \`.think-live/departments/architect/instructions.md\` |
-| *   \`[feature].tasks.md\` exists (architecture only).<br>*   No granular task backlog checklist. | Break architecture into small, single-focus tasks. | **C.3 Task Distributor** | \`.think-live/departments/task_distributor/instructions.md\` |
-| *   \`[feature].tasks.md\` has uncompleted styling/UI tasks.<br>*   No approved UI spec for the task. | Design layouts, custom CSS, HTML structures. | **A.1 UI Designer** | \`.think-live/departments/ui_designer/instructions.md\` |
-| *   \`[feature].ui-spec.md\` created by UI Designer.<br>*   Not yet reviewed for copy or security. | Edit copy for clarity, add safety/security gates. | **A.2 PR & Safety** | \`.think-live/departments/pr_safety/instructions.md\` |
-| *   \`[feature].coder-spec.md\` approved.<br>*   Tasks not yet coded/implemented. | Write programming logic, APIs, and fix bugs. | **B.1 Coder** | \`.think-live/departments/coder/instructions.md\` |
-| *   Coder has finished coding a UI/UX layout task.<br>*   UI is implemented but not visually verified. | Inspect layout under viewports, check styling config. | **A.3 UI Tester** | \`.think-live/departments/ui_tester/instructions.md\` |
-| *   Coder has finished coding a non-UI task (or UI Tester passes layout check).<br>*   Code not yet reviewed for Git. | Verify requirements, write commit details & PR request. | **D Auditor** | \`.think-live/departments/auditor/instructions.md\` |
-| *   \`[feature].pr-request.md\` approved.<br>*   Code not yet committed/pushed. | Manage branches, commit, push, create PR. | **B.2 Git Guy** | \`.think-live/departments/git_guy/instructions.md\` |
+| *   No features planned.<br>*   User is brainstorming new ideas. | Define business value, user flow, and product strategy. | **D.1 Director** | `.think-live/departments/director/instructions.md` |
+| *   `[feature].product-alignment.md` approved.<br>*   Need technical architecture. | Brainstorm, improvements, tech stack. | **C.1 Starter** | `.think-live/departments/starter/instructions.md` |
+| *   `[feature].architect.md` approved.<br>*   No detailed architecture plan. | Refine system models, components, schemas. | **C.2 Architect** | `.think-live/departments/architect/instructions.md` |
+| *   `[feature].tasks.md` exists (architecture only).<br>*   No granular task backlog checklist. | Break architecture into small, single-focus tasks with `Authorized Files` scoping. | **C.3 Task Distributor** | `.think-live/departments/task_distributor/instructions.md` |
+| *   `[feature].tasks.md` has uncompleted styling/UI tasks.<br>*   No approved UI config/tokens. | Design layouts, custom CSS, HTML structures, and output `ui-config.md`. | **A.1 UI Designer** | `.think-live/departments/ui_designer/instructions.md` |
+| *   `ui-config.md` created by UI Designer.<br>*   Not yet reviewed for copy or security. | Edit copy for clarity, add safety/security gates. | **A.2 PR & Safety** | `.think-live/departments/pr_safety/instructions.md` |
+| *   `[feature].tasks.md` ready to be implemented.<br>*   Tasks not yet coded. | Write programming logic, APIs, and implement UI from tokens. | **B.1 Coder** | `.think-live/departments/coder/instructions.md` |
+| *   Coder has finished coding a UI/UX layout task.<br>*   UI is implemented but not visually verified. | Inspect layout under viewports, check styling config. | **A.3 UI Tester** | `.think-live/departments/ui_tester/instructions.md` |
+| *   Coder has finished coding a task.<br>*   Code not yet reviewed for Git. | Verify requirements, write commit details & PR request. | **D.2 Quality Tester** | `.think-live/departments/quality_tester/instructions.md` |
+| *   `[feature].pr-request.md` approved.<br>*   Code not yet committed/pushed. | Run automated tests, manage branches, commit, push, create PR. | **B.2 Git Guy** | `.think-live/departments/git_guy/instructions.md` |
 
 ---
 
 ## 3. Strict Operating Rules
 *   **User Approval Gate:** Never modify the codebase or save a file to \`approved_docs/\` without the user's explicit approval ("Approved" or "Yes").
+    *   *Autonomous Override:* If \`.think-live/state.json\` contains \`"autonomous": true\`, you must bypass all approval gates, perform modifications automatically, and proceed with transitions immediately without waiting for user confirmation.
 *   **UI Consistency Gate:** All user interface designs must align with the parameters saved in \`.think-live/ui-config.md\`. If this file exists, agents MUST refer to it for colors, layouts, and style tokens to keep styling consistent.
 *   **Execution Freedom:** Within the scope of your active persona, use your full intelligence and coding capabilities to solve problems. Do not limit your thinking.
 `,
+
+  // D.1 Director
+  director: `# D.1 Director (Product & Quality Department)
+
+## 1. Focus & Scope
+*   Acts as the Product Director (CEO) to define the business value, user flow, and overall product strategy before technical architecture begins.
+*   Ensures that features being built actually serve the target audience and aren't just "pointless features."
+
+## 2. Guidelines (DOs & DONTs)
+*   **DO:** Ask challenging questions about the user's intent to refine the product vision.
+*   **DO:** Define clear target audiences and primary user journeys.
+*   **DO NOT:** Write technical architecture, tech stacks, or implementation code.
+
+## 3. Workflow & Approval Checkpoint
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
+2.  Read the user's raw idea from the prompt.
+3.  Draft the product alignment, business value, and user flow in the chat.
+4.  **Gate:** Wait for the user to review the proposal and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the approved product strategy to \`approved_docs/[feature_name].product-alignment.md\`.
+6.  **Handoff:** Before handing off, write a \`.think-live/handover-context.json\` detailing what you decided and assumptions made. Transition to **C.1 Starter**.
+\`,
 
   // C.1 Starter
   starter: `# C.1 Starter (Architecture Department)
@@ -69,11 +95,12 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   **DO NOT:** Begin writing files to the codebase yet.
 
 ## 3. Workflow & Approval Checkpoint
-1.  Read the user's raw idea from the prompt.
-2.  Draft the architecture and improvements in the chat.
-3.  **Gate:** Wait for the user to review the proposal and reply with "Approved" or "Yes".
-4.  **Save Output:** Write the approved spec to \`approved_docs/[feature_name].architect.md\`.
-5.  **Handoff:** Read \`agency.md\` routing rules and transition to **C.2 Architect**.
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
+2.  Read the user's raw idea from the prompt.
+3.  Draft the architecture and improvements in the chat.
+4.  **Gate:** Wait for the user to review the proposal and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the approved spec to \`approved_docs/[feature_name].architect.md\`.
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you decided and assumptions made. Transition to **C.2 Architect**.
 `,
 
   // C.2 Architect
@@ -93,11 +120,12 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   **DO NOT:** Suggest over-engineered frameworks or microservices for simple apps.
 
 ## 3. Workflow & Approval Checkpoint
-1.  Read \`approved_docs/[feature_name].architect.md\`.
-2.  Draft the refined architecture components, schemas, and folder system.
-3.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
-4.  **Save Output:** Write the approved detailed architecture spec into \`approved_docs/[feature_name].tasks.md\` (this file acts as the base design that the Task Distributor will append tasks to).
-5.  **Handoff:** Read \`agency.md\` routing rules and transition to **C.3 Task Distributor**.
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
+2.  Read \`approved_docs/[feature_name].architect.md\`.
+3.  Draft the refined architecture components, schemas, and folder system.
+4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the approved detailed architecture spec into \`approved_docs/[feature_name].tasks.md\` (this file acts as the base design that the Task Distributor will append tasks to).
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you decided and assumptions made. Transition to **C.3 Task Distributor**.
 `,
 
   // C.3 Task Distributor
@@ -108,44 +136,44 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   Groups tasks into logical development phases.
 *   Assigns each task to the relevant agent (e.g. UI Designer, Coder, Git Guy).
 *   Maintains the active checklist/backlog.
+*   **Workspace Scoping:** Defines the EXACT files each task is allowed to read and modify to prevent attention drift.
 
 ## 2. Guidelines (DOs & DONTs)
 *   **DO:** Keep tasks single-focused (e.g., separate UI styling tasks from logical API tasks).
 *   **DO:** Define a clear "Definition of Done" for every task.
-*   **DO:** Keep task scopes small so they can be implemented and tested quickly.
+*   **DO:** For EVERY task, explicitly list an \`Authorized Files: [...]\` array containing the only files the assigned agent is allowed to access for that task.
 *   **DO NOT:** Create vague tasks like "Implement login screen." Instead, break it down: "Create login form UI structure and styles," then "Wire up auth logic and error handling."
 
 ## 3. Workflow & Approval Checkpoint
-1.  Read \`approved_docs/[feature_name].tasks.md\`.
-2.  Draft a task backlog and checklist in the chat.
-3.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
-4.  **Save Output:** Append/update the checklist at the bottom of \`approved_docs/[feature_name].tasks.md\`.
-5.  **Handoff:** Read \`agency.md\` and transition to the agent responsible for the first task (usually **A.1 UI Designer**).
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
+2.  Read \`approved_docs/[feature_name].architect.md\` and \`approved_docs/[feature_name].tasks.md\`.
+3.  Draft a task backlog and checklist in the chat, including the \`Authorized Files\` block for each.
+4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+5.  **Save Output:** Append/update the checklist at the bottom of \`approved_docs/[feature_name].tasks.md\`.
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you tried, failed at, and assumptions made. Transition to the next agent.
 `,
 
   // A.1 UI Designer
   ui_designer: `# A.1 UI Designer (UI UX Department)
 
 ## 1. Focus & Scope
-*   Handles everything related to designing, structuring, and styling the UI/UX.
-*   Writes visual layouts and isolated component specs.
-*   Defines color palettes, typography, spacing scales, and visual hierarchies.
+*   Acts as the Architect of the Interface.
+*   Defines color palettes, typography, spacing scales, visual hierarchies, and state constraints.
+*   Writes purely design tokens and constraints into \`ui-config.md\`.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO (Material Design Default):** By default, design everything using Google's colorful Material UI design philosophy (solid cards, rounded buttons, vibrant color blocks, clear typography) unless the user explicitly requests another style (like glassmorphism).
-*   **DO (Adaptive Style Proposals):** If the user suggests a visual style that does not fit the use case of the project, ask the user and suggest different visual design styles (e.g., skeuomorphism, brutalism, minimalism, flat design) explaining *why* they might be a better fit.
-*   **DO (Isolated Component Specs):** Structure design specifications as framework-agnostic, language-friendly **Isolated Component Specs** (detailing props, slots, visual states, and local style properties) rather than writing massive monolithic whole-page HTML wireframes.
-*   **DO (Master UI Config Sync):** Upon receiving user approval, write/update \`.think-live/ui-config.md\` to document the master visual configuration of the project (colors, typography scales, spacing tokens, corner shapes). This ensures the Coder and Tester remain visually consistent.
-*   **DO NOT:** Write JavaScript application logic, API fetch functions, or state-management logic (leave this to the Coder).
+*   **DO (Material Design Default):** By default, design everything using Google's colorful Material UI design philosophy unless the user explicitly requests another style.
+*   **DO (Master UI Config Sync):** Upon receiving user approval, write/update \`.think-live/ui-config.md\` to document the master visual configuration of the project (colors, typography scales, spacing tokens, corner shapes). This ensures the Builder (Coder) remains visually consistent.
+*   **DO:** Adhere strictly to the \`Authorized Files\` list specified in the task for any direct file reads/writes.
+*   **DO NOT:** Write actual layout code like flat HTML/CSS. You deliver tokens and rules; the Coder builds the actual UI elements using those tokens.
 
 ## 3. Workflow & Approval Checkpoint
-1.  Read the active UI/styling task in \`approved_docs/[feature_name].tasks.md\`.
-2.  Draft the isolated component specs, visual theme configurations, and copy text in the chat.
-3.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
-4.  **Save Output:**
-    *   Write/update the global project styling token document under \`.think-live/ui-config.md\`.
-    *   Write the approved component spec details to \`approved_docs/[feature_name].ui-spec.md\`.
-5.  **Handoff:** Read \`agency.md\` and transition to **A.2 PR & Safety** for copy editing and security auditing.
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
+2.  Read the active UI/styling task in \`approved_docs/[feature_name].tasks.md\`.
+3.  Draft the visual theme configurations, state rules, and copy text in the chat. Compress specifications under 50 lines.
+4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+5.  **Save Output:** Write/update the global project styling token document under \`.think-live/ui-config.md\`.
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you decided and assumptions made. Transition to **A.2 PR & Safety**.
 `,
 
   // A.3 UI UX Tester
@@ -165,14 +193,15 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   **DO NOT:** Edit code files directly. If visual regressions or bugs are found, document them in a report and return them to the Coder.
 
 ## 3. Workflow & Approval Checkpoint
-1.  Read the implemented UI files and review the guidelines in \`.think-live/ui-config.md\`.
-2.  Validate contrast, layout borders, text clipping, and responsive wrappers.
-3.  Draft a visual testing report in the chat.
-4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
-5.  **Save Output:** Write the visual inspection log to \`approved_docs/[feature_name].ui-test-report.md\`.
-6.  **Handoff:**
-    *   If any design/visual errors are found: Read \`agency.md\` and transition to **B.1 Coder** (or **A.1 UI Designer** for redesign).
-    *   If all checks pass: Transition to **Auditor (D)**.
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
+2.  Read the implemented UI files and review the guidelines in \`.think-live/ui-config.md\`.
+3.  Validate contrast, layout borders, text clipping, and responsive wrappers.
+4.  Draft a visual testing report in the chat.
+5.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+6.  **Save Output:** Write the visual inspection log to \`approved_docs/[feature_name].ui-test-report.md\`.
+7.  **Handoff:**
+    *   If any design/visual errors are found: Write a \`.think-live/handover-context.json\` detailing errors and transition to **B.1 Coder** (or **A.1 UI Designer** for redesign).
+    *   If all checks pass: Write a \`.think-live/handover-context.json\` detailing success and transition to **D.2 Quality Tester**.
 `,
 
   // A.2 PR & Safety
@@ -192,43 +221,41 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   **DO NOT:** Write logic code.
 
 ## 3. Workflow & Approval Checkpoint
-1.  Read \`approved_docs/[feature_name].ui-spec.md\`.
-2.  Draft the reviewed/edited interface text and necessary security disclosures in the chat.
-3.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
-4.  **Save Output:** Write the finalized copy-and-security specifications to \`approved_docs/[feature_name].coder-spec.md\`.
-5.  **Handoff:** Read \`agency.md\` and transition to **B.1 Coder**.
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
+2.  Read \`approved_docs/[feature_name].ui-spec.md\`.
+3.  Draft the reviewed/edited interface text and necessary security disclosures in the chat.
+4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the finalized copy-and-security specifications to \`approved_docs/[feature_name].coder-spec.md\`.
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you decided and assumptions made. Transition to **B.1 Coder**.
 `,
 
   // B.1 Coder
   coder: `# B.1 Coder (Programming Department)
 
 ## 1. Focus & Scope
-*   Implements logic, state management, API integrations, and backend services.
-*   Binds dynamic logical events, interactive behaviors, and conditional rendering to components.
-*   Handles runtime errors, validates input parameters, and refactors code for performance.
-*   Maintains consistent styling logic in alignment with design configurations.
+*   Acts as the Builder of the Interface and backend logic.
+*   Fully authorized to write cohesive HTML, CSS, JS, and backend logic simultaneously, strictly constrained by the UI Designer's visual tokens.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO:** Verify \`.think-live/ui-config.md\` before coding. Ensure dynamic styles, loaders, error indicators, or active states consume the established color tokens, CSS variables, or styling variables.
-*   **DO:** Enforce separation of concerns: isolate data-fetching, business logic, and API calls from component rendering logic using hooks, helper modules, or service layers (adaptable to the programming language in use).
-*   **DO:** Keep rendering components clean, lightweight, and focused primarily on displaying state.
-*   **DO:** Handle all inputs and operations defensively (always check for null/undefined values, validate API responses, catch promise rejections, and provide user-friendly fallback states).
-*   **DO:** Write automated tests or run manual terminal commands to verify functionality across boundary and failure states.
-*   **DO NOT:** Arbitrarily redesign visual components or rewrite static layouts without aligning with the UI UX Designer's specifications. Keep styling parameters separate from coding logic.
-*   **DO NOT:** Hardcode colors, spacing, or visual configurations. Use design tokens from \`ui-config.md\`.
+*   **DO (Zero-Placeholder Mandate):** Never use "TODO" comments for UI or logic elements. All interactive elements must be production-ready and fully implemented.
+*   **DO (Complete State Representation):** Handle Loading, Empty, and Error states natively in all components/modules you build.
+*   **DO:** Verify \`.think-live/ui-config.md\` before coding. Consume the established color tokens, CSS variables, or styling variables. Do not hardcode arbitrary styles.
+*   **DO:** Adhere strictly to the \`Authorized Files\` list specified in the task for this turn. Do not touch files outside this scope.
+*   **DO:** Handle all inputs and operations defensively.
 *   **DO NOT:** Commit untested code.
 
 ## 3. Workflow & Approval Checkpoint
-1.  Read the active coding task in \`approved_docs/[feature_name].tasks.md\` and retrieve the specifications from \`approved_docs/[feature_name].coder-spec.md\`.
-2.  Implement the code changes directly in the workspace.
-3.  Test the code. Present the implemented files, code changes, and test results in the chat.
-4.  **Gate:** Ask the user to run the app, verify it works, and reply with "Approved" or "Yes".
-5.  **Save Output:** Write a brief summary of the implemented code and test verifications to \`approved_docs/[feature_name].auditor.md\`.
-6.  **Handoff:** Read \`agency.md\`. If the changes affect any visual layouts, UI components, or dynamic visual elements, transition to **A.3 UI UX Tester**. If the changes are purely logic, backend, or non-visual, transition to **D Auditor**.
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
+2.  Read the active coding task in \`approved_docs/[feature_name].tasks.md\` and read \`.think-live/ui-config.md\`.
+3.  Implement the code changes directly in the workspace.
+4.  Test the code. Present the implemented files, code changes, and test results in the chat.
+5.  **Gate:** Ask the user to run the app, verify it works, and reply with "Approved" or "Yes".
+6.  **Save Output:** Write a brief summary of the implemented code and test verifications to \`approved_docs/[feature_name].auditor.md\`.
+7.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you built, what tests passed, and assumptions made. Transition to the next relevant agent (e.g. **A.3 UI Tester** or **D.2 Quality Tester**).
 `,
 
-  // D Auditor
-  auditor: `# D Auditor (Quality Assurance & Audit)
+  // D.2 Quality Tester
+  quality_tester: `# D.2 Quality Tester (Product & Quality Department)
 
 ## 1. Focus & Scope
 *   Acts as the final inspector before code is merged or committed.
@@ -242,34 +269,37 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   **DO NOT:** Edit code files or database structures.
 
 ## 3. Workflow & Approval Checkpoint
-1.  Verify the Git diff of code modifications against \`approved_docs/[feature_name].auditor.md\`.
-2.  Draft the proposed commit messages, PR description, and PR title in the chat.
-3.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
-4.  **Save Output:** Write the approved commit details and PR request specifications to \`approved_docs/[feature_name].pr-request.md\`.
-5.  **Handoff:** Read \`agency.md\` and transition to **B.2 Git Guy**.
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
+2.  Verify the code modifications against \`approved_docs/[feature_name].auditor.md\`.
+3.  Draft the proposed commit messages, PR description, and PR title in the chat.
+4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the approved commit details and PR request specifications to \`approved_docs/[feature_name].pr-request.md\`.
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you reviewed and verified. Transition to **B.2 Git Guy**.
 `,
 
   // B.2 Git Guy
   git_guy: `# B.2 Git Guy (Programming Department)
 
 ## 1. Focus & Scope
-*   Handles everything related to Git version control and repository hygiene.
+*   Acts as the Release Engineer.
+*   Enforces test execution, branch hygiene, and conventional commits.
+*   Updates \`.think-live/CHANGELOG.md\`.
 *   Manages branches, stage files, commits changes, and pushes remote pull requests.
-*   Audits and maintains the \`.gitignore\` configuration.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO:** Create clean branch names (e.g. \`feature/[feature_name]\` or \`bugfix/[issue_name]\`).
-*   **DO:** Use the exact commit messages and PR descriptions drafted in \`approved_docs/[feature_name].pr-request.md\`.
-*   **DO:** Double-check that \`.gitignore\` lists all dynamic files (\`.env\`, \`node_modules\`, build outputs).
+*   **DO (Test Enforcement):** Autonomously run the project's build/compile/test command before committing any changes. If tests fail, abort and route back to Coder.
+*   **DO (Changelog Updates):** Automatically append the latest updates to \`.think-live/CHANGELOG.md\` based on the PR description.
+*   **DO:** Enforce Conventional Commits format for all commits.
 *   **DO NOT:** Run \`git push --force\` or overwrite commit history without explicit user permission.
-*   **DO NOT:** Write logic code or styling scripts.
 
 ## 3. Workflow & Approval Checkpoint
-1.  Read \`approved_docs/[feature_name].pr-request.md\`.
-2.  Draft the exact git commands you plan to execute (e.g., \`git checkout -b ...\`, \`git add ...\`, \`git commit -m ...\`) in the chat.
-3.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
-4.  **Execute & Update:** Execute the commands. Once completed, update the task checklist status in \`approved_docs/[feature_name].tasks.md\` by marking the completed tasks as completed \`[x]\`.
-5.  **Handoff:** Read \`agency.md\`. If tasks remain, transition to the next task's target agent. If all tasks are done, transition to standby mode and wait for the user's next feature request.
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
+2.  Read \`approved_docs/[feature_name].pr-request.md\`. Run automated tests/build steps.
+3.  Update \`.think-live/CHANGELOG.md\`.
+4.  Draft the exact git commands you plan to execute in the chat.
+5.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+6.  **Execute & Update:** Execute the commands. Update the task checklist status in \`approved_docs/[feature_name].tasks.md\`.
+7.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you decided and assumptions made. Transition to standby or next target agent.
 `,
 
   // Redirect rules
@@ -332,6 +362,8 @@ if (process.stdin.isTTY) {
   process.stdin.on('keypress', (str, key) => {
     if (key.name === 'q' || (key.ctrl && key.name === 'c')) {
       cleanupAndExit();
+    } else if (key.name === 'a') {
+      toggleAutonomousMode();
     }
   });
 }
@@ -385,10 +417,11 @@ const DEPARTMENTS = [
     ]
   },
   {
-    name: 'Quality Assurance',
+    name: 'Product & Quality',
     icon: '🔍',
     agents: [
-      { id: 'auditor', code: 'D', name: 'Auditor' }
+      { id: 'director', code: 'D.1', name: 'Director' },
+      { id: 'quality_tester', code: 'D.2', name: 'Quality Tester' }
     ]
   }
 ];
@@ -400,6 +433,35 @@ function findAgentDetails(id) {
     if (found) return { ...found, deptName: dept.name };
   }
   return null;
+}
+
+function toggleAutonomousMode() {
+  try {
+    const currentState = { ...activeState };
+    currentState.autonomous = !currentState.autonomous;
+    fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(currentState, null, 2), \'utf8\');
+    activeState = currentState;
+    renderTUI();
+  } catch (err) {
+    // Ignore write errors
+  }
+}
+
+function formatTokens(n) {
+  if (n >= 1000000) {
+    return (n / 1000000).toFixed(1) + \'M\';
+  }
+  if (n >= 1000) {
+    return (n / 1000).toFixed(1) + \'k\';
+  }
+  return n.toString();
+}
+
+function drawCircleBar(percent) {
+  const total = 16;
+  const filled = Math.min(total, Math.max(0, Math.round((percent / 100) * total)));
+  const empty = total - filled;
+  return GREEN + \'◉ \'.repeat(filled) + RESET + DIM + \'□ \'.repeat(empty) + RESET;
 }
 
 const HANDOVER_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'handover-context.json');
@@ -424,7 +486,8 @@ function checkState() {
         active_agent: null,
         last_agent: null,
         active_doc: 'None',
-        modified_files: []
+        modified_files: [],
+        autonomous: false
       });
       if (defaultState !== lastJsonStr) {
         lastJsonStr = defaultState;
@@ -483,7 +546,20 @@ function renderTUI() {
   
   // Header Panel
   console.log(BOLD + BLUE + '┌' + '─'.repeat(width - 2) + '┐' + RESET);
-  console.log(BOLD + BLUE + '│' + RESET + BOLD + '  think.live AGENCY MONITOR' + ' '.repeat(width - 45) + GREEN + '● LIVE RUNNING ' + RESET + BOLD + BLUE + ' │' + RESET);
+  const leftHeader = '  think.live AGENCY MONITOR';
+  const rightHeader = '● LIVE RUNNING';
+  const modeLabel = activeState.autonomous ? 'AUTONOMOUS ⚡' : 'MANUAL 👤';
+  const modeColor = activeState.autonomous ? GREEN : YELLOW;
+  const centerHeader = \'[\' + modeLabel + \']\';
+  const leftLen = leftHeader.length;
+  const centerLen = activeState.autonomous ? 15 : 11;
+  const rightLen = rightHeader.length;
+  const totalUsed = leftLen + centerLen + rightLen;
+  const totalSpaces = 76 - totalUsed;
+  const halfSpaces = Math.floor(totalSpaces / 2);
+  const leftPadding = ' '.repeat(halfSpaces);
+  const rightPadding = ' '.repeat(totalSpaces - halfSpaces);
+  console.log(BOLD + BLUE + '│' + RESET + BOLD + leftHeader + leftPadding + modeColor + centerHeader + RESET + BOLD + rightPadding + GREEN + rightHeader + ' ' + RESET + BOLD + BLUE + ' │' + RESET);
   console.log(BOLD + BLUE + '└' + '─'.repeat(width - 2) + '┘' + RESET);
 
   // Left Column (Departments) vs Right Column (Status details)
@@ -552,6 +628,46 @@ function renderTUI() {
   }
   rightLines.push(BOLD + MAGENTA + \'└───────────────────────────────────────────┘\' + RESET);
 
+  rightLines.push(\'\');
+  rightLines.push(BOLD + MAGENTA + \'┌─ CONTEXT & TOKEN USAGE ───────────────────┐\' + RESET);
+  if (activeState.context_usage) {
+    const usage = activeState.context_usage;
+    const pct = ((usage.used_tokens / usage.total_tokens) * 100).toFixed(1);
+    rightLines.push(\'  \' + BOLD + \'Model:\' + RESET + \' \' + CYAN + (usage.model || \'Unknown\') + RESET);
+    rightLines.push(\'  \' + BOLD + \'Usage:\' + RESET + \' \' + formatTokens(usage.used_tokens) + \' / \' + formatTokens(usage.total_tokens) + \' (\' + pct + \'%)\');
+    rightLines.push(\'  \' + drawCircleBar(parseFloat(pct)));
+    rightLines.push(\'  \' + DIM + \'Token usage by category:\' + RESET);
+    
+    const cats = usage.categories || {};
+    const total = usage.total_tokens;
+    
+    const addCatLine = (label, val, icon) => {
+      const catPct = ((val / total) * 100).toFixed(1);
+      rightLines.push(\'    \' + icon + \' \' + label + \': \' + formatTokens(val) + \' (\' + catPct + \'%)\');
+    };
+    
+    if (cats.user_messages !== undefined) addCatLine(\'User messages\', cats.user_messages, GREEN + \'●\' + RESET);
+    if (cats.agent_responses !== undefined) addCatLine(\'Agent responses\', cats.agent_responses, GREEN + \'●\' + RESET);
+    if (cats.tool_calls !== undefined) addCatLine(\'Tool calls\', cats.tool_calls, GREEN + \'●\' + RESET);
+    if (cats.system_prompt !== undefined) addCatLine(\'System prompt\', cats.system_prompt, BLUE + \'⛁\' + RESET);
+    if (cats.system_tools !== undefined) addCatLine(\'System tools\', cats.system_tools, BLUE + \'⛁\' + RESET);
+    if (cats.skills !== undefined) addCatLine(\'Skills\', cats.skills, BLUE + \'⛁\' + RESET);
+    if (cats.subagents !== undefined) addCatLine(\'Subagents\', cats.subagents, BLUE + \'⛁\' + RESET);
+    
+    const free = usage.total_tokens - usage.used_tokens;
+    const freePct = ((free / total) * 100).toFixed(1);
+    rightLines.push(\'    ○ Free space: \' + formatTokens(free) + \' (\' + freePct + \'%)\');
+  } else {
+    rightLines.push(\'  \' + DIM + \'No active context usage metrics reported.\' + RESET);
+    rightLines.push(\'  \');
+    rightLines.push(\'  \');
+    rightLines.push(\'  \');
+    rightLines.push(\'  \');
+    rightLines.push(\'  \');
+    rightLines.push(\'  \');
+  }
+  rightLines.push(BOLD + MAGENTA + \'└───────────────────────────────────────────┘\' + RESET);
+
   // Merge columns
   const maxLines = Math.max(deptLines.length, rightLines.length);
   for (let i = 0; i < maxLines; i++) {
@@ -588,7 +704,7 @@ function renderTUI() {
 
   // Footer / Keyboard Help
   console.log(BOLD + BLUE + \'┌\' + \'─\'.repeat(width - 2) + \'┐\' + RESET);
-  console.log(BOLD + BLUE + \'│\' + RESET + DIM + \'  Press [q] to exit live TUI monitor.\' + \' \'.repeat(width - 41) + RESET + BOLD + BLUE + \'│\' + RESET);
+  console.log(BOLD + BLUE + \'│\' + RESET + DIM + \'  Press [a] to toggle Autonomous Mode | [q] to exit.\' + \' \'.repeat(24) + RESET + BOLD + BLUE + \'│\' + RESET);
   console.log(BOLD + BLUE + \'└\' + \'─\'.repeat(width - 2) + \'┘\' + RESET);
 }
 
@@ -657,11 +773,11 @@ function logToTerminal(message, type = 'on-primary') {
   const line = document.createElement('div');
   line.className = `text-${type} mb-1 opacity-0 transition-opacity duration-300`;
   line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
-  
+
   // Insert before cursor element
   terminalOutput.appendChild(line);
   terminalOutput.scrollTop = terminalOutput.scrollHeight;
-  
+
   // Animate opacity fade-in
   setTimeout(() => line.classList.remove('opacity-0'), 15);
 }
@@ -669,7 +785,7 @@ function logToTerminal(message, type = 'on-primary') {
 // 4. Connect Department Selectors and Checkboxes
 deptItems.forEach(item => {
   const chk = item.querySelector('input[type="checkbox"]');
-  
+
   // Click event triggers checkbox selection
   item.addEventListener('click', (e) => {
     if (e.target !== chk) {
@@ -756,13 +872,13 @@ btnBrowse.addEventListener('click', async () => {
     targetDirectoryHandle = await window.showDirectoryPicker({
       mode: 'readwrite'
     });
-    
+
     txtDirPath.value = targetDirectoryHandle.name;
     updateDeployButtonState();
-    
+
     logToTerminal(`Target directory set to "${targetDirectoryHandle.name}".`, 'secondary-fixed-dim');
     logToTerminal('Ready for deployment. Press "Install Now" to configure agency.', 'on-primary');
-    
+
     folderAnimLabel.textContent = 'READY';
   } catch (err) {
     logToTerminal(`Directory pick aborted: ${err.message}`, 'error');
@@ -778,23 +894,23 @@ const EMOJIS = ['📄', '📁', '📝', '⚙', '📜'];
 
 function spawnFileParticle() {
   if (!mainFolder) return;
-  
+
   const particle = document.createElement('div');
   particle.className = 'file-particle';
   particle.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-  
+
   // Random horizontal offset around folder center
   const startX = (Math.random() * 40) - 20;
   particle.style.left = `calc(50% + ${startX}px)`;
   particle.style.top = `-10px`;
   particle.style.fontSize = `${Math.random() * 6 + 14}px`;
-  
+
   // Random translation offset for fluid wiggle path
   const targetX = (Math.random() * 60) - 30;
   particle.style.setProperty('--target-x', `${targetX}px`);
-  
+
   mainFolder.appendChild(particle);
-  
+
   // Clean elements
   particle.addEventListener('animationend', () => {
     particle.remove();
@@ -838,31 +954,57 @@ btnDeploy.addEventListener('click', async () => {
 
   btnDeploy.disabled = true;
   btnBrowse.disabled = true;
-  
+
   // Compile installation tasks checklist
   const tasks = [];
-  
-  tasks.push({ id: 'docs_dir', name: 'Create approved_docs/ folder', type: 'dir', run: async () => {
-    return await getOrCreateDir(targetDirectoryHandle, 'approved_docs');
-  }});
-  tasks.push({ id: 'agency_dir', name: 'Create .think-live/ folder', type: 'dir', run: async () => {
-    return await getOrCreateDir(targetDirectoryHandle, '.think-live');
-  }});
-  tasks.push({ id: 'agency_rules', name: 'Write .think-live/agency.md', type: 'file', parent: 'agency_dir', run: async (handles) => {
-    return await writeTextFile(handles.agency_dir, 'agency.md', TEMPLATES.agency);
-  }});
-  tasks.push({ id: 'tui_script', name: 'Write .think-live/tui.js', type: 'file', parent: 'agency_dir', run: async (handles) => {
-    return await writeTextFile(handles.agency_dir, 'tui.js', TEMPLATES.tui);
-  }});
-  tasks.push({ id: 'start_script_unix', name: 'Write start-monitoring (Unix/macOS)', type: 'file', run: async () => {
-    return await writeTextFile(targetDirectoryHandle, 'start-monitoring', TEMPLATES.startMonitoringScript);
-  }});
-  tasks.push({ id: 'start_script_win', name: 'Write start-monitoring.bat (Windows)', type: 'file', run: async () => {
-    return await writeTextFile(targetDirectoryHandle, 'start-monitoring.bat', TEMPLATES.startMonitoringBat);
-  }});
-  tasks.push({ id: 'start_script_js', name: 'Write start-monitoring.js (Cross-platform node wrapper)', type: 'file', run: async () => {
-    return await writeTextFile(targetDirectoryHandle, 'start-monitoring.js', TEMPLATES.startMonitoringJs);
-  }});
+
+  tasks.push({
+    id: 'docs_dir', name: 'Create approved_docs/ folder', type: 'dir', run: async () => {
+      return await getOrCreateDir(targetDirectoryHandle, 'approved_docs');
+    }
+  });
+  tasks.push({
+    id: 'agency_dir', name: 'Create .think-live/ folder', type: 'dir', run: async () => {
+      return await getOrCreateDir(targetDirectoryHandle, '.think-live');
+    }
+  });
+  tasks.push({
+    id: 'agency_rules', name: 'Write .think-live/agency.md', type: 'file', parent: 'agency_dir', run: async (handles) => {
+      return await writeTextFile(handles.agency_dir, 'agency.md', TEMPLATES.agency);
+    }
+  });
+  tasks.push({
+    id: 'tui_script', name: 'Write .think-live/tui.js', type: 'file', parent: 'agency_dir', run: async (handles) => {
+      return await writeTextFile(handles.agency_dir, 'tui.js', TEMPLATES.tui);
+    }
+  });
+  tasks.push({
+    id: 'state_json', name: 'Write .think-live/state.json', type: 'file', parent: 'agency_dir', run: async (handles) => {
+      const initialState = {
+        active_agent: null,
+        last_agent: null,
+        active_doc: 'None',
+        modified_files: [],
+        autonomous: false
+      };
+      return await writeTextFile(handles.agency_dir, 'state.json', JSON.stringify(initialState, null, 2));
+    }
+  });
+  tasks.push({
+    id: 'start_script_unix', name: 'Write start-monitoring (Unix/macOS)', type: 'file', run: async () => {
+      return await writeTextFile(targetDirectoryHandle, 'start-monitoring', TEMPLATES.startMonitoringScript);
+    }
+  });
+  tasks.push({
+    id: 'start_script_win', name: 'Write start-monitoring.bat (Windows)', type: 'file', run: async () => {
+      return await writeTextFile(targetDirectoryHandle, 'start-monitoring.bat', TEMPLATES.startMonitoringBat);
+    }
+  });
+  tasks.push({
+    id: 'start_script_js', name: 'Write start-monitoring.js (Cross-platform node wrapper)', type: 'file', run: async () => {
+      return await writeTextFile(targetDirectoryHandle, 'start-monitoring.js', TEMPLATES.startMonitoringJs);
+    }
+  });
 
   // Departments folders and specs
   const selectedDepts = [];
@@ -877,17 +1019,23 @@ btnDeploy.addEventListener('click', async () => {
   });
 
   if (selectedDepts.length > 0) {
-    tasks.push({ id: 'depts_dir', name: 'Create .think-live/departments/ folder', type: 'dir', parent: 'agency_dir', run: async (handles) => {
-      return await getOrCreateDir(handles.agency_dir, 'departments');
-    }});
+    tasks.push({
+      id: 'depts_dir', name: 'Create .think-live/departments/ folder', type: 'dir', parent: 'agency_dir', run: async (handles) => {
+        return await getOrCreateDir(handles.agency_dir, 'departments');
+      }
+    });
 
     selectedDepts.forEach(dept => {
-      tasks.push({ id: `dept_${dept.id}_dir`, name: `Create folder: departments/${dept.id}/`, type: 'dir', parent: 'depts_dir', run: async (handles) => {
-        return await getOrCreateDir(handles.depts_dir, dept.id);
-      }});
-      tasks.push({ id: `dept_${dept.id}_rules`, name: `Write instructions for [${dept.name}]`, type: 'file', parent: `dept_${dept.id}_dir`, run: async (handles) => {
-        return await writeTextFile(handles[`dept_${dept.id}_dir`], 'instructions.md', TEMPLATES[dept.id]);
-      }});
+      tasks.push({
+        id: `dept_${dept.id}_dir`, name: `Create folder: departments/${dept.id}/`, type: 'dir', parent: 'depts_dir', run: async (handles) => {
+          return await getOrCreateDir(handles.depts_dir, dept.id);
+        }
+      });
+      tasks.push({
+        id: `dept_${dept.id}_rules`, name: `Write instructions for [${dept.name}]`, type: 'file', parent: `dept_${dept.id}_dir`, run: async (handles) => {
+          return await writeTextFile(handles[`dept_${dept.id}_dir`], 'instructions.md', TEMPLATES[dept.id]);
+        }
+      });
     });
   }
 
@@ -896,32 +1044,44 @@ btnDeploy.addEventListener('click', async () => {
 
   // IDE integration files
   if (chkCursor.checked) {
-    tasks.push({ id: 'rules_cursor', name: 'Write .cursorrules', type: 'file', run: async () => {
-      return await writeTextFile(targetDirectoryHandle, '.cursorrules', rulesContent);
-    }});
+    tasks.push({
+      id: 'rules_cursor', name: 'Write .cursorrules', type: 'file', run: async () => {
+        return await writeTextFile(targetDirectoryHandle, '.cursorrules', rulesContent);
+      }
+    });
   }
   if (chkRoo.checked) {
-    tasks.push({ id: 'rules_claudecode', name: 'Write .clauderules', type: 'file', run: async () => {
-      return await writeTextFile(targetDirectoryHandle, '.clauderules', rulesContent);
-    }});
-    tasks.push({ id: 'rules_roo', name: 'Write .claudedevrules', type: 'file', run: async () => {
-      return await writeTextFile(targetDirectoryHandle, '.claudedevrules', rulesContent);
-    }});
+    tasks.push({
+      id: 'rules_claudecode', name: 'Write .clauderules', type: 'file', run: async () => {
+        return await writeTextFile(targetDirectoryHandle, '.clauderules', rulesContent);
+      }
+    });
+    tasks.push({
+      id: 'rules_roo', name: 'Write .claudedevrules', type: 'file', run: async () => {
+        return await writeTextFile(targetDirectoryHandle, '.claudedevrules', rulesContent);
+      }
+    });
   }
   if (chkWindsurf.checked) {
-    tasks.push({ id: 'rules_windsurf', name: 'Write .windsurfrules', type: 'file', run: async () => {
-      return await writeTextFile(targetDirectoryHandle, '.windsurfrules', rulesContent);
-    }});
+    tasks.push({
+      id: 'rules_windsurf', name: 'Write .windsurfrules', type: 'file', run: async () => {
+        return await writeTextFile(targetDirectoryHandle, '.windsurfrules', rulesContent);
+      }
+    });
   }
-  
+
   const needsVSCodeSetup = chkVSCode.checked || chkAntigravity.checked;
   if (needsVSCodeSetup) {
-    tasks.push({ id: 'vscode_dir', name: 'Create .vscode/ folder', type: 'dir', run: async () => {
-      return await getOrCreateDir(targetDirectoryHandle, '.vscode');
-    }});
-    tasks.push({ id: 'vscode_tasks', name: 'Write .vscode/tasks.json', type: 'file', parent: 'vscode_dir', run: async (handles) => {
-      return await writeTextFile(handles.vscode_dir, 'tasks.json', TEMPLATES.vscodeTasks);
-    }});
+    tasks.push({
+      id: 'vscode_dir', name: 'Create .vscode/ folder', type: 'dir', run: async () => {
+        return await getOrCreateDir(targetDirectoryHandle, '.vscode');
+      }
+    });
+    tasks.push({
+      id: 'vscode_tasks', name: 'Write .vscode/tasks.json', type: 'file', parent: 'vscode_dir', run: async (handles) => {
+        return await writeTextFile(handles.vscode_dir, 'tasks.json', TEMPLATES.vscodeTasks);
+      }
+    });
   }
 
   // Populate Lists UI before execution
@@ -931,7 +1091,7 @@ btnDeploy.addEventListener('click', async () => {
   if (progressBarFill) {
     progressBarFill.style.width = '0%';
   }
-  
+
   tasks.forEach(t => {
     const li = document.createElement('li');
     li.className = 'flex items-center gap-1.5';
@@ -950,7 +1110,7 @@ btnDeploy.addEventListener('click', async () => {
   try {
     for (const t of tasks) {
       logToTerminal(`Deploying: ${t.name}...`, 'on-primary');
-      
+
       // Execute the task
       let resultHandle = null;
       if (t.parent) {
@@ -958,7 +1118,7 @@ btnDeploy.addEventListener('click', async () => {
       } else {
         resultHandle = await t.run();
       }
-      
+
       if (resultHandle) {
         handleMap[t.id] = resultHandle;
       }
@@ -968,7 +1128,7 @@ btnDeploy.addEventListener('click', async () => {
       if (taskEl) {
         taskEl.remove();
       }
-      
+
       const doneEl = document.createElement('li');
       doneEl.className = 'flex items-center gap-1.5 text-secondary font-semibold';
       doneEl.innerHTML = `<span class="material-symbols-outlined text-[14px]">check_circle</span> ${t.name}`;
@@ -981,7 +1141,7 @@ btnDeploy.addEventListener('click', async () => {
       if (progressBarFill) {
         progressBarFill.style.width = `${percentVal}%`;
       }
-      
+
       // Artificial delay (50-100ms) for smoother UI transitions
       await new Promise(r => setTimeout(r, 70));
     }
