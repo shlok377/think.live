@@ -41,7 +41,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 | *   `ui-config.md` created by UI Designer.<br>*   Not yet reviewed for copy or security. | Edit copy for clarity, add safety/security gates. | **A.2 PR & Safety** | `.think-live/departments/pr_safety/instructions.md` |
 | *   `[feature].tasks.md` ready to be implemented.<br>*   Tasks not yet coded. | Write programming logic, APIs, and implement UI from tokens. | **B.1 Coder** | `.think-live/departments/coder/instructions.md` |
 | *   Coder has finished coding a UI/UX layout task.<br>*   UI is implemented but not visually verified. | Inspect layout under viewports, check styling config. | **A.3 UI Tester** | `.think-live/departments/ui_tester/instructions.md` |
-| *   Coder has finished coding a task.<br>*   Code not yet reviewed for Git. | Verify requirements, write commit details & PR request. | **D.2 Quality Tester** | `.think-live/departments/quality_tester/instructions.md` |
+| *   Coder has finished coding a task.<br>*   Code not yet verified. | Verify requirements. If Git is enabled, prepare PR request. Otherwise, mark task complete. | **D.2 Quality Tester** | `.think-live/departments/quality_tester/instructions.md` |
 | *   `[feature].pr-request.md` approved.<br>*   Code not yet committed/pushed. | Run automated tests, manage branches, commit, push, create PR. | **B.2 Git Guy** | `.think-live/departments/git_guy/instructions.md` |
 
 ---

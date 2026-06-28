@@ -17,4 +17,4 @@
 3.  Draft the proposed commit messages, PR description, and PR title in the chat.
 4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
 5.  **Save Output:** Write the approved commit details and PR request specifications to `approved_docs/[feature_name].pr-request.md`.
-6.  **Handoff:** Write a `.think-live/handover-context.json` detailing what you reviewed and verified. Transition to **B.2 Git Guy**.
+6.  **Handoff:** Read `.think-live/state.json`. Write a `.think-live/handover-context.json` detailing what you reviewed. If `git_enabled` is `true`, transition to **B.2 Git Guy**. If `false`, transition to Standby/Idle (task is complete).

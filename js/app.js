@@ -44,7 +44,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 | *   \`ui-config.md\` created by UI Designer.<br>*   Not yet reviewed for copy or security. | Edit copy for clarity, add safety/security gates. | **A.2 PR & Safety** | \`.think-live/departments/pr_safety/instructions.md\` |
 | *   \`[feature].tasks.md\` ready to be implemented.<br>*   Tasks not yet coded. | Write programming logic, APIs, and implement UI from tokens. | **B.1 Coder** | \`.think-live/departments/coder/instructions.md\` |
 | *   Coder has finished coding a UI/UX layout task.<br>*   UI is implemented but not visually verified. | Inspect layout under viewports, check styling config. | **A.3 UI Tester** | \`.think-live/departments/ui_tester/instructions.md\` |
-| *   Coder has finished coding a task.<br>*   Code not yet reviewed for Git. | Verify requirements, write commit details & PR request. | **D.2 Quality Tester** | \`.think-live/departments/quality_tester/instructions.md\` |
+| *   Coder has finished coding a task.<br>*   Code not yet verified. | Verify requirements. If Git is enabled, prepare PR request. Otherwise, mark task complete. | **D.2 Quality Tester** | \`.think-live/departments/quality_tester/instructions.md\` |
 | *   \`[feature].pr-request.md\` approved.<br>*   Code not yet committed/pushed. | Run automated tests, manage branches, commit, push, create PR. | **B.2 Git Guy** | \`.think-live/departments/git_guy/instructions.md\` |
 
 ---
@@ -298,7 +298,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 3.  Draft the proposed commit messages, PR description, and PR title in the chat.
 4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
 5.  **Save Output:** Write the approved commit details and PR request specifications to \`approved_docs/[feature_name].pr-request.md\`.
-6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you reviewed and verified. Transition to **B.2 Git Guy**.
+6.  **Handoff:** Read \`.think-live/state.json\`. Write a \`.think-live/handover-context.json\` detailing what you reviewed. If \`git_enabled\` is \`true\`, transition to **B.2 Git Guy**. If \`false\`, transition to Standby/Idle (task is complete).
 `,
 
   // B.2 Git Guy
@@ -388,6 +388,8 @@ if (process.stdin.isTTY) {
       cleanupAndExit();
     } else if (key.name === 'a') {
       toggleAutonomousMode();
+    } else if (key.name === 'g') {
+      toggleGitMode();
     }
   });
 }
@@ -409,7 +411,9 @@ let activeState = {
   active_agent: null,
   last_agent: null,
   active_doc: 'None',
-  modified_files: []
+  modified_files: [],
+  autonomous: false,
+  git_enabled: false
 };
 
 // Department Structure Config
@@ -472,6 +476,18 @@ function toggleAutonomousMode() {
   }
 }
 
+function toggleGitMode() {
+  try {
+    const currentState = { ...activeState };
+    currentState.git_enabled = !currentState.git_enabled;
+    fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(currentState, null, 2), \'utf8\');
+    activeState = currentState;
+    renderTUI();
+  } catch (err) {
+    // Ignore write errors
+  }
+}
+
 function formatTokens(n) {
   if (n >= 1000000) {
     return (n / 1000000).toFixed(1) + \'M\';
@@ -512,7 +528,8 @@ function checkState() {
         last_agent: null,
         active_doc: 'None',
         modified_files: [],
-        autonomous: false
+        autonomous: false,
+        git_enabled: false
       });
       if (defaultState !== lastJsonStr) {
         lastJsonStr = defaultState;
@@ -574,17 +591,22 @@ function renderTUI() {
   const leftHeader = '  think.live AGENCY MONITOR';
   const rightHeader = '● LIVE RUNNING';
   const modeLabel = activeState.autonomous ? 'AUTONOMOUS ⚡' : 'MANUAL 👤';
+  const gitLabel = activeState.git_enabled ? 'GIT: ON' : 'GIT: OFF';
   const modeColor = activeState.autonomous ? GREEN : YELLOW;
-  const centerHeader = \'[\' + modeLabel + \']\';
+  const gitColor = activeState.git_enabled ? GREEN : RED;
+  const centerHeader = \'[\' + modeLabel + \'] [\' + gitLabel + \']\';
   const leftLen = leftHeader.length;
-  const centerLen = activeState.autonomous ? 15 : 11;
+  // centerLen matches uncolored string length: "[AUTONOMOUS ⚡] [GIT: OFF]"
+  const modeLen = activeState.autonomous ? 15 : 11;
+  const gitLen = activeState.git_enabled ? 10 : 11;
+  const centerLen = modeLen + gitLen;
   const rightLen = rightHeader.length;
   const totalUsed = leftLen + centerLen + rightLen;
   const totalSpaces = 76 - totalUsed;
   const halfSpaces = Math.floor(totalSpaces / 2);
   const leftPadding = ' '.repeat(halfSpaces);
   const rightPadding = ' '.repeat(totalSpaces - halfSpaces);
-  console.log(BOLD + BLUE + '│' + RESET + BOLD + leftHeader + leftPadding + modeColor + centerHeader + RESET + BOLD + rightPadding + GREEN + rightHeader + ' ' + RESET + BOLD + BLUE + ' │' + RESET);
+  console.log(BOLD + BLUE + '│' + RESET + BOLD + leftHeader + leftPadding + modeColor + \'[\' + modeLabel + \'] \' + gitColor + \'[\' + gitLabel + \']\' + RESET + BOLD + rightPadding + GREEN + rightHeader + ' ' + RESET + BOLD + BLUE + ' │' + RESET);
   console.log(BOLD + BLUE + '└' + '─'.repeat(width - 2) + '┘' + RESET);
 
   // Left Column (Departments) vs Right Column (Status details)
