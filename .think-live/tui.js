@@ -54,6 +54,7 @@ const DEPARTMENTS = [
     name: 'UI UX Design',
     icon: '🎨',
     agents: [
+      { id: 'creative_director', code: 'A.0', name: 'Creative Dir' },
       { id: 'ui_designer', code: 'A.1', name: 'UI Designer' },
       { id: 'pr_safety', code: 'A.2', name: 'PR & Safety' },
       { id: 'ui_tester', code: 'A.3', name: 'UI Tester' }
