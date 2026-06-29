@@ -15,6 +15,6 @@
 1.  **Memory Handoff Protocol:** Read `.think-live/handover-context.json` (if it exists) to load session metadata.
 2.  Read the active UI/styling task in `approved_docs/[feature_name].tasks.md` and the creative guidelines in `.think-live/creative-spec.md`.
 3.  Draft the structural grid layout, spacing configurations, skeleton states, and component classes in the chat. Compress specifications under 50 lines.
-4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+4.  **Gate:** Read `.think-live/state.json`. If `"autonomous": true`, self-approve your work and proceed to the next step immediately. If `"autonomous": false`, wait for the user to review and reply with "Approved" or "Yes".
 5.  **Save Output:** Write/update the global project styling token document under `.think-live/ui-config.md`.
 6.  **Handoff:** Write a `.think-live/handover-context.json` detailing what you decided and assumptions made. Transition to **A.2 PR & Safety**.

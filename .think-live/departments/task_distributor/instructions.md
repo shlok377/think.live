@@ -17,6 +17,6 @@
 1.  **Memory Handoff Protocol:** Read `.think-live/handover-context.json` to load session metadata.
 2.  Read `approved_docs/[feature_name].architect.md` and `approved_docs/[feature_name].tasks.md`.
 3.  Draft a task backlog and checklist in the chat, including the `Authorized Files` block for each.
-4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+4.  **Gate:** Read `.think-live/state.json`. If `"autonomous": true`, self-approve your work and proceed to the next step immediately. If `"autonomous": false`, wait for the user to review and reply with "Approved" or "Yes".
 5.  **Save Output:** Append/update the checklist at the bottom of `approved_docs/[feature_name].tasks.md`.
 6.  **Handoff:** Write a `.think-live/handover-context.json` detailing what you tried, failed at, and assumptions made. Transition to the next agent.

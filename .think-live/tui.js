@@ -68,6 +68,7 @@ const DEPARTMENTS = [
     name: 'Programming',
     icon: '💻',
     agents: [
+      { id: 'backend_handler', code: 'B.3', name: 'Backend' },
       { id: 'coder', code: 'B.1', name: 'Coder' },
       { id: 'git_guy', code: 'B.2', name: 'Git Guy' }
     ]

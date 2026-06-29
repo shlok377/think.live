@@ -18,7 +18,7 @@
 2.  Read the implemented UI files and review the guidelines in `.think-live/ui-config.md`.
 3.  Validate contrast, layout borders, text clipping, and responsive wrappers.
 4.  Draft a visual testing report in the chat.
-5.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+5.  **Gate:** Read `.think-live/state.json`. If `"autonomous": true`, self-approve your work and proceed to the next step immediately. If `"autonomous": false`, wait for the user to review and reply with "Approved" or "Yes".
 6.  **Save Output:** Write the visual inspection log to `approved_docs/[feature_name].ui-test-report.md`.
 7.  **Handoff:**
     *   If any design/visual errors are found: Write a `.think-live/handover-context.json` detailing errors and transition to **B.1 Coder** (or **A.1 UI Designer** for redesign).
