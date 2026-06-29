@@ -301,15 +301,25 @@ input[type="checkbox"].m3-checkbox:checked {
 }
 
 /* Active solid colors */
-.dept-item.active.dept-starter { background-color: #94a3b8; }
-.dept-item.active.dept-architect { background-color: var(--solid-blue); }
-.dept-item.active.dept-task-distributor { background-color: #c084fc; }
-.dept-item.active.dept-ui-designer { background-color: var(--solid-pink); }
+/* Group A (Pink) */
+.dept-item.active.dept-creative-director,
+.dept-item.active.dept-ui-designer,
+.dept-item.active.dept-pr-safety,
 .dept-item.active.dept-ui-tester { background-color: var(--solid-pink); }
-.dept-item.active.dept-pr-safety { background-color: var(--solid-yellow-orange); }
-.dept-item.active.dept-coder { background-color: var(--solid-lime-green); }
-.dept-item.active.dept-auditor { background-color: var(--solid-orange-red); }
-.dept-item.active.dept-git-guy { background-color: #22d3ee; }
+
+/* Group B (Lime Green / Emerald) */
+.dept-item.active.dept-coder,
+.dept-item.active.dept-git-guy,
+.dept-item.active.dept-backend-handler { background-color: var(--solid-lime-green); }
+
+/* Group C (Blue) */
+.dept-item.active.dept-starter,
+.dept-item.active.dept-architect,
+.dept-item.active.dept-task-distributor { background-color: var(--solid-blue); }
+
+/* Group D (Yellow / Orange) */
+.dept-item.active.dept-director,
+.dept-item.active.dept-quality-tester { background-color: var(--solid-yellow-orange); }
 
 .dept-item.active h4 {
   color: #000000 !important;
