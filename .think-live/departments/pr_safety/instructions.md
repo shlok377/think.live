@@ -17,6 +17,6 @@
 1.  **Memory Handoff Protocol:** Read `.think-live/handover-context.json` (if it exists) to load session metadata.
 2.  Read `approved_docs/[feature_name].ui-spec.md`.
 3.  Draft the reviewed/edited interface text and necessary security disclosures in the chat.
-4.  **Gate:** Wait for the user to review and reply with "Approved" or "Yes".
+4.  **Gate:** Read `.think-live/state.json`. If `"autonomous": true`, self-approve your work and proceed to Step 5 immediately. If `"autonomous": false`, wait for the user to review and reply with "Approved" or "Yes" in the chat.
 5.  **Save Output:** Write the finalized copy-and-security specifications to `approved_docs/[feature_name].coder-spec.md`.
-6.  **Handoff:** Write a `.think-live/handover-context.json` detailing what you decided and assumptions made. Transition to **B.1 Coder**.
+6.  **Handoff:** Write a `.think-live/handover-context.json` detailing what you decided and assumptions made. Transition to **B.3 Backend Handler**.

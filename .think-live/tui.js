@@ -15,6 +15,8 @@ if (process.stdin.isTTY) {
       cleanupAndExit();
     } else if (key.name === 'a') {
       toggleAutonomousMode();
+    } else if (key.name === 'g') {
+      toggleGitMode();
     }
   });
 }
@@ -36,7 +38,9 @@ let activeState = {
   active_agent: null,
   last_agent: null,
   active_doc: 'None',
-  modified_files: []
+  modified_files: [],
+  autonomous: false,
+  git_enabled: false
 };
 
 // Department Structure Config
@@ -54,6 +58,7 @@ const DEPARTMENTS = [
     name: 'UI UX Design',
     icon: '🎨',
     agents: [
+      { id: 'creative_director', code: 'A.0', name: 'Creative Dir' },
       { id: 'ui_designer', code: 'A.1', name: 'UI Designer' },
       { id: 'pr_safety', code: 'A.2', name: 'PR & Safety' },
       { id: 'ui_tester', code: 'A.3', name: 'UI Tester' }
@@ -63,6 +68,7 @@ const DEPARTMENTS = [
     name: 'Programming',
     icon: '💻',
     agents: [
+      { id: 'backend_handler', code: 'B.3', name: 'Backend' },
       { id: 'coder', code: 'B.1', name: 'Coder' },
       { id: 'git_guy', code: 'B.2', name: 'Git Guy' }
     ]
@@ -90,6 +96,18 @@ function toggleAutonomousMode() {
   try {
     const currentState = { ...activeState };
     currentState.autonomous = !currentState.autonomous;
+    fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(currentState, null, 2), 'utf8');
+    activeState = currentState;
+    renderTUI();
+  } catch (err) {
+    // Ignore write errors
+  }
+}
+
+function toggleGitMode() {
+  try {
+    const currentState = { ...activeState };
+    currentState.git_enabled = !currentState.git_enabled;
     fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(currentState, null, 2), 'utf8');
     activeState = currentState;
     renderTUI();
@@ -138,7 +156,8 @@ function checkState() {
         last_agent: null,
         active_doc: 'None',
         modified_files: [],
-        autonomous: false
+        autonomous: false,
+        git_enabled: false
       });
       if (defaultState !== lastJsonStr) {
         lastJsonStr = defaultState;
@@ -200,17 +219,22 @@ function renderTUI() {
   const leftHeader = '  think.live AGENCY MONITOR';
   const rightHeader = '● LIVE RUNNING';
   const modeLabel = activeState.autonomous ? 'AUTONOMOUS ⚡' : 'MANUAL 👤';
+  const gitLabel = activeState.git_enabled ? 'GIT: ON' : 'GIT: OFF';
   const modeColor = activeState.autonomous ? GREEN : YELLOW;
-  const centerHeader = `[${modeLabel}]`;
+  const gitColor = activeState.git_enabled ? GREEN : RED;
+  const centerHeader = `[${modeLabel}] [${gitLabel}]`;
   const leftLen = leftHeader.length;
-  const centerLen = activeState.autonomous ? 15 : 11;
+  // centerLen matches uncolored string length: "[AUTONOMOUS ⚡] [GIT: OFF]"
+  const modeLen = activeState.autonomous ? 15 : 11;
+  const gitLen = activeState.git_enabled ? 10 : 11;
+  const centerLen = modeLen + gitLen;
   const rightLen = rightHeader.length;
   const totalUsed = leftLen + centerLen + rightLen;
   const totalSpaces = 76 - totalUsed;
   const halfSpaces = Math.floor(totalSpaces / 2);
   const leftPadding = ' '.repeat(halfSpaces);
   const rightPadding = ' '.repeat(totalSpaces - halfSpaces);
-  console.log(BOLD + BLUE + '│' + RESET + BOLD + leftHeader + leftPadding + modeColor + centerHeader + RESET + BOLD + rightPadding + GREEN + rightHeader + ' ' + RESET + BOLD + BLUE + ' │' + RESET);
+  console.log(BOLD + BLUE + '│' + RESET + BOLD + leftHeader + leftPadding + modeColor + '[' + modeLabel + '] ' + gitColor + '[' + gitLabel + ']' + RESET + BOLD + rightPadding + GREEN + rightHeader + ' ' + RESET + BOLD + BLUE + ' │' + RESET);
   console.log(BOLD + BLUE + '└' + '─'.repeat(width - 2) + '┘' + RESET);
 
   // Left Column (Departments) vs Right Column (Status details)
