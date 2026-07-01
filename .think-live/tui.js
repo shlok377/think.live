@@ -134,10 +134,12 @@ function drawCircleBar(percent) {
 }
 
 const HANDOVER_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'handover-context.json');
+const TASK_TRACKER_PATH = path.join(WORKSPACE_DIR, '.think-live', 'task-tracker.md');
 
 // Safe read state
 let lastHandoverStr = '';
 let activeHandover = null;
+let trackerStats = { exists: false, completed: 0, total: 0 };
 
 function checkState() {
   try {
@@ -176,6 +178,25 @@ function checkState() {
     } else if (lastHandoverStr !== '') {
       lastHandoverStr = '';
       activeHandover = null;
+      stateChanged = true;
+    }
+
+    let newTrackerStats = { exists: false, completed: 0, total: 0 };
+    if (fs.existsSync(TASK_TRACKER_PATH)) {
+      const trackerData = fs.readFileSync(TASK_TRACKER_PATH, 'utf8');
+      const lines = trackerData.split('\n');
+      for (const line of lines) {
+        if (line.match(/^\s*-\s*\[[xX]\]/)) {
+          newTrackerStats.completed++;
+          newTrackerStats.total++;
+        } else if (line.match(/^\s*-\s*\[\s\]/) || line.match(/^\s*-\s*\[\/\]/)) {
+          newTrackerStats.total++;
+        }
+      }
+      newTrackerStats.exists = true;
+    }
+    if (JSON.stringify(newTrackerStats) !== JSON.stringify(trackerStats)) {
+      trackerStats = newTrackerStats;
       stateChanged = true;
     }
 
@@ -303,42 +324,18 @@ function renderTUI() {
   }
   rightLines.push(BOLD + MAGENTA + '└───────────────────────────────────────────┘' + RESET);
 
-  rightLines.push('');
-  rightLines.push(BOLD + MAGENTA + '┌─ CONTEXT & TOKEN USAGE ───────────────────┐' + RESET);
-  if (activeState.context_usage) {
-    const usage = activeState.context_usage;
-    const pct = ((usage.used_tokens / usage.total_tokens) * 100).toFixed(1);
-    rightLines.push(`  ${BOLD}Model:${RESET} ${CYAN}${usage.model || 'Unknown'}${RESET}`);
-    rightLines.push(`  ${BOLD}Usage:${RESET} ${formatTokens(usage.used_tokens)} / ${formatTokens(usage.total_tokens)} (${pct}%)`);
+
+
+  rightLines.push(BOLD + MAGENTA + '┌─ TASK PROGRESS ───────────────────────────┐' + RESET);
+  if (trackerStats.exists && trackerStats.total > 0) {
+    const pct = ((trackerStats.completed / trackerStats.total) * 100).toFixed(0);
+    rightLines.push(`  ${BOLD}Tasks Done:${RESET} ${GREEN}${trackerStats.completed}${RESET} / ${trackerStats.total} (${pct}%)`);
     rightLines.push(`  ` + drawCircleBar(parseFloat(pct)));
-    rightLines.push(`  ${DIM}Token usage by category:${RESET}`);
-    
-    const cats = usage.categories || {};
-    const total = usage.total_tokens;
-    
-    const addCatLine = (label, val, icon) => {
-      const catPct = ((val / total) * 100).toFixed(1);
-      rightLines.push(`    ${icon} ${label}: ${formatTokens(val)} (${catPct}%)`);
-    };
-    
-    if (cats.user_messages !== undefined) addCatLine('User messages', cats.user_messages, `${GREEN}●${RESET}`);
-    if (cats.agent_responses !== undefined) addCatLine('Agent responses', cats.agent_responses, `${GREEN}●${RESET}`);
-    if (cats.tool_calls !== undefined) addCatLine('Tool calls', cats.tool_calls, `${GREEN}●${RESET}`);
-    if (cats.system_prompt !== undefined) addCatLine('System prompt', cats.system_prompt, `${BLUE}⛁${RESET}`);
-    if (cats.system_tools !== undefined) addCatLine('System tools', cats.system_tools, `${BLUE}⛁${RESET}`);
-    if (cats.skills !== undefined) addCatLine('Skills', cats.skills, `${BLUE}⛁${RESET}`);
-    if (cats.subagents !== undefined) addCatLine('Subagents', cats.subagents, `${BLUE}⛁${RESET}`);
-    
-    const free = usage.total_tokens - usage.used_tokens;
-    const freePct = ((free / total) * 100).toFixed(1);
-    rightLines.push(`    ○ Free space: ${formatTokens(free)} (${freePct}%)`);
+  } else if (trackerStats.exists) {
+    rightLines.push(`  ${DIM}Task tracker exists but no tasks found.${RESET}`);
+    rightLines.push('  ');
   } else {
-    rightLines.push(`  ${DIM}No active context usage metrics reported.${RESET}`);
-    rightLines.push('  ');
-    rightLines.push('  ');
-    rightLines.push('  ');
-    rightLines.push('  ');
-    rightLines.push('  ');
+    rightLines.push(`  ${DIM}No task-tracker.md found yet.${RESET}`);
     rightLines.push('  ');
   }
   rightLines.push(BOLD + MAGENTA + '└───────────────────────────────────────────┘' + RESET);

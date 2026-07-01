@@ -10,6 +10,7 @@
 *   **DO:** Verify `.think-live/ui-config.md` before coding. Consume the established color tokens, CSS variables, or styling variables. Do not hardcode arbitrary styles.
 *   **DO:** Verify `.think-live/backend-schema.md` before writing database or API queries. Adhere strictly to the defined schema.
 *   **DO:** Adhere strictly to the `Authorized Files` list specified in the task for this turn. Do not touch files outside this scope.
+*   **DO:** When you finish a task, read `.think-live/task-tracker.md` and explicitly mark your specific task as complete by changing `[ ]` to `[x]`.
 *   **DO:** Handle all inputs and operations defensively.
 *   **DO NOT:** Commit untested code.
 
@@ -19,5 +20,5 @@
 3.  Implement the code changes directly in the workspace.
 4.  Test the code. Present the implemented files, code changes, and test results in the chat.
 5.  **Gate:** Read `.think-live/state.json`. If `"autonomous": true`, self-approve your work and proceed to Step 6 immediately. If `"autonomous": false`, ask the user to run the app, verify it works, and reply with "Approved" or "Yes".
-6.  **Save Output:** Write a brief summary of the implemented code and test verifications to `approved_docs/[feature_name].auditor.md`.
+6.  **Save Output:** Write a brief summary of the implemented code and test verifications to `approved_docs/[feature_name].auditor.md`. ALSO modify `.think-live/task-tracker.md` to check off the task you just completed (change `[ ]` to `[x]`).
 7.  **Handoff:** Write a `.think-live/handover-context.json` detailing what you built, what tests passed, and assumptions made. Transition to the next relevant agent (e.g. **A.3 UI Tester** or **D.2 Quality Tester**).
