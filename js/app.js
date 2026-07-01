@@ -144,6 +144,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   **DO:** Keep tasks single-focused (e.g., separate UI styling tasks from logical API tasks).
 *   **DO:** Define a clear "Definition of Done" for every task.
 *   **DO:** For EVERY task, explicitly list an \`Authorized Files: [...]\` array containing the only files the assigned agent is allowed to access for that task.
+*   **DO:** Create and initialize a \`.think-live/task-tracker.md\` file using markdown checkboxes (\`- [ ] Task Name\`) so the TUI dashboard can track global progress.
 *   **DO NOT:** Create vague tasks like "Implement login screen." Instead, break it down: "Create login form UI structure and styles," then "Wire up auth logic and error handling."
 
 ## 3. Workflow & Approval Checkpoint
@@ -151,7 +152,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 2.  Read \`approved_docs/[feature_name].architect.md\` and \`approved_docs/[feature_name].tasks.md\`.
 3.  Draft a task backlog and checklist in the chat, including the \`Authorized Files\` block for each.
 4.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
-5.  **Save Output:** Append/update the checklist at the bottom of \`approved_docs/[feature_name].tasks.md\`.
+5.  **Save Output:** Append/update the checklist at the bottom of \`approved_docs/[feature_name].tasks.md\`. ADDITIONALLY, create or overwrite \`.think-live/task-tracker.md\` with a clean list of markdown checkboxes (\`- [ ] Task name\`) representing every atomic task in the sprint.
 6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you tried, failed at, and assumptions made. Transition to **A.0 Creative Director**.
 `,
 
@@ -290,6 +291,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   **DO:** Verify \`.think-live/ui-config.md\` before coding. Consume the established color tokens, CSS variables, or styling variables. Do not hardcode arbitrary styles.
 *   **DO:** Verify \`.think-live/backend-schema.md\` before writing database or API queries. Adhere strictly to the defined schema.
 *   **DO:** Adhere strictly to the \`Authorized Files\` list specified in the task for this turn. Do not touch files outside this scope.
+*   **DO:** When you finish a task, read \`.think-live/task-tracker.md\` and explicitly mark your specific task as complete by changing \`[ ]\` to \`[x]\`.
 *   **DO:** Handle all inputs and operations defensively.
 *   **DO NOT:** Commit untested code.
 
@@ -299,7 +301,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 3.  Implement the code changes directly in the workspace.
 4.  Test the code. Present the implemented files, code changes, and test results in the chat.
 5.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, ask the user to run the app, verify it works, and reply with "Approved" or "Yes".
-6.  **Save Output:** Write a brief summary of the implemented code and test verifications to \`approved_docs/[feature_name].auditor.md\`.
+6.  **Save Output:** Write a brief summary of the implemented code and test verifications to \`approved_docs/[feature_name].auditor.md\`. ALSO modify \`.think-live/task-tracker.md\` to check off the task you just completed (change \`[ ]\` to \`[x]\`).
 7.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you built, what tests passed, and assumptions made. Transition to the next relevant agent (e.g. **A.3 UI Tester** or **D.2 Quality Tester**).
 `,
 
@@ -532,10 +534,12 @@ function drawCircleBar(percent) {
 }
 
 const HANDOVER_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'handover-context.json');
+const TASK_TRACKER_PATH = path.join(WORKSPACE_DIR, '.think-live', 'task-tracker.md');
 
 // Safe read state
 let lastHandoverStr = '';
 let activeHandover = null;
+let trackerStats = { exists: false, completed: 0, total: 0 };
 
 function checkState() {
   try {
@@ -574,6 +578,25 @@ function checkState() {
     } else if (lastHandoverStr !== '') {
       lastHandoverStr = '';
       activeHandover = null;
+      stateChanged = true;
+    }
+
+    let newTrackerStats = { exists: false, completed: 0, total: 0 };
+    if (fs.existsSync(TASK_TRACKER_PATH)) {
+      const trackerData = fs.readFileSync(TASK_TRACKER_PATH, 'utf8');
+      const lines = trackerData.split('\\n');
+      for (const line of lines) {
+        if (line.match(/^\\s*-\\s*\\[[xX]\\]/)) {
+          newTrackerStats.completed++;
+          newTrackerStats.total++;
+        } else if (line.match(/^\\s*-\\s*\\[\\s\\]/) || line.match(/^\\s*-\\s*\\[\\/\\]/)) {
+          newTrackerStats.total++;
+        }
+      }
+      newTrackerStats.exists = true;
+    }
+    if (JSON.stringify(newTrackerStats) !== JSON.stringify(trackerStats)) {
+      trackerStats = newTrackerStats;
       stateChanged = true;
     }
 
@@ -700,43 +723,18 @@ function renderTUI() {
     rightLines.push(\'  \');
   }
   rightLines.push(BOLD + MAGENTA + \'└───────────────────────────────────────────┘\' + RESET);
-
   rightLines.push(\'\');
-  rightLines.push(BOLD + MAGENTA + \'┌─ CONTEXT & TOKEN USAGE ───────────────────┐\' + RESET);
-  if (activeState.context_usage) {
-    const usage = activeState.context_usage;
-    const pct = ((usage.used_tokens / usage.total_tokens) * 100).toFixed(1);
-    rightLines.push(\'  \' + BOLD + \'Model:\' + RESET + \' \' + CYAN + (usage.model || \'Unknown\') + RESET);
-    rightLines.push(\'  \' + BOLD + \'Usage:\' + RESET + \' \' + formatTokens(usage.used_tokens) + \' / \' + formatTokens(usage.total_tokens) + \' (\' + pct + \'%)\');
-    rightLines.push(\'  \' + drawCircleBar(parseFloat(pct)));
-    rightLines.push(\'  \' + DIM + \'Token usage by category:\' + RESET);
-    
-    const cats = usage.categories || {};
-    const total = usage.total_tokens;
-    
-    const addCatLine = (label, val, icon) => {
-      const catPct = ((val / total) * 100).toFixed(1);
-      rightLines.push(\'    \' + icon + \' \' + label + \': \' + formatTokens(val) + \' (\' + catPct + \'%)\');
-    };
-    
-    if (cats.user_messages !== undefined) addCatLine(\'User messages\', cats.user_messages, GREEN + \'●\' + RESET);
-    if (cats.agent_responses !== undefined) addCatLine(\'Agent responses\', cats.agent_responses, GREEN + \'●\' + RESET);
-    if (cats.tool_calls !== undefined) addCatLine(\'Tool calls\', cats.tool_calls, GREEN + \'●\' + RESET);
-    if (cats.system_prompt !== undefined) addCatLine(\'System prompt\', cats.system_prompt, BLUE + \'⛁\' + RESET);
-    if (cats.system_tools !== undefined) addCatLine(\'System tools\', cats.system_tools, BLUE + \'⛁\' + RESET);
-    if (cats.skills !== undefined) addCatLine(\'Skills\', cats.skills, BLUE + \'⛁\' + RESET);
-    if (cats.subagents !== undefined) addCatLine(\'Subagents\', cats.subagents, BLUE + \'⛁\' + RESET);
-    
-    const free = usage.total_tokens - usage.used_tokens;
-    const freePct = ((free / total) * 100).toFixed(1);
-    rightLines.push(\'    ○ Free space: \' + formatTokens(free) + \' (\' + freePct + \'%)\');
+
+  rightLines.push(BOLD + MAGENTA + \'┌─ TASK PROGRESS ───────────────────────────┐\' + RESET);
+  if (trackerStats.exists && trackerStats.total > 0) {
+    const pct = ((trackerStats.completed / trackerStats.total) * 100).toFixed(0);
+    rightLines.push(\`  \${BOLD}Tasks Done:\${RESET} \${GREEN}\${trackerStats.completed}\${RESET} / \${trackerStats.total} (\${pct}%)\`);
+    rightLines.push(\`  \` + drawCircleBar(parseFloat(pct)));
+  } else if (trackerStats.exists) {
+    rightLines.push(\`  \${DIM}Task tracker exists but no tasks found.\${RESET}\`);
+    rightLines.push(\'  \');
   } else {
-    rightLines.push(\'  \' + DIM + \'No active context usage metrics reported.\' + RESET);
-    rightLines.push(\'  \');
-    rightLines.push(\'  \');
-    rightLines.push(\'  \');
-    rightLines.push(\'  \');
-    rightLines.push(\'  \');
+    rightLines.push(\`  \${DIM}No task-tracker.md found yet.\${RESET}\`);
     rightLines.push(\'  \');
   }
   rightLines.push(BOLD + MAGENTA + \'└───────────────────────────────────────────┘\' + RESET);
