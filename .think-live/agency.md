@@ -43,7 +43,8 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 | *   `backend-schema.md` approved.<br>*   `.think-live/task-tracker.md` has uncompleted `[ ]` tasks. | Pick exactly ONE uncompleted task and implement it. | **B.1 Coder** | `.think-live/departments/coder/instructions.md` |
 | *   `.think-live/handover-context.json` reports failed tests or bugs. | Fix the reported bugs in the codebase. | **B.1 Coder** | `.think-live/departments/coder/instructions.md` |
 | *   Coder has finished coding ONE task.<br>*   Task code not yet verified. | Verify requirements for the most recently completed task. Route back to Coder if bugs exist. | **D.2 Quality Tester** | `.think-live/departments/quality_tester/instructions.md` |
-| *   `.think-live/task-tracker.md` has ALL tasks marked as completed `[x]`.<br>*   No `pr-request.md` exists. | Write the final PR request and changelog. | **D.2 Quality Tester** | `.think-live/departments/quality_tester/instructions.md` |
+| *   `.think-live/task-tracker.md` has ALL tasks marked as completed `[x]`.<br>*   No `security-report.md` exists. | Run rigorous OWASP and STRIDE security audit. | **D.3 Security Auditor** | `.think-live/departments/security_auditor/instructions.md` |
+| *   `[feature].security-report.md` approved.<br>*   No `pr-request.md` exists. | Write the final PR request and changelog. | **D.2 Quality Tester** | `.think-live/departments/quality_tester/instructions.md` |
 | *   `[feature].pr-request.md` approved.<br>*   Code not yet committed/pushed. | Run automated tests, manage branches, commit, push, create PR. | **B.2 Git Guy** | `.think-live/departments/git_guy/instructions.md` |
 
 ---
