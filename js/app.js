@@ -43,10 +43,11 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 | *   \`creative-spec.md\` created by Creative Director.<br>*   No approved UI config/tokens. | Design layouts, custom CSS, automatic skeleton loaders, and output \`ui-config.md\`. | **A.1 UI Designer** | \`.think-live/departments/ui_designer/instructions.md\` |
 | *   \`ui-config.md\` created by UI Designer.<br>*   Not yet reviewed for copy or security. | Edit copy for clarity, add safety/security gates. | **A.2 PR & Safety** | \`.think-live/departments/pr_safety/instructions.md\` |
 | *   \`coder-spec.md\` approved.<br>*   No backend schema or APIs defined. | Design database schema, define API contracts. | **B.3 Backend Handler** | \`.think-live/departments/backend_handler/instructions.md\` |
-| *   \`backend-schema.md\` approved.<br>*   Tasks not yet coded. | Write programming logic, APIs, and implement UI from tokens. | **B.1 Coder** | \`.think-live/departments/coder/instructions.md\` |
-| *   Coder has finished coding a UI/UX layout task.<br>*   UI is implemented but not visually verified. | Inspect layout under viewports, check styling config. | **A.3 UI Tester** | \`.think-live/departments/ui_tester/instructions.md\` |
-| *   Coder has finished coding a task.<br>*   Code not yet verified. | Verify requirements. If Git is enabled, prepare PR request. Otherwise, mark task complete. | **D.2 Quality Tester** | \`.think-live/departments/quality_tester/instructions.md\` |
-| *   \`[feature].pr-request.md\` approved.<br>*   Code not yet committed/pushed. | Run automated tests, manage branches, commit, push, create PR. | **B.2 Git Guy** | \`.think-live/departments/git_guy/instructions.md\` |
+| *   \`backend-schema.md\` approved.<br>*   \`.think-live/task-tracker.md\` has uncompleted \`[ ]\` tasks. | Pick exactly ONE uncompleted task and implement it. | **B.1 Coder** | \`.think-live/departments/coder/instructions.md\` |
+| *   \`.think-live/handover-context.json\` reports failed tests or bugs. | Fix the reported bugs in the codebase. | **B.1 Coder** | \`.think-live/departments/coder/instructions.md\` |
+| *   Coder has finished coding ONE task.<br>*   Task code not yet verified. | Verify requirements for the most recently completed task. Route back to Coder if bugs exist. | **D.2 Quality Tester** | \`.think-live/departments/quality_tester/instructions.md\` |
+| *   `.think-live/task-tracker.md` has ALL tasks marked as completed `[x]`.<br>*   No `pr-request.md` exists. | Write the final PR request and changelog. | **D.2 Quality Tester** | `.think-live/departments/quality_tester/instructions.md` |
+| *   `[feature].pr-request.md` approved.<br>*   Code not yet committed/pushed. | Run automated tests, manage branches, commit, push, create PR. | **B.2 Git Guy** | `.think-live/departments/git_guy/instructions.md` |
 
 ---
 
@@ -167,6 +168,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 ## 2. Guidelines (DOs & DONTs)
 *   **DO (Curate Typography):** Select unique, hand-crafted font pairings (e.g., editorial serifs with clean monospace) rather than generic defaults.
 *   **DO (Tactility & Polish):** Specify exact micro-interactions (e.g., active button scale shifts, custom caret styles, hover magnets, custom scrollbars) and audio cues if applicable.
+*   **DO (Maximum Animation):** Infuse the design with rich, continuous, and dynamic animations in every part of the interface (e.g., spring physics, scroll reveals, layout transitions, intricate hover states). **Crucial constraint:** Do not sacrifice performance; mandate performant techniques (hardware-accelerated CSS transforms and opacity instead of layout shifts) so the site remains buttery smooth and never laggy.
 *   **DO (Anti-AI Rule):** Ban default Vercel/Tailwind aesthetics. Push for curated themes like Brutalist Grid, Warm Organic, Skeuomorphic, or Editorial Minimal.
 *   **DO NOT:** Write actual layout code (HTML/CSS). You deliver the creative vision and rules; the UI Designer builds the structure.
 
@@ -290,42 +292,46 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   **DO (Complete State Representation):** Handle Loading, Empty, and Error states natively in all components/modules you build.
 *   **DO:** Verify \`.think-live/ui-config.md\` before coding. Consume the established color tokens, CSS variables, or styling variables. Do not hardcode arbitrary styles.
 *   **DO:** Verify \`.think-live/backend-schema.md\` before writing database or API queries. Adhere strictly to the defined schema.
+*   **DO (Agile Loop Mandate):** Implement exactly ONE unchecked task from \`.think-live/task-tracker.md\`. Do not attempt to implement the entire feature or multiple tasks in a single prompt.
 *   **DO:** Adhere strictly to the \`Authorized Files\` list specified in the task for this turn. Do not touch files outside this scope.
-*   **DO:** When you finish a task, read \`.think-live/task-tracker.md\` and explicitly mark your specific task as complete by changing \`[ ]\` to \`[x]\`.
+*   **DO:** When you finish the single task, read \`.think-live/task-tracker.md\` and explicitly mark that specific task as complete by changing \`[ ]\` to \`[x]\`.
 *   **DO:** Handle all inputs and operations defensively.
 *   **DO NOT:** Commit untested code.
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
-2.  Read the active coding task in \`approved_docs/[feature_name].tasks.md\`, read \`.think-live/ui-config.md\`, and read \`.think-live/backend-schema.md\`.
-3.  Implement the code changes directly in the workspace.
+2.  Read \`.think-live/task-tracker.md\` to find the next uncompleted \`[ ]\` task. Locate its details in \`approved_docs/[feature_name].tasks.md\`. Read \`.think-live/ui-config.md\` and \`.think-live/backend-schema.md\`.
+3.  Implement the code changes directly in the workspace for ONLY that single task.
 4.  Test the code. Present the implemented files, code changes, and test results in the chat.
 5.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, ask the user to run the app, verify it works, and reply with "Approved" or "Yes".
 6.  **Save Output:** Write a brief summary of the implemented code and test verifications to \`approved_docs/[feature_name].auditor.md\`. ALSO modify \`.think-live/task-tracker.md\` to check off the task you just completed (change \`[ ]\` to \`[x]\`).
-7.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you built, what tests passed, and assumptions made. Transition to the next relevant agent (e.g. **A.3 UI Tester** or **D.2 Quality Tester**).
+7.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you built, what tests passed, and assumptions made. Transition to **D.2 Quality Tester** so it can verify this specific task.
 `,
 
   // D.2 Quality Tester
   quality_tester: `# D.2 Quality Tester (Product & Quality Department)
 
 ## 1. Focus & Scope
-*   Acts as the final inspector before code is merged or committed.
-*   Reviews codebase changes against the original task checklist in \`[feature_name].tasks.md\`.
-*   Writes PR titles, commit messages, PR descriptions, and changelog updates.
+*   Acts as the final inspector for every single implemented task in the Agile loop.
+*   Reviews codebase changes against the specific task checklist in \`[feature_name].tasks.md\`.
+*   When all tasks are complete, writes PR titles, commit messages, PR descriptions, and changelog updates.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO:** Use standard Conventional Commits naming syntax (e.g., \`feat(ui): add dashboard shell\`, \`fix(api): fix login crash\`).
+*   **DO (Per-Task Verification):** Review the code for the specific task that was just implemented. If there are logic bugs, missing requirements, or visual issues, you must reject it.
+*   **DO:** When generating the final PR, use standard Conventional Commits naming syntax (e.g., \`feat(ui): add dashboard shell\`).
 *   **DO:** Summarize the changes in clear bullet points, detailing *what* changed and *why*.
 *   **DO:** Double-check that no temporary log statements, debugging bypasses, or credentials are left exposed.
 *   **DO NOT:** Edit code files or database structures.
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
-2.  Verify the code modifications against \`approved_docs/[feature_name].auditor.md\`.
-3.  Draft the proposed commit messages, PR description, and PR title in the chat.
-4.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
-5.  **Save Output:** Write the approved commit details and PR request specifications to \`approved_docs/[feature_name].pr-request.md\`.
-6.  **Handoff:** Read \`.think-live/state.json\`. Write a \`.think-live/handover-context.json\` detailing what you reviewed. If \`git_enabled\` is \`true\`, transition to **B.2 Git Guy**. If \`false\`, transition to Standby/Idle (task is complete).
+2.  Read \`.think-live/task-tracker.md\` to identify the most recently checked off task \`[x]\`. Verify the code modifications for that specific task.
+3.  **Routing Gate (Bug Check):** If the code fails requirements or has bugs, write a \`.think-live/handover-context.json\` detailing the errors and transition immediately to **B.1 Coder** for a fix. (Skip the remaining steps).
+4.  **Routing Gate (Next Task):** If the code passes, check if there are still uncompleted \`[ ]\` tasks in \`.think-live/task-tracker.md\`. If there are, transition to **null** (Idle) so the Master Coordinator can pick up the next task. (Skip the remaining steps).
+5.  **Final PR Generation:** If ALL tasks are \`[x]\`, draft the proposed commit messages, PR description, and PR title in the chat.
+6.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
+7.  **Save Output:** Write the approved commit details and PR request specifications to \`approved_docs/[feature_name].pr-request.md\`.
+8.  **Handoff:** Read \`.think-live/state.json\`. Write a \`.think-live/handover-context.json\` detailing what you reviewed. If \`git_enabled\` is \`true\`, transition to **B.2 Git Guy**. If \`false\`, transition to Standby/Idle (task is complete).
 `,
 
   // B.2 Git Guy
@@ -939,6 +945,12 @@ function updateDeployButtonState() {
 
 // Directory Picking Handler
 btnBrowse.addEventListener('click', async () => {
+  if (typeof window.showDirectoryPicker !== 'function') {
+    alert("⚠️ BROWSER INCOMPATIBLE\n\nYour browser (Firefox/Safari) does not support the Local File System Access API required to install these files directly to your disk.\n\nPlease switch to a Chromium-based browser like Google Chrome, Microsoft Edge, Brave, or Opera to run this installer.");
+    logToTerminal('Error: File System Access API not supported in this browser. Use Chrome/Edge/Brave.', 'error');
+    return;
+  }
+
   try {
     targetDirectoryHandle = await window.showDirectoryPicker({
       mode: 'readwrite'
