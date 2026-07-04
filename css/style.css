@@ -319,7 +319,8 @@ input[type="checkbox"].m3-checkbox:checked {
 
 /* Group D (Yellow / Orange) */
 .dept-item.active.dept-director,
-.dept-item.active.dept-quality-tester { background-color: var(--solid-yellow-orange); }
+.dept-item.active.dept-quality-tester,
+.dept-item.active.dept-security-auditor { background-color: var(--solid-yellow-orange); }
 
 .dept-item.active h4 {
   color: #000000 !important;
