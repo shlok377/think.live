@@ -478,7 +478,8 @@ const DEPARTMENTS = [
     icon: '🔍',
     agents: [
       { id: 'director', code: 'D.1', name: 'Director' },
-      { id: 'quality_tester', code: 'D.2', name: 'Quality Tester' }
+      { id: 'quality_tester', code: 'D.2', name: 'Quality Tester' },
+      { id: 'memory_archivist', code: 'D.4', name: 'Archivist' }
     ]
   }
 ];
@@ -887,8 +888,9 @@ presetFull.addEventListener('click', () => {
   clearPresetSelection();
   presetFull.classList.add('active');
   setDepartmentsState({
-    starter: true, architect: true, task_distributor: true, ui_designer: true,
-    ui_tester: true, pr_safety: true, coder: true, auditor: true, git_guy: true
+    director: true, creative_director: true, ui_designer: true, pr_safety: true, ui_tester: true,
+    starter: true, architect: true, task_distributor: true, backend_handler: true,
+    coder: true, git_guy: true, quality_tester: true, auditor: true, memory_archivist: true
   });
 });
 
@@ -896,8 +898,9 @@ presetCoding.addEventListener('click', () => {
   clearPresetSelection();
   presetCoding.classList.add('active');
   setDepartmentsState({
-    starter: false, architect: false, task_distributor: false, ui_designer: true,
-    ui_tester: true, pr_safety: true, coder: true, auditor: true, git_guy: true
+    director: false, creative_director: true, ui_designer: true, pr_safety: false, ui_tester: true,
+    starter: false, architect: false, task_distributor: false, backend_handler: true,
+    coder: true, git_guy: true, quality_tester: true, auditor: false, memory_archivist: true
   });
 });
 
@@ -905,8 +908,9 @@ presetArchitect.addEventListener('click', () => {
   clearPresetSelection();
   presetArchitect.classList.add('active');
   setDepartmentsState({
-    starter: true, architect: true, task_distributor: true, ui_designer: false,
-    ui_tester: false, pr_safety: false, coder: false, auditor: false, git_guy: false
+    director: true, creative_director: false, ui_designer: false, pr_safety: true, ui_tester: false,
+    starter: true, architect: true, task_distributor: true, backend_handler: true,
+    coder: false, git_guy: false, quality_tester: false, auditor: false, memory_archivist: true
   });
 });
 

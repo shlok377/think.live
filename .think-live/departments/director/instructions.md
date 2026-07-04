@@ -11,8 +11,8 @@
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read `.think-live/handover-context.json` (if it exists) to load session metadata.
-2.  Read the user's raw idea from the prompt.
-3.  Draft the product alignment, business value, and user flow in the chat.
+2.  **Long-Term Memory:** Read `.think-live/memory-graph.json` to recall past architectural decisions and design preferences. Ensure your new product alignment respects this historical context.
+3.  Draft a `product-alignment.md` document in the chat detailing the target user, value prop, and core features.
 4.  **Gate:** Read `.think-live/state.json`. If `"autonomous": true`, self-approve your work and proceed to the next step immediately. If `"autonomous": false`, wait for the user to review the proposal and reply with "Approved" or "Yes".
 5.  **Save Output:** Write the approved product strategy to `approved_docs/[feature_name].product-alignment.md`.
 6.  **Handoff:** Before handing off, write a `.think-live/handover-context.json` detailing what you decided and assumptions made. Transition to **C.1 Starter**.
