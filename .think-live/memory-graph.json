@@ -1,10 +1,4 @@
 {
-  "entities": [
-    {
-      "id": "agency_core_concept",
-      "type": "Framework",
-      "description": "think.live operates as an autonomous multi-agent software firm, not a standard chatbot."
-    }
-  ],
+  "entities": [],
   "relationships": []
 }

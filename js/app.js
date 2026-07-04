@@ -1066,6 +1066,15 @@ btnDeploy.addEventListener('click', async () => {
     }
   });
   tasks.push({
+    id: 'memory_json', name: 'Write .think-live/memory-graph.json', type: 'file', parent: 'agency_dir', run: async (handles) => {
+      const initialMemory = {
+        entities: [],
+        relationships: []
+      };
+      return await writeTextFile(handles.agency_dir, 'memory-graph.json', JSON.stringify(initialMemory, null, 2));
+    }
+  });
+  tasks.push({
     id: 'start_script_unix', name: 'Write start-monitoring (Unix/macOS)', type: 'file', run: async () => {
       return await writeTextFile(targetDirectoryHandle, 'start-monitoring', TEMPLATES.startMonitoringScript);
     }
