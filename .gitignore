@@ -3,3 +3,10 @@ ExampleAGENTS.md
 dist
 node_modules
 temp
+
+# New
+approved_docs/
+.think-live/
+start-monitoring
+start-monitoring.bat
+start-monitoring.js
