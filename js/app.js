@@ -453,21 +453,22 @@ node .think-live\\tui.js
 ## 1. Focus & Scope
 *   Acts as the Motion Engineer for promotional videos.
 *   Triggers when \`approved_docs/showcase-script.json\` exists but the \`showcase/\` folder is not fully built.
-*   Clones the target UI, injects GSAP/Anime.js, and builds a cinematic, self-playing animation based on the JSON script.
+*   Clones the target UI, injects GSAP/Anime.js, builds a cinematic self-playing animation, and then records it using a headless browser subagent.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO (Strict Isolation):** Create a new \`showcase/\` folder in the root directory. Copy all necessary HTML/CSS/JS files into this folder. NEVER modify the original source files in \`frontend/\` or \`src/\`.
+*   **DO (Strict Isolation):** Create a new \`showcase/\` folder in the root directory. Copy all necessary HTML/CSS/JS files into this folder. NEVER modify the original source files.
 *   **DO (Cinematic Styling):** Wrap the cloned UI in a "Screen Bezel" (e.g., \`<div class="showcase-frame" style="border-radius: 24px; border: 12px solid #333; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">\`).
-*   **DO (Slide-Up Elastic Elements):** Inject a GSAP script that targets all major elements (\`h1\`, \`h2\`, \`p\`, \`.card\`, \`button\`, \`input\`) and animates them in on load with a staggered, elastic slide-up (e.g., \`gsap.from(..., { y: 50, opacity: 0, stagger: 0.1, ease: "elastic.out(1, 0.5)" })\`).
-*   **DO (Mock the Cursor & Camera):** Inject a mock cursor element (a dot or arrow). Write a parser that reads \`showcase-script.json\` and moves the cursor using GSAP. Apply CSS \`transform: scale()\` to the \`.showcase-frame\` to create dynamic camera zooms to follow the action.
-*   **DO (Mock Backends):** If the original UI relies on an API, replace those fetch calls inside the \`showcase/\` folder's JS with hardcoded mock responses so the animation runs perfectly static.
+*   **DO (Slide-Up Elastic Elements):** Inject a GSAP script that targets major elements and animates them in on load with a staggered, elastic slide-up (\`ease: "elastic.out(1, 0.5)"\`).
+*   **DO (Smooth Camera Zooms):** Inject a mock cursor element. Parse \`showcase-script.json\` and move the cursor using GSAP. Apply CSS \`transform: scale()\` to the \`.showcase-frame\` for dynamic zooms. **CRITICAL:** Use \`ease: "power2.inOut"\` for zooms, and dynamically set \`transformOrigin\` based on the cursor's target coordinates to ensure zooming feels natural and not "weird".
+*   **DO (Mock Backends):** Replace active fetch calls with hardcoded mock responses so the animation runs perfectly static.
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
 2.  Read \`approved_docs/showcase-script.json\`.
-3.  Clone the target files to \`showcase/\` and inject the animation libraries (via CDN) and logic.
-4.  **Gate:** No explicit approval gate for local rendering, but if \`"autonomous": false\`, pause to let the user review the generated showcase code.
-5.  **Handoff:** Inform the user that the showcase is ready. Instruct them to open \`showcase/index.html\` in their browser and use a screen recorder (OBS/QuickTime) to capture the beautiful animation. Transition to idle.`,
+3.  Clone the target files to \`showcase/\` and inject the animation libraries.
+4.  **Gate:** No explicit approval gate for local rendering.
+5.  **Record Video:** Use the \`browser_subagent\` tool to open \`file://[absolute_path]/showcase/index.html\`. Instruct the subagent to wait and watch the animation play out. This will automatically capture a WebP video recording of the showcase!
+6.  **Handoff:** Present the generated WebP artifact video to the user. Transition to idle.`,
 
   // Node script wrapper (runs on all platforms without chmod+x)
   startMonitoringJs: `#!/usr/bin/env node
@@ -667,7 +668,7 @@ function checkState() {
       stateChanged = true;
     }
 
-    let newTrackerStats = { exists: false, completed: 0, total: 0 };
+    let newTrackerStats = { exists: false, completed: 0, total: 0, current_task: '' };
     if (fs.existsSync(TASK_TRACKER_PATH)) {
       const trackerData = fs.readFileSync(TASK_TRACKER_PATH, 'utf8');
       const lines = trackerData.split('\\n');
@@ -675,8 +676,12 @@ function checkState() {
         if (line.match(/^\\s*-\\s*\\[[xX]\\]/)) {
           newTrackerStats.completed++;
           newTrackerStats.total++;
-        } else if (line.match(/^\\s*-\\s*\\[\\s\\]/) || line.match(/^\\s*-\\s*\\[\\/\\]/)) {
+        } else if (line.match(/^\\s*-\\s*\\[\\/\\]/)) {
           newTrackerStats.total++;
+          if (!newTrackerStats.current_task) newTrackerStats.current_task = line.replace(/^\\s*-\\s*\\[\\/\\]\\s*/, '').substring(0, 36);
+        } else if (line.match(/^\\s*-\\s*\\[\\s\\]/)) {
+          newTrackerStats.total++;
+          if (!newTrackerStats.current_task) newTrackerStats.current_task = line.replace(/^\\s*-\\s*\\[\\s\\]\\s*/, '').substring(0, 36);
         }
       }
       newTrackerStats.exists = true;
@@ -816,6 +821,8 @@ function renderTUI() {
     const pct = ((trackerStats.completed / trackerStats.total) * 100).toFixed(0);
     rightLines.push(\`  \${BOLD}Tasks Done:\${RESET} \${GREEN}\${trackerStats.completed}\${RESET} / \${trackerStats.total} (\${pct}%)\`);
     rightLines.push(\`  \` + drawCircleBar(parseFloat(pct)));
+    rightLines.push(\'  \');
+    rightLines.push(\`  \${BOLD}Current:\${RESET} \${YELLOW}\${trackerStats.current_task || \'None\'}\${RESET}\`);
   } else if (trackerStats.exists) {
     rightLines.push(\`  \${DIM}Task tracker exists but no tasks found.\${RESET}\`);
     rightLines.push(\'  \');
