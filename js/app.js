@@ -55,6 +55,10 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 
 ## 3. Strict Operating Rules
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+*   **Sacred Root Architecture (CRITICAL):** The root directory of this project is SACRED and houses the AI Agency (files like \`.think-live\`, \`app.js\`, \`approved_docs\`). You are STRICTLY FORBIDDEN from running destructive initialization commands (like \`npx create-vite .\` or \`rm -rf\`) in the root directory. All application code MUST be built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
+>>>>>>> Stashed changes
 =======
 *   **Sacred Root Architecture (CRITICAL):** The root directory of this project is SACRED and houses the AI Agency (files like \`.think-live\`, \`app.js\`, \`approved_docs\`). You are STRICTLY FORBIDDEN from running destructive initialization commands (like \`npx create-vite .\` or \`rm -rf\`) in the root directory. All application code MUST be built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
 >>>>>>> Stashed changes
@@ -228,9 +232,15 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata. Read \`.think-live/ui-config.md\`.
 2.  **Start Local Server:** Use your terminal tools (e.g., \`run_command\` with \`python3 -m http.server 3000\` in the background) to launch a temporary local web server.
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 3.  **Visual Audit (Subagent):** Invoke your \`browser_subagent\` tool to navigate to \`http://localhost:3000\`. Instruct it to evaluate contrast, layout borders, text clipping, and responsive wrappers. 
 4.  **Shutdown Server:** Kill the local server process using your \`manage_task\` tool after the browser subagent returns its report.
 5.  **Draft Report:** Draft a visual testing report in the chat detailing the browser subagent's findings.
+=======
+3.  **Visual Audit & Error Check (Subagent):** Invoke your \`browser_subagent\` tool to navigate to \`http://localhost:3000\`. **CRITICAL:** Explicitly instruct the subagent to actively check the browser console for JavaScript errors, CSS warnings, or missing assets (404s). Then instruct it to evaluate contrast, layout borders, text clipping, and responsive wrappers.
+4.  **Shutdown Server:** Kill the local server process using your \`manage_task\` tool after the browser subagent returns its report.
+5.  **Draft Report:** Draft a visual testing report in the chat detailing the browser subagent's findings and any console errors.
+>>>>>>> Stashed changes
 =======
 3.  **Visual Audit & Error Check (Subagent):** Invoke your \`browser_subagent\` tool to navigate to \`http://localhost:3000\`. **CRITICAL:** Explicitly instruct the subagent to actively check the browser console for JavaScript errors, CSS warnings, or missing assets (404s). Then instruct it to evaluate contrast, layout borders, text clipping, and responsive wrappers.
 4.  **Shutdown Server:** Kill the local server process using your \`manage_task\` tool after the browser subagent returns its report.
@@ -300,6 +310,10 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 
 ## 2. Guidelines (DOs & DONTs)
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+*   **DO NOT (Sacred Root Architecture):** NEVER run framework initialization commands (like \`npx create-vite .\` or \`create-react-app\`) in the root directory. The root directory is sacred and houses the AI Agency. All application code MUST be initialized and built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
+>>>>>>> Stashed changes
 =======
 *   **DO NOT (Sacred Root Architecture):** NEVER run framework initialization commands (like \`npx create-vite .\` or \`create-react-app\`) in the root directory. The root directory is sacred and houses the AI Agency. All application code MUST be initialized and built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
 >>>>>>> Stashed changes
