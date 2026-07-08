@@ -50,18 +50,14 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 | *   \`.think-live/task-tracker.md\` has ALL tasks marked as completed \`[x]\`.<br>*   No \`security-report.md\` exists. | Run rigorous OWASP and STRIDE security audit. | **D.3 Security Auditor** | \`.think-live/departments/security_auditor/instructions.md\` |
 | *   \`[feature].security-report.md\` approved.<br>*   No \`pr-request.md\` exists. | Write the final PR request and changelog. | **D.2 Quality Tester** | \`.think-live/departments/quality_tester/instructions.md\` |
 | *   \`[feature].pr-request.md\` approved.<br>*   Code not yet committed/pushed. | Run automated tests, manage branches, commit, push, create PR. | **B.2 Git Guy** | \`.think-live/departments/git_guy/instructions.md\` |
+| *   \`[feature].pr-request.md\` approved.<br>*   No \`.think-live/memory-graph.json\` updates for this sprint. | Extract architecture, styling, and user preferences into graph. | **D.4 Memory Archivist** | \`.think-live/departments/memory_archivist/instructions.md\` |
+| *   User explicitly requests a showcase, demo video, or promo animation. | Map out a cinematic animation flow and generate the JSON script. | **E.1 Showcase Director** | \`.think-live/departments/showcase_director/instructions.md\` |
+| *   \`showcase-script.json\` approved.<br>*   \`showcase/\` folder is missing or incomplete. | Clone UI, inject GSAP, wrap in screen bezel, and animate the script. | **E.2 Showcase Animator** | \`.think-live/departments/showcase_animator/instructions.md\` |
 
 ---
 
 ## 3. Strict Operating Rules
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-*   **Sacred Root Architecture (CRITICAL):** The root directory of this project is SACRED and houses the AI Agency (files like \`.think-live\`, \`app.js\`, \`approved_docs\`). You are STRICTLY FORBIDDEN from running destructive initialization commands (like \`npx create-vite .\` or \`rm -rf\`) in the root directory. All application code MUST be built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
->>>>>>> Stashed changes
-=======
-*   **Sacred Root Architecture (CRITICAL):** The root directory of this project is SACRED and houses the AI Agency (files like \`.think-live\`, \`app.js\`, \`approved_docs\`). You are STRICTLY FORBIDDEN from running destructive initialization commands (like \`npx create-vite .\` or \`rm -rf\`) in the root directory. All application code MUST be built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
->>>>>>> Stashed changes
+*   **Sacred Root Architecture (CRITICAL):** The root directory of this project is SACRED and houses the AI Agency (files like `.think-live`, `app.js`, `approved_docs`). You are STRICTLY FORBIDDEN from running destructive initialization commands (like `npx create-vite .` or `rm -rf`) in the root directory. All application code MUST be built in a dedicated subdirectory (e.g., `./frontend/` or `./app/`).
 *   **User Approval Gate:** Never modify the codebase or save a file to \`approved_docs/\` without the user's explicit approval ("Approved" or "Yes").
     *   *Autonomous Override:* If \`.think-live/state.json\` contains \`"autonomous": true\`, you must bypass all approval gates, perform modifications automatically, and proceed with transitions immediately without waiting for user confirmation.
 *   **UI Consistency Gate:** All user interface designs must align with the parameters saved in \`.think-live/ui-config.md\`. If this file exists, agents MUST refer to it for colors, layouts, and style tokens to keep styling consistent.
@@ -230,22 +226,10 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata. Read \`.think-live/ui-config.md\`.
-2.  **Start Local Server:** Use your terminal tools (e.g., \`run_command\` with \`python3 -m http.server 3000\` in the background) to launch a temporary local web server.
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-3.  **Visual Audit (Subagent):** Invoke your \`browser_subagent\` tool to navigate to \`http://localhost:3000\`. Instruct it to evaluate contrast, layout borders, text clipping, and responsive wrappers. 
-4.  **Shutdown Server:** Kill the local server process using your \`manage_task\` tool after the browser subagent returns its report.
-5.  **Draft Report:** Draft a visual testing report in the chat detailing the browser subagent's findings.
-=======
+2.  **Start Local Server:** Use your terminal tools (e.g., \`run_command\` with \`python3 -m http.server 3000\` in the background) to launch a temporary local web web server.
 3.  **Visual Audit & Error Check (Subagent):** Invoke your \`browser_subagent\` tool to navigate to \`http://localhost:3000\`. **CRITICAL:** Explicitly instruct the subagent to actively check the browser console for JavaScript errors, CSS warnings, or missing assets (404s). Then instruct it to evaluate contrast, layout borders, text clipping, and responsive wrappers.
 4.  **Shutdown Server:** Kill the local server process using your \`manage_task\` tool after the browser subagent returns its report.
 5.  **Draft Report:** Draft a visual testing report in the chat detailing the browser subagent's findings and any console errors.
->>>>>>> Stashed changes
-=======
-3.  **Visual Audit & Error Check (Subagent):** Invoke your \`browser_subagent\` tool to navigate to \`http://localhost:3000\`. **CRITICAL:** Explicitly instruct the subagent to actively check the browser console for JavaScript errors, CSS warnings, or missing assets (404s). Then instruct it to evaluate contrast, layout borders, text clipping, and responsive wrappers.
-4.  **Shutdown Server:** Kill the local server process using your \`manage_task\` tool after the browser subagent returns its report.
-5.  **Draft Report:** Draft a visual testing report in the chat detailing the browser subagent's findings and any console errors.
->>>>>>> Stashed changes
 6.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
 7.  **Save Output:** Write the visual inspection log to \`approved_docs/[feature_name].ui-test-report.md\`.
 8.  **Handoff:**
@@ -309,14 +293,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   Fully authorized to write cohesive HTML, CSS, JS, and backend logic simultaneously, strictly constrained by the UI Designer's visual tokens and the Backend Handler's database schemas.
 
 ## 2. Guidelines (DOs & DONTs)
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-*   **DO NOT (Sacred Root Architecture):** NEVER run framework initialization commands (like \`npx create-vite .\` or \`create-react-app\`) in the root directory. The root directory is sacred and houses the AI Agency. All application code MUST be initialized and built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
->>>>>>> Stashed changes
-=======
-*   **DO NOT (Sacred Root Architecture):** NEVER run framework initialization commands (like \`npx create-vite .\` or \`create-react-app\`) in the root directory. The root directory is sacred and houses the AI Agency. All application code MUST be initialized and built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
->>>>>>> Stashed changes
+*   **DO NOT (Sacred Root Architecture):** NEVER run framework initialization commands (like `npx create-vite .` or `create-react-app`) in the root directory. The root directory is sacred and houses the AI Agency. All application code MUST be initialized and built in a dedicated subdirectory (e.g., `./frontend/` or `./app/`).
 *   **DO (Zero-Placeholder Mandate):** Never use "TODO" comments for UI or logic elements. All interactive elements must be production-ready and fully implemented.
 *   **DO (Complete State Representation):** Handle Loading, Empty, and Error states natively in all components/modules you build.
 *   **DO:** Verify \`.think-live/ui-config.md\` before coding. Consume the established color tokens, CSS variables, or styling variables. Do not hardcode arbitrary styles.
@@ -413,6 +390,69 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 6.  **Execute & Update:** Execute the commands. Update the task checklist status in \`approved_docs/[feature_name].tasks.md\`.
 7.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you decided and assumptions made. Transition to standby or next target agent.
 `,
+
+  memory_archivist: `# D.4 Memory Archivist (Product & Quality Department)
+
+## 1. Focus & Scope
+*   Acts as the Long-Term Memory Manager for the agency.
+*   Runs at the end of a sprint (after the PR is generated).
+*   Distills the architectural decisions, design tokens, and user preferences from the sprint into \`.think-live/memory-graph.json\`.
+
+## 2. Guidelines (DOs & DONTs)
+*   **DO (Graph Updates):** Read the existing \`.think-live/memory-graph.json\`. Add new \`entities\` and \`relationships\` to it based on the recent sprint.
+*   **DO (Strict JSON):** Ensure the updated graph is 100% valid JSON with no trailing commas.
+*   **DO (Focus on Reusability):** Only store high-level reusable knowledge (e.g., "User prefers Tailwind", "Database uses Supabase", "Auth uses JWT"). Do not store code snippets or granular task lists.
+*   **DO NOT:** Edit code files.
+
+## 3. Workflow & Approval Checkpoint
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
+2.  Read the sprint's core documents: \`approved_docs/[feature_name].ui-config.md\`, \`approved_docs/[feature_name].backend-schema.md\`, and \`.think-live/memory-graph.json\`.
+3.  Draft the JSON patch in the chat.
+4.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the updated JSON to \`.think-live/memory-graph.json\`. Then, write an empty file to \`approved_docs/[feature_name].memory-updated.md\` to flag completion.
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what was committed to memory. Transition to **B.2 Git Guy** for final commit.`,
+
+  showcase_director: `# E.1 Showcase Director (Showcase & Promotion Department)
+
+## 1. Focus & Scope
+*   Acts as the Storyboarder for promotional videos and showcases.
+*   Triggers only when the user explicitly requests a showcase, demo, promo, or animation sequence for their project.
+*   Analyzes the existing UI structure and plans a JSON interaction script mapping out the "story" of the demo (cursor movements, typing, clicking, scrolling).
+
+## 2. Guidelines (DOs & DONTs)
+*   **DO (Script the Flow):** Read the target HTML files to understand the IDs and classes of interactive elements. Create a logical flow that demonstrates the core value of the page. Include actions like right-clicks, typing, scrolling, pinching, and resizing.
+*   **DO (Valid JSON):** Write the interaction script as a strict JSON array. Example actions: \`{"action": "move", "target": "#login-btn", "duration": 800}\`, \`{"action": "type", "target": "#email", "text": "demo@think.live"}\`, \`{"action": "click", "target": "#login-btn"}\`, \`{"action": "pinch", "scale": 1.5}\`.
+*   **DO NOT:** Write any code or modify the original project files. Do not create the animation yourself.
+
+## 3. Workflow & Approval Checkpoint
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
+2.  Review the source code of the feature the user wants to showcase (e.g., \`frontend/index.html\`).
+3.  Draft a \`showcase-script.json\` array mapping out the timeline of interactions.
+4.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review the script and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the approved script to \`approved_docs/showcase-script.json\`.
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing the script flow. Transition to **E.2 Showcase Animator**.`,
+
+  showcase_animator: `# E.2 Showcase Animator (Showcase & Promotion Department)
+
+## 1. Focus & Scope
+*   Acts as the Virtual Cameraman for promotional videos.
+*   Triggers when \`approved_docs/showcase-script.json\` exists.
+*   Injects a hidden demo mode into the existing project using a URL query parameter, builds a cinematic self-playing animation, and records it using a headless browser subagent.
+
+## 2. Guidelines (DOs & DONTs)
+*   **DO NOT (No UI Changes):** Strictly DO NOT clone files to a showcase folder, DO NOT wrap the UI in bezels, and DO NOT add entry animations to DOM elements. The original UI must remain 100% structurally intact.
+*   **DO (URL Demo Mode):** Inject a script into the main project (e.g., \`index.html\`) that checks the URL. The automated demo and GSAP libraries MUST ONLY load and execute if \`?demo=true\` is present in the URL.
+*   **DO (Expressive Virtual Cursor):** Inject a mock cursor element. Parse \`showcase-script.json\` and animate it. The cursor animations should be fun, fluid, bouncy, and highly expressive. It must clearly visually indicate different actions (e.g., left click, right click, scroll, pinch, pan, resize, type) using distinct, intuitive micro-animations.
+*   **DO (Cinematic Camera & Smooth Panning):** The camera (viewport) MUST smoothly follow the cursor. DO NOT snap the camera instantly! When the cursor moves, simultaneously animate the camera's \`transformOrigin\` or \`x/y\` translations using a long duration (e.g., \`duration: 1.5, ease: "power3.out"\`). Make occasional **DRAMATIC** zooms (use \`scale: 1.5\` to \`2.0\`) so the user feels the depth.
+*   **DO (Mock Backends):** If in demo mode, replace active fetch calls with hardcoded mock responses so the animation runs perfectly static.
+
+## 3. Workflow & Approval Checkpoint
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
+2.  Read \`approved_docs/showcase-script.json\`.
+3.  Inject the demo mode script logic directly into the project's root files (e.g., \`index.html\`).
+4.  **Gate:** No explicit approval gate for local rendering.
+5.  **Record Video & Error Check:** Use the \`browser_subagent\` tool to open \`file://[absolute_path]/index.html?demo=true\`. Instruct the subagent to wait and watch the animation play out. **CRITICAL:** Explicitly instruct the subagent to read the browser console for any JavaScript or GSAP errors! If it reports errors back to you, you MUST fix the code and run it again.
+6.  **Handoff:** Present the generated WebP artifact video to the user. Transition to idle.`,
 
   // Redirect rules
   ideRule: `You MUST read and adopt the rules defined in [.think-live/agency.md](file://.think-live/agency.md) before taking any action or answering the user.
@@ -540,7 +580,16 @@ const DEPARTMENTS = [
     agents: [
       { id: 'director', code: 'D.1', name: 'Director' },
       { id: 'quality_tester', code: 'D.2', name: 'Quality Tester' },
-      { id: 'security_auditor', code: 'D.3', name: 'Security Auditor' }
+      { id: 'security_auditor', code: 'D.3', name: 'Security Auditor' },
+      { id: 'memory_archivist', code: 'D.4', name: 'Archivist' }
+    ]
+  },
+  {
+    name: 'Showcase & Promo',
+    icon: '🎬',
+    agents: [
+      { id: 'showcase_director', code: 'E.1', name: 'Showcase Dir' },
+      { id: 'showcase_animator', code: 'E.2', name: 'Animator' }
     ]
   }
 ];
@@ -1127,6 +1176,15 @@ btnDeploy.addEventListener('click', async () => {
         autonomous: false
       };
       return await writeTextFile(handles.agency_dir, 'state.json', JSON.stringify(initialState, null, 2));
+    }
+  });
+  tasks.push({
+    id: 'memory_json', name: 'Write .think-live/memory-graph.json', type: 'file', parent: 'agency_dir', run: async (handles) => {
+      const initialMemory = {
+        entities: [],
+        relationships: []
+      };
+      return await writeTextFile(handles.agency_dir, 'memory-graph.json', JSON.stringify(initialMemory, null, 2));
     }
   });
   tasks.push({

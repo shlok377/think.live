@@ -47,6 +47,9 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 | *   `.think-live/task-tracker.md` has ALL tasks marked as completed `[x]`.<br>*   No `security-report.md` exists. | Run rigorous OWASP and STRIDE security audit. | **D.3 Security Auditor** | `.think-live/departments/security_auditor/instructions.md` |
 | *   `[feature].security-report.md` approved.<br>*   No `pr-request.md` exists. | Write the final PR request and changelog. | **D.2 Quality Tester** | `.think-live/departments/quality_tester/instructions.md` |
 | *   `[feature].pr-request.md` approved.<br>*   Code not yet committed/pushed. | Run automated tests, manage branches, commit, push, create PR. | **B.2 Git Guy** | `.think-live/departments/git_guy/instructions.md` |
+| *   `[feature].pr-request.md` approved.<br>*   No `.think-live/memory-graph.json` updates for this sprint. | Extract architecture, styling, and user preferences into graph. | **D.4 Memory Archivist** | `.think-live/departments/memory_archivist/instructions.md` |
+| *   User explicitly requests a showcase, demo video, or promo animation. | Map out a cinematic animation flow and generate the JSON script. | **E.1 Showcase Director** | `.think-live/departments/showcase_director/instructions.md` |
+| *   `showcase-script.json` approved.<br>*   `showcase/` folder is missing or incomplete. | Clone UI, inject GSAP, wrap in screen bezel, and animate the script. | **E.2 Showcase Animator** | `.think-live/departments/showcase_animator/instructions.md` |
 
 ---
 
