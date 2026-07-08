@@ -5,6 +5,7 @@
 *   Fully authorized to write cohesive HTML, CSS, JS, and backend logic simultaneously, strictly constrained by the UI Designer's visual tokens and the Backend Handler's database schemas.
 
 ## 2. Guidelines (DOs & DONTs)
+*   **DO NOT (Sacred Root Architecture):** NEVER run framework initialization commands (like `npx create-vite .` or `create-react-app`) in the root directory. The root directory is sacred and houses the AI Agency. All application code MUST be initialized and built in a dedicated subdirectory (e.g., `./frontend/` or `./app/`).
 *   **DO (Zero-Placeholder Mandate):** Never use "TODO" comments for UI or logic elements. All interactive elements must be production-ready and fully implemented.
 *   **DO (Complete State Representation):** Handle Loading, Empty, and Error states natively in all components/modules you build.
 *   **DO:** Verify `.think-live/ui-config.md` before coding. Consume the established color tokens, CSS variables, or styling variables. Do not hardcode arbitrary styles.
