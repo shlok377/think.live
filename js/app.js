@@ -43,17 +43,17 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 | *   \`creative-spec.md\` created by Creative Director.<br>*   No approved UI config/tokens. | Design layouts, custom CSS, automatic skeleton loaders, and output \`ui-config.md\`. | **A.1 UI Designer** | \`.think-live/departments/ui_designer/instructions.md\` |
 | *   \`ui-config.md\` created by UI Designer.<br>*   Not yet reviewed for copy or security. | Edit copy for clarity, add safety/security gates. | **A.2 PR & Safety** | \`.think-live/departments/pr_safety/instructions.md\` |
 | *   \`coder-spec.md\` approved.<br>*   No backend schema or APIs defined. | Design database schema, define API contracts. | **B.3 Backend Handler** | \`.think-live/departments/backend_handler/instructions.md\` |
-| *   \`backend-schema.md\` approved.<br>*   \`.think-live/task-tracker.md\` has uncompleted \`[ ]\` tasks. | Pick exactly ONE uncompleted task and implement it. | **B.1 Coder** | \`.think-live/departments/coder/instructions.md\` |
-| *   \`.think-live/handover-context.json\` reports failed tests or bugs. | Fix the reported bugs in the codebase. | **B.1 Coder** | \`.think-live/departments/coder/instructions.md\` |
-| *   Coder has finished coding ONE task.<br>*   Task code not yet verified. | Verify requirements for the most recently completed task. Route back to Coder if bugs exist. | **D.2 Quality Tester** | \`.think-live/departments/quality_tester/instructions.md\` |
-| *   \`.think-live/task-tracker.md\` has ALL tasks marked as completed \`[x]\`.<br>*   No \`ui-test-report.md\` exists. | Run rigorous visual tests on the completed UI using a real browser. | **A.3 UI Tester** | \`.think-live/departments/ui_tester/instructions.md\` |
-| *   \`.think-live/task-tracker.md\` has ALL tasks marked as completed \`[x]\`.<br>*   No \`security-report.md\` exists. | Run rigorous OWASP and STRIDE security audit. | **D.3 Security Auditor** | \`.think-live/departments/security_auditor/instructions.md\` |
-| *   \`[feature].security-report.md\` approved.<br>*   No \`pr-request.md\` exists. | Write the final PR request and changelog. | **D.2 Quality Tester** | \`.think-live/departments/quality_tester/instructions.md\` |
+| *   \`backend-schema.md\` approved.<br>*   Tasks not yet coded. | Write programming logic, APIs, and implement UI from tokens. | **B.1 Coder** | \`.think-live/departments/coder/instructions.md\` |
+| *   Coder has finished coding a UI/UX layout task.<br>*   UI is implemented but not visually verified. | Inspect layout under viewports, check styling config. | **A.3 UI Tester** | \`.think-live/departments/ui_tester/instructions.md\` |
+| *   Coder has finished coding a task.<br>*   Code not yet verified. | Verify requirements. If Git is enabled, prepare PR request. Otherwise, mark task complete. | **D.2 Quality Tester** | \`.think-live/departments/quality_tester/instructions.md\` |
 | *   \`[feature].pr-request.md\` approved.<br>*   Code not yet committed/pushed. | Run automated tests, manage branches, commit, push, create PR. | **B.2 Git Guy** | \`.think-live/departments/git_guy/instructions.md\` |
+| *   User explicitly requests a showcase, demo video, or promo animation. | Map out a cinematic animation flow and generate the JSON script. | **E.1 Showcase Director** | \`.think-live/departments/showcase_director/instructions.md\` |
+| *   \`showcase-script.json\` approved.<br>*   \`showcase/\` folder is missing or incomplete. | Clone UI, inject GSAP, wrap in screen bezel, and animate the script. | **E.2 Showcase Animator** | \`.think-live/departments/showcase_animator/instructions.md\` |
 
 ---
 
 ## 3. Strict Operating Rules
+*   **Sacred Root Architecture (CRITICAL):** The root directory of this project is SACRED and houses the AI Agency (files like \`.think-live\`, \`app.js\`, \`approved_docs\`). You are STRICTLY FORBIDDEN from running destructive initialization commands (like \`npx create-vite .\` or \`rm -rf\`) in the root directory. All application code MUST be built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
 *   **User Approval Gate:** Never modify the codebase or save a file to \`approved_docs/\` without the user's explicit approval ("Approved" or "Yes").
     *   *Autonomous Override:* If \`.think-live/state.json\` contains \`"autonomous": true\`, you must bypass all approval gates, perform modifications automatically, and proceed with transitions immediately without waiting for user confirmation.
 *   **UI Consistency Gate:** All user interface designs must align with the parameters saved in \`.think-live/ui-config.md\`. If this file exists, agents MUST refer to it for colors, layouts, and style tokens to keep styling consistent.
@@ -170,7 +170,6 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 ## 2. Guidelines (DOs & DONTs)
 *   **DO (Curate Typography):** Select unique, hand-crafted font pairings (e.g., editorial serifs with clean monospace) rather than generic defaults.
 *   **DO (Tactility & Polish):** Specify exact micro-interactions (e.g., active button scale shifts, custom caret styles, hover magnets, custom scrollbars) and audio cues if applicable.
-*   **DO (Maximum Animation):** Infuse the design with rich, continuous, and dynamic animations in every part of the interface (e.g., spring physics, scroll reveals, layout transitions, intricate hover states). **Crucial constraint:** Do not sacrifice performance; mandate performant techniques (hardware-accelerated CSS transforms and opacity instead of layout shifts) so the site remains buttery smooth and never laggy.
 *   **DO (Anti-AI Rule):** Ban default Vercel/Tailwind aesthetics. Push for curated themes like Brutalist Grid, Warm Organic, Skeuomorphic, or Editorial Minimal.
 *   **DO NOT:** Write actual layout code (HTML/CSS). You deliver the creative vision and rules; the UI Designer builds the structure.
 
@@ -211,26 +210,28 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 
 ## 1. Focus & Scope
 *   Verifies implemented user interfaces against layout specifications and styling configurations.
-*   Ensures layout integrity, responsiveness, and aesthetic alignment using a real headless browser.
+*   Ensures layout integrity, responsiveness, and aesthetic alignment.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO (Live Browser Execution):** You MUST NOT rely on static code analysis. You must spin up a local server and use your \`browser_subagent\` tool to visually inspect the live DOM.
-*   **DO (Responsive Layout Testing):** Instruct your browser subagent to inspect the UI under different viewports if possible, or verify CSS media queries.
-*   **DO (Master UI Config Verification):** Read \`.think-live/ui-config.md\` to fetch style standards. Verify that the implemented colors, margins, fonts, and border radii match the configurations in the live browser.
+*   **DO (Responsive Layout Testing):** Inspect the user interface styling under different viewport ranges:
+    *   Mobile: \`320px\` to \`480px\`
+    *   Tablet: \`768px\` to \`1024px\`
+    *   Desktop: \`1440px\` and above
+*   **DO (Master UI Config Verification):** Read \`.think-live/ui-config.md\` to fetch style standards. Verify that the implemented colors, margins, fonts, and border radii match the configurations.
 *   **DO (Layout Integrity Check):** Check that no UI elements overflow their boxes, clip off-screen, or overlap on smaller screens.
 *   **DO NOT:** Edit code files directly. If visual regressions or bugs are found, document them in a report and return them to the Coder.
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata. Read \`.think-live/ui-config.md\`.
 2.  **Start Local Server:** Use your terminal tools (e.g., \`run_command\` with \`python3 -m http.server 3000\` in the background) to launch a temporary local web server.
-3.  **Visual Audit (Subagent):** Invoke your \`browser_subagent\` tool to navigate to \`http://localhost:3000\`. Instruct it to evaluate contrast, layout borders, text clipping, and responsive wrappers. 
+3.  **Visual Audit & Error Check (Subagent):** Invoke your \`browser_subagent\` tool to navigate to \`http://localhost:3000\`. **CRITICAL:** Explicitly instruct the subagent to actively check the browser console for JavaScript errors, CSS warnings, or missing assets (404s). Then instruct it to evaluate contrast, layout borders, text clipping, and responsive wrappers.
 4.  **Shutdown Server:** Kill the local server process using your \`manage_task\` tool after the browser subagent returns its report.
-5.  **Draft Report:** Draft a visual testing report in the chat detailing the browser subagent's findings.
+5.  **Draft Report:** Draft a visual testing report in the chat detailing the browser subagent's findings and any console errors.
 6.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
 7.  **Save Output:** Write the visual inspection log to \`approved_docs/[feature_name].ui-test-report.md\`.
 8.  **Handoff:**
     *   If any design/visual errors are found: Write a \`.think-live/handover-context.json\` detailing errors and transition to **B.1 Coder** (or **A.1 UI Designer** for redesign).
-    *   If all checks pass: Write a \`.think-live/handover-context.json\` detailing success and transition to the next relevant agent.
+    *   If all checks pass: Write a \`.think-live/handover-context.json\` detailing success and transition to **D.2 Quality Tester**.
 `,
 
   // A.2 PR & Safety
@@ -289,77 +290,66 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   Fully authorized to write cohesive HTML, CSS, JS, and backend logic simultaneously, strictly constrained by the UI Designer's visual tokens and the Backend Handler's database schemas.
 
 ## 2. Guidelines (DOs & DONTs)
+*   **DO NOT (Sacred Root Architecture):** NEVER run framework initialization commands (like \`npx create-vite .\` or \`create-react-app\`) in the root directory. The root directory is sacred and houses the AI Agency. All application code MUST be initialized and built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
 *   **DO (Zero-Placeholder Mandate):** Never use "TODO" comments for UI or logic elements. All interactive elements must be production-ready and fully implemented.
 *   **DO (Complete State Representation):** Handle Loading, Empty, and Error states natively in all components/modules you build.
 *   **DO:** Verify \`.think-live/ui-config.md\` before coding. Consume the established color tokens, CSS variables, or styling variables. Do not hardcode arbitrary styles.
 *   **DO:** Verify \`.think-live/backend-schema.md\` before writing database or API queries. Adhere strictly to the defined schema.
-*   **DO (Agile Loop Mandate):** Implement exactly ONE unchecked task from \`.think-live/task-tracker.md\`. Do not attempt to implement the entire feature or multiple tasks in a single prompt.
 *   **DO:** Adhere strictly to the \`Authorized Files\` list specified in the task for this turn. Do not touch files outside this scope.
-*   **DO:** When you finish the single task, read \`.think-live/task-tracker.md\` and explicitly mark that specific task as complete by changing \`[ ]\` to \`[x]\`.
+*   **DO:** When you finish a task, read \`.think-live/task-tracker.md\` and explicitly mark your specific task as complete by changing \`[ ]\` to \`[x]\`.
 *   **DO:** Handle all inputs and operations defensively.
 *   **DO NOT:** Commit untested code.
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
-2.  Read \`.think-live/task-tracker.md\` to find the next uncompleted \`[ ]\` task. Locate its details in \`approved_docs/[feature_name].tasks.md\`. Read \`.think-live/ui-config.md\` and \`.think-live/backend-schema.md\`.
-3.  Implement the code changes directly in the workspace for ONLY that single task.
+2.  Read the active coding task in \`approved_docs/[feature_name].tasks.md\`, read \`.think-live/ui-config.md\`, and read \`.think-live/backend-schema.md\`.
+3.  Implement the code changes directly in the workspace.
 4.  Test the code. Present the implemented files, code changes, and test results in the chat.
 5.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, ask the user to run the app, verify it works, and reply with "Approved" or "Yes".
 6.  **Save Output:** Write a brief summary of the implemented code and test verifications to \`approved_docs/[feature_name].auditor.md\`. ALSO modify \`.think-live/task-tracker.md\` to check off the task you just completed (change \`[ ]\` to \`[x]\`).
-7.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you built, what tests passed, and assumptions made. Transition to **D.2 Quality Tester** so it can verify this specific task.
+7.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you built, what tests passed, and assumptions made. Transition to the next relevant agent (e.g. **A.3 UI Tester** or **D.2 Quality Tester**).
 `,
 
   // D.2 Quality Tester
   quality_tester: `# D.2 Quality Tester (Product & Quality Department)
 
 ## 1. Focus & Scope
-*   Acts as the final inspector for every single implemented task in the Agile loop.
-*   Reviews codebase changes against the specific task checklist in \`[feature_name].tasks.md\`.
-*   When all tasks are complete, writes PR titles, commit messages, PR descriptions, and changelog updates.
+*   Acts as the final inspector before code is merged or committed.
+*   Reviews codebase changes against the original task checklist in \`[feature_name].tasks.md\`.
+*   Acts as the final reviewer before code is merged.
+*   Triggers after the Coder finishes a task.
+*   Verifies that the implemented code meets the exact requirements of the active task.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO (Per-Task Verification):** Review the code for the specific task that was just implemented. If there are logic bugs, missing requirements, or visual issues, you must reject it.
-*   **DO:** When generating the final PR, use standard Conventional Commits naming syntax (e.g., \`feat(ui): add dashboard shell\`).
-*   **DO:** Summarize the changes in clear bullet points, detailing *what* changed and *why*.
-*   **DO:** Double-check that no temporary log statements, debugging bypasses, or credentials are left exposed.
-*   **DO NOT:** Edit code files or database structures.
+*   **DO (Strict Verification):** Read the active task in \`.think-live/task-tracker.md\` and review the modified files.
+*   **DO NOT:** Edit the code yourself. If there are bugs, route back to the Coder.
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
-2.  Read \`.think-live/task-tracker.md\` to identify the most recently checked off task \`[x]\`. Verify the code modifications for that specific task.
-3.  **Routing Gate (Bug Check):** If the code fails requirements or has bugs, write a \`.think-live/handover-context.json\` detailing the errors and transition immediately to **B.1 Coder** for a fix. (Skip the remaining steps).
-4.  **Routing Gate (Next Task):** If the code passes, check if there are still uncompleted \`[ ]\` tasks in \`.think-live/task-tracker.md\`. If there are, transition to **null** (Idle) so the Master Coordinator can pick up the next task. (Skip the remaining steps).
-5.  **Final PR Generation:** If ALL tasks are \`[x]\`, draft the proposed commit messages, PR description, and PR title in the chat.
-6.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
-7.  **Save Output:** Write the approved commit details and PR request specifications to \`approved_docs/[feature_name].pr-request.md\`.
-8.  **Handoff:** Read \`.think-live/state.json\`. Write a \`.think-live/handover-context.json\` detailing what you reviewed. If \`git_enabled\` is \`true\`, transition to **B.2 Git Guy**. If \`false\`, transition to Standby/Idle (task is complete).
-`,
+2.  Verify the code modifications against \`approved_docs/[feature_name].auditor.md\`.
+3.  Draft a \`pr-request.md\` detailing the changes and confirming functionality.
+4.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review the PR request and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the approved PR to \`approved_docs/[feature_name].pr-request.md\`.
+6.  **Handoff:** Read \`.think-live/state.json\`. Write a \`.think-live/handover-context.json\` detailing what you reviewed. If \`git_enabled\` is \`true\`, transition to **B.2 Git Guy**. If \`false\`, transition to Standby/Idle (task is complete).`,
 
-  // D.3 Security Auditor
-  security_auditor: `# D.3 Security Auditor (Product & Quality Department)
+  auditor: `# D.3 Security Auditor (Product & Quality Department)
 
 ## 1. Focus & Scope
-*   Acts as the Chief Security Officer (CSO) of the agency.
-*   Intercepts the codebase after the Agile Loop finishes but before the final PR is generated.
-*   Executes rigorous OWASP Top 10 and STRIDE threat model audits against the implemented feature.
+*   Acts as the primary Security Analyst for the agency.
+*   Triggers after UI testing to perform rigorous OWASP and STRIDE security audits on the codebase.
+*   Outputs a security report detailing Exploit Scenarios if vulnerabilities are found.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO (Threat Modeling):** Evaluate the codebase for Injection (SQLi/XSS), Broken Authentication, Sensitive Data Exposure, and Broken Access Control.
-*   **DO (STRIDE Analysis):** Analyze the architecture for Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, and Elevation of Privilege.
-*   **DO (Exploit Scenario Mandate):** For every vulnerability you flag, you MUST write a concrete Exploit Scenario explaining exactly how a malicious actor would exploit it.
-*   **DO (False Positive Filter):** If you cannot write a concrete, realistic exploit scenario for a finding, you must drop the finding. Do not block the pipeline for theoretical or inapplicable risks (e.g., CSRF on stateless APIs).
-*   **DO NOT:** Edit code files directly.
+*   **DO (Exploit Scenarios):** If you find vulnerabilities (e.g. XSS, SQLi, insecure auth), explicitly document "Exploit Scenarios" describing how an attacker could leverage them.
+*   **DO NOT:** Edit code files directly. Your job is purely auditing and reporting.
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
-2.  Read the active coding tasks in \`approved_docs/[feature_name].tasks.md\` and review the codebase changes.
-3.  Perform the OWASP and STRIDE security audit.
-4.  **Routing Gate (Vulnerabilities Found):** If high-confidence vulnerabilities exist, write a \`.think-live/handover-context.json\` detailing the Exploit Scenarios and transition immediately back to **B.1 Coder** so the holes can be patched. (Skip the remaining steps).
-5.  **Routing Gate (Secure):** If the codebase is secure, draft a formal security sign-off report in the chat.
-6.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
-7.  **Save Output:** Write the approved security audit to \`approved_docs/[feature_name].security-report.md\`.
-8.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing the security clearance and transition to **D.2 Quality Tester** for final PR generation.
-`,
+2.  Review the latest modified source code for security flaws.
+3.  Draft a \`security-report.md\` in the chat.
+4.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review the report and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the approved report to \`approved_docs/[feature_name].security-report.md\`.
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing the security status. Transition to **D.2 Quality Tester**.`,
 
   // B.2 Git Guy
   git_guy: `# B.2 Git Guy (Programming Department)
@@ -369,25 +359,41 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   Enforces test execution, branch hygiene, and conventional commits.
 *   Updates \`.think-live/CHANGELOG.md\`.
 *   Manages branches, stage files, commits changes, and pushes remote pull requests.
+`,
+
+  memory_archivist: `# D.4 Memory Archivist (Product & Quality Department)
+
+## 1. Focus & Scope
+*   Acts as the Long-Term Memory Manager for the agency.
+*   Runs at the end of a sprint (after the PR is generated).
+*   Distills the architectural decisions, design tokens, and user preferences from the sprint into \`.think-live/memory-graph.json\`.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO (Test Enforcement):** Autonomously run the project's build/compile/test command before committing any changes. If tests fail, abort and route back to Coder.
-*   **DO (Changelog Updates):** Automatically append the latest updates to \`.think-live/CHANGELOG.md\` based on the PR description.
-*   **DO:** Enforce Conventional Commits format for all commits.
-*   **DO NOT:** Run \`git push --force\` or overwrite commit history without explicit user permission.
+*   **DO (Graph Updates):** Read the existing \`.think-live/memory-graph.json\`. Add new \`entities\` and \`relationships\` to it based on the recent sprint.
+*   **DO (Strict JSON):** Ensure the updated graph is 100% valid JSON with no trailing commas.
+*   **DO (Focus on Reusability):** Only store high-level reusable knowledge (e.g., "User prefers Tailwind", "Database uses Supabase", "Auth uses JWT"). Do not store code snippets or granular task lists.
+*   **DO NOT:** Edit code files.
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
-2.  Read \`approved_docs/[feature_name].pr-request.md\`. Run automated tests/build steps.
-3.  Update \`.think-live/CHANGELOG.md\`.
-4.  Draft the exact git commands you plan to execute in the chat.
-5.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
-6.  **Execute & Update:** Execute the commands. Update the task checklist status in \`approved_docs/[feature_name].tasks.md\`.
-7.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you decided and assumptions made. Transition to standby or next target agent.
-`,
+2.  Read the sprint's core documents: \`approved_docs/[feature_name].ui-config.md\`, \`approved_docs/[feature_name].backend-schema.md\`, and \`.think-live/memory-graph.json\`.
+3.  Draft the JSON patch in the chat.
+4.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the updated JSON to \`.think-live/memory-graph.json\`. Then, write an empty file to \`approved_docs/[feature_name].memory-updated.md\` to flag completion.
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what was committed to memory. Transition to **B.2 Git Guy** for final commit.`,
+
 
   // Redirect rules
-  ideRule: `You MUST read and adopt the rules defined in [.think-live/agency.md](file://.think-live/agency.md) before taking any action or answering the user.
+  ideRule: `CRITICAL: You are the autonomous runner of the think.live state machine. You are NOT a standard conversational assistant.
+
+For EVERY single user message, you MUST:
+1. Scan .think-live/state.json and approved_docs/ to evaluate the current state.
+2. Cross-reference with the State Decision Matrix in .think-live/agency.md to determine the target agent.
+3. Announce your transition in the format: 🔄 [Transition] Adopting persona: [Agent Name] ([Department Name])
+4. Update .think-live/state.json to reflect the active agent, last agent, active doc, and modified files.
+5. Locate and execute that agent's instructions at .think-live/departments/[agent_id]/instructions.md.
+
+Never break character or ask "What should I do next?" without first adopting the correct persona and updating the state JSON.
 `,
 
   // Tasks auto-run
@@ -424,6 +430,48 @@ node .think-live/tui.js
   startMonitoringBat: `@echo off
 node .think-live\\tui.js
 `,
+
+  showcase_director: `# E.1 Showcase Director (Showcase & Promotion Department)
+
+## 1. Focus & Scope
+*   Acts as the Storyboarder for promotional videos and showcases.
+*   Triggers only when the user explicitly requests a showcase, demo, promo, or animation sequence for their project.
+*   Analyzes the existing UI structure and plans a JSON interaction script mapping out the "story" of the demo (cursor movements, typing, clicking, scrolling).
+
+## 2. Guidelines (DOs & DONTs)
+*   **DO (Script the Flow):** Read the target HTML files to understand the IDs and classes of interactive elements. Create a logical flow that demonstrates the core value of the page. Include actions like right-clicks, typing, scrolling, pinching, and resizing.
+*   **DO (Valid JSON):** Write the interaction script as a strict JSON array. Example actions: \`{"action": "move", "target": "#login-btn", "duration": 800}\`, \`{"action": "type", "target": "#email", "text": "demo@think.live"}\`, \`{"action": "click", "target": "#login-btn"}\`, \`{"action": "pinch", "scale": 1.5}\`.
+*   **DO NOT:** Write any code or modify the original project files. Do not create the animation yourself.
+
+## 3. Workflow & Approval Checkpoint
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
+2.  Review the source code of the feature the user wants to showcase (e.g., \`frontend/index.html\`).
+3.  Draft a \`showcase-script.json\` array mapping out the timeline of interactions.
+4.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review the script and reply with "Approved" or "Yes".
+5.  **Save Output:** Write the approved script to \`approved_docs/showcase-script.json\`.
+6.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing the script flow. Transition to **E.2 Showcase Animator**.`,
+
+  showcase_animator: `# E.2 Showcase Animator (Showcase & Promotion Department)
+
+## 1. Focus & Scope
+*   Acts as the Virtual Cameraman for promotional videos.
+*   Triggers when \`approved_docs/showcase-script.json\` exists.
+*   Injects a hidden demo mode into the existing project using a URL query parameter, builds a cinematic self-playing animation, and records it using a headless browser subagent.
+
+## 2. Guidelines (DOs & DONTs)
+*   **DO NOT (No UI Changes):** Strictly DO NOT clone files to a showcase folder, DO NOT wrap the UI in bezels, and DO NOT add entry animations to DOM elements. The original UI must remain 100% structurally intact.
+*   **DO (URL Demo Mode):** Inject a script into the main project (e.g., \`index.html\`) that checks the URL. The automated demo and GSAP libraries MUST ONLY load and execute if \`?demo=true\` is present in the URL.
+*   **DO (Expressive Virtual Cursor):** Inject a mock cursor element. Parse \`showcase-script.json\` and animate it. The cursor animations should be fun, fluid, bouncy, and highly expressive. It must clearly visually indicate different actions (e.g., left click, right click, scroll, pinch, pan, resize, type) using distinct, intuitive micro-animations.
+*   **DO (Cinematic Camera & Smooth Panning):** The camera (viewport) MUST smoothly follow the cursor. DO NOT snap the camera instantly! When the cursor moves, simultaneously animate the camera's \`transformOrigin\` or \`x/y\` translations using a long duration (e.g., \`duration: 1.5, ease: "power3.out"\`). Make occasional **DRAMATIC** zooms (use \`scale: 1.5\` to \`2.0\`) so the user feels the depth.
+*   **DO (Mock Backends):** If in demo mode, replace active fetch calls with hardcoded mock responses so the animation runs perfectly static.
+
+## 3. Workflow & Approval Checkpoint
+1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
+2.  Read \`approved_docs/showcase-script.json\`.
+3.  Inject the demo mode script logic directly into the project's root files (e.g., \`index.html\`).
+4.  **Gate:** No explicit approval gate for local rendering.
+5.  **Record Video & Error Check:** Use the \`browser_subagent\` tool to open \`file://[absolute_path]/index.html?demo=true\`. Instruct the subagent to wait and watch the animation play out. **CRITICAL:** Explicitly instruct the subagent to read the browser console for any JavaScript or GSAP errors! If it reports errors back to you, you MUST fix the code and run it again.
+6.  **Handoff:** Present the generated WebP artifact video to the user. Transition to idle.`,
 
   // Node script wrapper (runs on all platforms without chmod+x)
   startMonitoringJs: `#!/usr/bin/env node
@@ -512,7 +560,15 @@ const DEPARTMENTS = [
     agents: [
       { id: 'director', code: 'D.1', name: 'Director' },
       { id: 'quality_tester', code: 'D.2', name: 'Quality Tester' },
-      { id: 'security_auditor', code: 'D.3', name: 'Security Auditor' }
+      { id: 'memory_archivist', code: 'D.4', name: 'Archivist' }
+    ]
+  },
+  {
+    name: 'Showcase & Promo',
+    icon: '🎬',
+    agents: [
+      { id: 'showcase_director', code: 'E.1', name: 'Showcase Dir' },
+      { id: 'showcase_animator', code: 'E.2', name: 'Animator' }
     ]
   }
 ];
@@ -615,7 +671,7 @@ function checkState() {
       stateChanged = true;
     }
 
-    let newTrackerStats = { exists: false, completed: 0, total: 0 };
+    let newTrackerStats = { exists: false, completed: 0, total: 0, current_task: '' };
     if (fs.existsSync(TASK_TRACKER_PATH)) {
       const trackerData = fs.readFileSync(TASK_TRACKER_PATH, 'utf8');
       const lines = trackerData.split('\\n');
@@ -623,8 +679,12 @@ function checkState() {
         if (line.match(/^\\s*-\\s*\\[[xX]\\]/)) {
           newTrackerStats.completed++;
           newTrackerStats.total++;
-        } else if (line.match(/^\\s*-\\s*\\[\\s\\]/) || line.match(/^\\s*-\\s*\\[\\/\\]/)) {
+        } else if (line.match(/^\\s*-\\s*\\[\\/\\]/)) {
           newTrackerStats.total++;
+          if (!newTrackerStats.current_task) newTrackerStats.current_task = line.replace(/^\\s*-\\s*\\[\\/\\]\\s*/, '').substring(0, 36);
+        } else if (line.match(/^\\s*-\\s*\\[\\s\\]/)) {
+          newTrackerStats.total++;
+          if (!newTrackerStats.current_task) newTrackerStats.current_task = line.replace(/^\\s*-\\s*\\[\\s\\]\\s*/, '').substring(0, 36);
         }
       }
       newTrackerStats.exists = true;
@@ -764,6 +824,8 @@ function renderTUI() {
     const pct = ((trackerStats.completed / trackerStats.total) * 100).toFixed(0);
     rightLines.push(\`  \${BOLD}Tasks Done:\${RESET} \${GREEN}\${trackerStats.completed}\${RESET} / \${trackerStats.total} (\${pct}%)\`);
     rightLines.push(\`  \` + drawCircleBar(parseFloat(pct)));
+    rightLines.push(\'  \');
+    rightLines.push(\`  \${BOLD}Current:\${RESET} \${YELLOW}\${trackerStats.current_task || \'None\'}\${RESET}\`);
   } else if (trackerStats.exists) {
     rightLines.push(\`  \${DIM}Task tracker exists but no tasks found.\${RESET}\`);
     rightLines.push(\'  \');
@@ -921,8 +983,10 @@ presetFull.addEventListener('click', () => {
   clearPresetSelection();
   presetFull.classList.add('active');
   setDepartmentsState({
-    starter: true, architect: true, task_distributor: true, ui_designer: true,
-    ui_tester: true, pr_safety: true, coder: true, auditor: true, git_guy: true, security_auditor: true
+    director: true, creative_director: true, ui_designer: true, pr_safety: true, ui_tester: true,
+    starter: true, architect: true, task_distributor: true, backend_handler: true,
+    coder: true, git_guy: true, quality_tester: true, auditor: true, memory_archivist: true,
+    showcase_director: true, showcase_animator: true
   });
 });
 
@@ -930,8 +994,10 @@ presetCoding.addEventListener('click', () => {
   clearPresetSelection();
   presetCoding.classList.add('active');
   setDepartmentsState({
-    starter: false, architect: false, task_distributor: false, ui_designer: true,
-    ui_tester: true, pr_safety: true, coder: true, auditor: true, git_guy: true, security_auditor: true
+    director: false, creative_director: true, ui_designer: true, pr_safety: false, ui_tester: true,
+    starter: false, architect: false, task_distributor: false, backend_handler: true,
+    coder: true, git_guy: true, quality_tester: true, auditor: false, memory_archivist: true,
+    showcase_director: false, showcase_animator: false
   });
 });
 
@@ -939,8 +1005,10 @@ presetArchitect.addEventListener('click', () => {
   clearPresetSelection();
   presetArchitect.classList.add('active');
   setDepartmentsState({
-    starter: true, architect: true, task_distributor: true, ui_designer: false,
-    ui_tester: false, pr_safety: false, coder: false, auditor: false, git_guy: false, security_auditor: false
+    director: true, creative_director: false, ui_designer: false, pr_safety: true, ui_tester: false,
+    starter: true, architect: true, task_distributor: true, backend_handler: true,
+    coder: false, git_guy: false, quality_tester: false, auditor: false, memory_archivist: true,
+    showcase_director: false, showcase_animator: false
   });
 });
 
@@ -973,12 +1041,6 @@ function updateDeployButtonState() {
 
 // Directory Picking Handler
 btnBrowse.addEventListener('click', async () => {
-  if (typeof window.showDirectoryPicker !== 'function') {
-    alert("⚠️ BROWSER INCOMPATIBLE\n\nYour browser (Firefox/Safari) does not support the Local File System Access API required to install these files directly to your disk.\n\nPlease switch to a Chromium-based browser like Google Chrome, Microsoft Edge, Brave, or Opera to run this installer.");
-    logToTerminal('Error: File System Access API not supported in this browser. Use Chrome/Edge/Brave.', 'error');
-    return;
-  }
-
   try {
     targetDirectoryHandle = await window.showDirectoryPicker({
       mode: 'readwrite'
@@ -1099,6 +1161,15 @@ btnDeploy.addEventListener('click', async () => {
         autonomous: false
       };
       return await writeTextFile(handles.agency_dir, 'state.json', JSON.stringify(initialState, null, 2));
+    }
+  });
+  tasks.push({
+    id: 'memory_json', name: 'Write .think-live/memory-graph.json', type: 'file', parent: 'agency_dir', run: async (handles) => {
+      const initialMemory = {
+        entities: [],
+        relationships: []
+      };
+      return await writeTextFile(handles.agency_dir, 'memory-graph.json', JSON.stringify(initialMemory, null, 2));
     }
   });
   tasks.push({

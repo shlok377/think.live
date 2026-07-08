@@ -181,7 +181,7 @@ function checkState() {
       stateChanged = true;
     }
 
-    let newTrackerStats = { exists: false, completed: 0, total: 0 };
+    let newTrackerStats = { exists: false, completed: 0, total: 0, current_task: '' };
     if (fs.existsSync(TASK_TRACKER_PATH)) {
       const trackerData = fs.readFileSync(TASK_TRACKER_PATH, 'utf8');
       const lines = trackerData.split('\n');
@@ -189,8 +189,12 @@ function checkState() {
         if (line.match(/^\s*-\s*\[[xX]\]/)) {
           newTrackerStats.completed++;
           newTrackerStats.total++;
-        } else if (line.match(/^\s*-\s*\[\s\]/) || line.match(/^\s*-\s*\[\/\]/)) {
+        } else if (line.match(/^\s*-\s*\[\/\]/)) {
           newTrackerStats.total++;
+          if (!newTrackerStats.current_task) newTrackerStats.current_task = line.replace(/^\s*-\s*\[\/\]\s*/, '').substring(0, 36);
+        } else if (line.match(/^\s*-\s*\[\s\]/)) {
+          newTrackerStats.total++;
+          if (!newTrackerStats.current_task) newTrackerStats.current_task = line.replace(/^\s*-\s*\[\s\]\s*/, '').substring(0, 36);
         }
       }
       newTrackerStats.exists = true;
@@ -331,6 +335,8 @@ function renderTUI() {
     const pct = ((trackerStats.completed / trackerStats.total) * 100).toFixed(0);
     rightLines.push(`  ${BOLD}Tasks Done:${RESET} ${GREEN}${trackerStats.completed}${RESET} / ${trackerStats.total} (${pct}%)`);
     rightLines.push(`  ` + drawCircleBar(parseFloat(pct)));
+    rightLines.push('  ');
+    rightLines.push(`  ${BOLD}Current:${RESET} ${YELLOW}${trackerStats.current_task || 'None'}${RESET}`);
   } else if (trackerStats.exists) {
     rightLines.push(`  ${DIM}Task tracker exists but no tasks found.${RESET}`);
     rightLines.push('  ');
