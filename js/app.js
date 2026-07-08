@@ -223,8 +223,8 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
 2.  Read the implemented UI files and review the guidelines in \`.think-live/ui-config.md\`.
-3.  Validate contrast, layout borders, text clipping, and responsive wrappers.
-4.  Draft a visual testing report in the chat.
+3.  **Validate Layout & Errors:** Use the \`browser_subagent\` tool to visually inspect the implemented UI. Instruct the subagent to actively check the browser console for JavaScript errors, CSS warnings, or missing assets (404s). Validate contrast, layout borders, text clipping, and responsive wrappers.
+4.  Draft a visual testing report in the chat. Include any console errors found by the subagent.
 5.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
 6.  **Save Output:** Write the visual inspection log to \`approved_docs/[feature_name].ui-test-report.md\`.
 7.  **Handoff:**
@@ -459,7 +459,7 @@ node .think-live\\tui.js
 *   **DO (Strict Isolation):** Create a new \`showcase/\` folder in the root directory. Copy all necessary HTML/CSS/JS files into this folder. NEVER modify the original source files.
 *   **DO (Cinematic Styling):** Wrap the cloned UI in a "Screen Bezel" (e.g., \`<div class="showcase-frame" style="border-radius: 24px; border: 12px solid #333; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">\`).
 *   **DO (Slide-Up Elastic Elements):** Inject a GSAP script that targets major elements and animates them in on load with a staggered, elastic slide-up (\`ease: "elastic.out(1, 0.5)"\`).
-*   **DO (Smooth Camera Zooms):** Inject a mock cursor element. Parse \`showcase-script.json\` and move the cursor using GSAP. Apply CSS \`transform: scale()\` to the \`.showcase-frame\` for dynamic zooms. **CRITICAL:** Use \`ease: "power2.inOut"\` for zooms, and dynamically set \`transformOrigin\` based on the cursor's target coordinates to ensure zooming feels natural and not "weird".
+*   **DO (Cinematic Camera & Smooth Panning):** Inject a mock cursor element. Parse \`showcase-script.json\` and move the cursor using GSAP. **CRITICAL:** The camera (the \`.showcase-frame\`) MUST smoothly follow the cursor. DO NOT snap the camera instantly! When the cursor moves, simultaneously animate the frame's \`transformOrigin\` or \`x/y\` translations using a long duration (e.g., \`duration: 1.5, ease: "power3.out"\`). Make the zoom **DRAMATIC** (use \`scale: 1.5\` to \`2.0\`, not just a tiny zoom) so the user really feels the depth.
 *   **DO (Mock Backends):** Replace active fetch calls with hardcoded mock responses so the animation runs perfectly static.
 
 ## 3. Workflow & Approval Checkpoint
@@ -467,7 +467,7 @@ node .think-live\\tui.js
 2.  Read \`approved_docs/showcase-script.json\`.
 3.  Clone the target files to \`showcase/\` and inject the animation libraries.
 4.  **Gate:** No explicit approval gate for local rendering.
-5.  **Record Video:** Use the \`browser_subagent\` tool to open \`file://[absolute_path]/showcase/index.html\`. Instruct the subagent to wait and watch the animation play out. This will automatically capture a WebP video recording of the showcase!
+5.  **Record Video & Error Check:** Use the \`browser_subagent\` tool to open \`file://[absolute_path]/showcase/index.html\`. Instruct the subagent to wait and watch the animation play out. **CRITICAL:** Explicitly instruct the subagent to read the browser console for any JavaScript or GSAP errors! If it reports errors back to you, you MUST fix the code and run it again.
 6.  **Handoff:** Present the generated WebP artifact video to the user. Transition to idle.`,
 
   // Node script wrapper (runs on all platforms without chmod+x)
