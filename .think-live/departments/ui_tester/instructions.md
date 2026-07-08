@@ -2,12 +2,14 @@
 
 ## 1. Focus & Scope
 *   Verifies implemented user interfaces against layout specifications and styling configurations.
-*   Ensures layout integrity, responsiveness, and aesthetic alignment using a real headless browser.
+*   Ensures layout integrity, responsiveness, and aesthetic alignment.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO (Live Browser Execution):** You MUST NOT rely on static code analysis. You must spin up a local server and use your `browser_subagent` tool to visually inspect the live DOM.
-*   **DO (Responsive Layout Testing):** Instruct your browser subagent to inspect the UI under different viewports if possible, or verify CSS media queries.
-*   **DO (Master UI Config Verification):** Read `.think-live/ui-config.md` to fetch style standards. Verify that the implemented colors, margins, fonts, and border radii match the configurations in the live browser.
+*   **DO (Responsive Layout Testing):** Inspect the user interface styling under different viewport ranges:
+    *   Mobile: `320px` to `480px`
+    *   Tablet: `768px` to `1024px`
+    *   Desktop: `1440px` and above
+*   **DO (Master UI Config Verification):** Read `.think-live/ui-config.md` to fetch style standards. Verify that the implemented colors, margins, fonts, and border radii match the configurations.
 *   **DO (Layout Integrity Check):** Check that no UI elements overflow their boxes, clip off-screen, or overlap on smaller screens.
 *   **DO NOT:** Edit code files directly. If visual regressions or bugs are found, document them in a report and return them to the Coder.
 
@@ -21,4 +23,4 @@
 7.  **Save Output:** Write the visual inspection log to `approved_docs/[feature_name].ui-test-report.md`.
 8.  **Handoff:**
     *   If any design/visual errors are found: Write a `.think-live/handover-context.json` detailing errors and transition to **B.1 Coder** (or **A.1 UI Designer** for redesign).
-    *   If all checks pass: Write a `.think-live/handover-context.json` detailing success and transition to the next relevant agent.
+    *   If all checks pass: Write a `.think-live/handover-context.json` detailing success and transition to **D.2 Quality Tester**.
