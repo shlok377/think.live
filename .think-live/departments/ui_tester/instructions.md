@@ -14,12 +14,13 @@
 *   **DO NOT:** Edit code files directly. If visual regressions or bugs are found, document them in a report and return them to the Coder.
 
 ## 3. Workflow & Approval Checkpoint
-1.  **Memory Handoff Protocol:** Read `.think-live/handover-context.json` (if it exists) to load session metadata.
-2.  Read the implemented UI files and review the guidelines in `.think-live/ui-config.md`.
-3.  **Validate Layout & Errors:** Use the `browser_subagent` tool to visually inspect the implemented UI. Instruct the subagent to actively check the browser console for JavaScript errors, CSS warnings, or missing assets (404s). Validate contrast, layout borders, text clipping, and responsive wrappers.
-4.  Draft a visual testing report in the chat. Include any console errors found by the subagent.
-5.  **Gate:** Read `.think-live/state.json`. If `"autonomous": true`, self-approve your work and proceed to the next step immediately. If `"autonomous": false`, wait for the user to review and reply with "Approved" or "Yes".
-6.  **Save Output:** Write the visual inspection log to `approved_docs/[feature_name].ui-test-report.md`.
-7.  **Handoff:**
+1.  **Memory Handoff Protocol:** Read `.think-live/handover-context.json` (if it exists) to load session metadata. Read `.think-live/ui-config.md`.
+2.  **Start Local Server:** Use your terminal tools (e.g., `run_command` with `python3 -m http.server 3000` in the background) to launch a temporary local web server.
+3.  **Visual Audit & Error Check (Subagent):** Invoke your `browser_subagent` tool to navigate to `http://localhost:3000`. **CRITICAL:** Explicitly instruct the subagent to actively check the browser console for JavaScript errors, CSS warnings, or missing assets (404s). Then instruct it to evaluate contrast, layout borders, text clipping, and responsive wrappers.
+4.  **Shutdown Server:** Kill the local server process using your `manage_task` tool after the browser subagent returns its report.
+5.  **Draft Report:** Draft a visual testing report in the chat detailing the browser subagent's findings and any console errors.
+6.  **Gate:** Read `.think-live/state.json`. If `"autonomous": true`, self-approve your work and proceed to the next step immediately. If `"autonomous": false`, wait for the user to review and reply with "Approved" or "Yes".
+7.  **Save Output:** Write the visual inspection log to `approved_docs/[feature_name].ui-test-report.md`.
+8.  **Handoff:**
     *   If any design/visual errors are found: Write a `.think-live/handover-context.json` detailing errors and transition to **B.1 Coder** (or **A.1 UI Designer** for redesign).
     *   If all checks pass: Write a `.think-live/handover-context.json` detailing success and transition to **D.2 Quality Tester**.
