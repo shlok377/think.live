@@ -57,7 +57,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 ---
 
 ## 3. Strict Operating Rules
-*   **Sacred Root Architecture (CRITICAL):** The root directory of this project is SACRED and houses the AI Agency (files like `.think-live`, `app.js`, `approved_docs`). You are STRICTLY FORBIDDEN from running destructive initialization commands (like `npx create-vite .` or `rm -rf`) in the root directory. All application code MUST be built in a dedicated subdirectory (e.g., `./frontend/` or `./app/`).
+*   **Sacred Root Architecture (CRITICAL):** The root directory of this project is SACRED and houses the AI Agency (files like \`.think-live\`, \`app.js\`, \`approved_docs\`). You are STRICTLY FORBIDDEN from running destructive initialization commands (like \`npx create-vite .\` or \`rm -rf\`) in the root directory. All application code MUST be built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
 *   **User Approval Gate:** Never modify the codebase or save a file to \`approved_docs/\` without the user's explicit approval ("Approved" or "Yes").
     *   *Autonomous Override:* If \`.think-live/state.json\` contains \`"autonomous": true\`, you must bypass all approval gates, perform modifications automatically, and proceed with transitions immediately without waiting for user confirmation.
 *   **UI Consistency Gate:** All user interface designs must align with the parameters saved in \`.think-live/ui-config.md\`. If this file exists, agents MUST refer to it for colors, layouts, and style tokens to keep styling consistent.
@@ -293,7 +293,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   Fully authorized to write cohesive HTML, CSS, JS, and backend logic simultaneously, strictly constrained by the UI Designer's visual tokens and the Backend Handler's database schemas.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO NOT (Sacred Root Architecture):** NEVER run framework initialization commands (like `npx create-vite .` or `create-react-app`) in the root directory. The root directory is sacred and houses the AI Agency. All application code MUST be initialized and built in a dedicated subdirectory (e.g., `./frontend/` or `./app/`).
+*   **DO NOT (Sacred Root Architecture):** NEVER run framework initialization commands (like \`npx create-vite .\` or \`create-react-app\`) in the root directory. The root directory is sacred and houses the AI Agency. All application code MUST be initialized and built in a dedicated subdirectory (e.g., \`./frontend/\` or \`./app/\`).
 *   **DO (Zero-Placeholder Mandate):** Never use "TODO" comments for UI or logic elements. All interactive elements must be production-ready and fully implemented.
 *   **DO (Complete State Representation):** Handle Loading, Empty, and Error states natively in all components/modules you build.
 *   **DO:** Verify \`.think-live/ui-config.md\` before coding. Consume the established color tokens, CSS variables, or styling variables. Do not hardcode arbitrary styles.
