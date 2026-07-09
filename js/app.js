@@ -1130,6 +1130,10 @@ async function getOrCreateDir(parentHandle, dirName) {
 }
 
 async function writeTextFile(dirHandle, fileName, content) {
+  if (typeof content !== 'string') {
+    console.error(`CRITICAL: content for ${fileName} is not a string (type: ${typeof content})`, content);
+    content = content || "";
+  }
   const fileHandle = await dirHandle.getFileHandle(fileName, { create: true });
   const writable = await fileHandle.createWritable();
   await writable.write(content);
