@@ -5,29 +5,27 @@ const TEMPLATES = {
 
 You are the Master Coordinator of this project. Your goal is to guide the development process by adopting the correct specialized agent persona.
 
-## 1. Dynamic Routing Protocol (Every Turn)
-*   **Step 1:** Read the user's input.
-*   **Step 2:** Scan \`approved_docs/\` to find the active feature and current task list (\`[feature].tasks.md\`).
-*   **Step 3:** Evaluate the **State Decision Matrix** below to determine which agent persona is needed *right now*.
-*   **Step 4:** Maintain Live TUI Monitor State:
-    *   On every prompt, update \`.think-live/state.json\` with the following structure:
-        *   \`active_agent\`: Folder name of your active persona (e.g. \`coder\`, \`starter\`, etc. or \`null\` if idle).
-        *   \`last_agent\`: Folder name of the previously active persona (or \`null\`).
-        *   \`active_doc\`: Path of the spec/task document from \`approved_docs/\` currently in use.
-        *   \`modified_files\`: Array of files you have modified in the current step/turn.
-        *   \`active_model\`: The model identifier used in this turn (e.g. \`"gemini-2.5-pro"\`, \`"gemini-2.5-flash"\`).
-        *   \`tokens_used\`: The number of tokens consumed by the last query/response.
-        *   \`context_usage\`: An optional breakdown object tracking token usage by categories (e.g. \`model\`, \`total_tokens\`, \`used_tokens\`, and a \`categories\` object mapping \`user_messages\`, \`agent_responses\`, \`tool_calls\`, \`system_prompt\`, \`system_tools\`, \`skills\`, \`subagents\` to their exact token numbers).
-*   **Step 5:** If a transition is needed:
-    *   Announce it: \`🔄 [Transition] Adopting persona: [Agent Name] ([Department Name])\`
-    *   Write a \`.think-live/handover-context.json\` file detailing:
-        *   \`last_agent\`: Folder name of the active persona handing off.
-        *   \`next_agent\`: Folder name of the persona being adopted.
-        *   \`what_was_tried\`: Array of actions performed or modifications made during this step.
-        *   \`failures_or_warnings\`: Array of errors, compilation warnings, or sandboxed limits encountered.
-        *   \`dependencies_or_assumptions\`: Array of logical or styling assumptions made.
-    *   Read that agent's instruction file under \`.think-live/departments/[agent_folder]/instructions.md\`.
-    *   Adopt the persona and execute the request.
+## 1. Command-Driven Hybrid State Machine (Every Turn)
+You operate in a Command-Driven Hybrid State Machine. You can navigate the agency manually using the following slash commands:
+
+### Slash Command Registry
+*   \`/route [agent_id]\` - Force transition to a target agent (e.g. \`/route coder\`). This updates \`state.json\` and adopts the new persona.
+*   \`/exec [skill_id]\` - Dynamically read instructions for a specific skill from \`.think-live/skills/[skill_id].md\` (e.g., \`/exec ui-styling\`). 
+*   \`/approve\` - Manually mark the current state's approval gate as complete.
+
+### Normal Routing Pipeline
+If no slash command is run, evaluate the **State Decision Matrix** below to determine the next agent:
+1. Scan \`approved_docs/\` to find the active feature and current task list (\`[feature].tasks.md\`).
+2. Update \`.think-live/state.json\` with the active agent, last agent, modified files, active spec doc, and model details.
+3. If changing agents:
+   - Announce: \`🔄 [Transition] Adopting persona: [Agent Name] ([Department Name])\`
+   - Write \`.think-live/handover-context.json\` detailing:
+     - \`last_agent\`: Folder name of the active persona handing off.
+     - \`next_agent\`: Folder name of the persona being adopted.
+     - \`what_was_tried\`: Actions performed or modifications made.
+     - \`failures_or_warnings\`: Errors or limits encountered.
+   - Run hooks verification. Transitions leaving \`coder\` or entering \`security_auditor\` run automated verification hooks. If hooks fail, the state reverts and a \`transition-failure.md\` report is outputted.
+   - Read \`.think-live/departments/[agent_id]/instructions.md\`.
 
 ---
 
@@ -68,22 +66,24 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
   director: `# D.1 Director (Product & Quality Department)
 
 ## 1. Focus & Scope
-*   Acts as the Product Director (CEO) to define the business value, user flow, and overall product strategy before technical architecture begins.
-*   Ensures that features being built actually serve the target audience and aren't just "pointless features."
+*   Acts as the Product Director (CEO) to define business value, user flow, and overall product strategy before technical architecture begins.
+*   Syncs GitHub issues dynamically into product backlog tasks.
 
 ## 2. Guidelines (DOs & DONTs)
+*   **DO (GitHub Issue Integration):** If \`.think-live/github-creds.json\` exists, fetch active open issues using:
+    \`curl -H "Authorization: token <TOKEN>" https://api.github.com/repos/<OWNER>/<REPO>/issues\`
+*   **DO:** Transform reported GitHub issues directly into sprint user stories inside \`product-alignment.md\`.
 *   **DO:** Ask challenging questions about the user's intent to refine the product vision.
-*   **DO:** Define clear target audiences and primary user journeys.
 *   **DO NOT:** Write technical architecture, tech stacks, or implementation code.
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` (if it exists) to load session metadata.
-2.  Read the user's raw idea from the prompt.
-3.  Draft the product alignment, business value, and user flow in the chat.
-4.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review the proposal and reply with "Approved" or "Yes".
-5.  **Save Output:** Write the approved product strategy to \`approved_docs/[feature_name].product-alignment.md\`.
-6.  **Handoff:** Before handing off, write a \`.think-live/handover-context.json\` detailing what you decided and assumptions made. Transition to **C.1 Starter**.
-`,
+2.  **GitHub Issue Check:** If configured, check open issues on GitHub to incorporate into the product roadmap.
+3.  **Long-Term Memory:** Read \`.think-live/memory-graph.json\` to recall past architectural decisions and design preferences.
+4.  Draft a \`product-alignment.md\` document in the chat detailing target user, value prop, and core features.
+5.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve work and proceed immediately. If \`"autonomous": false\`, wait for user approval.
+6.  **Save Output:** Write approved strategy to \`approved_docs/[feature_name].product-alignment.md\`.
+7.  **Handoff:** Write \`.think-live/handover-context.json\` detailing decisions made. Transition to **C.1 Starter**.`,
 
   // C.1 Starter
   starter: `# C.1 Starter (Architecture Department)
@@ -357,8 +357,8 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
-2.  Read the active coding tasks in \`approved_docs/[feature_name].tasks.md\` and review the codebase changes.
-3.  Perform the OWASP and STRIDE security audit.
+2.  Read the security audit report automatically generated at \`.think-live/security-report.json\` by the automated scan.
+3.  Perform the OWASP and STRIDE security audit, combining the automated scan's warnings with your structural analysis of the codebase.
 4.  **Routing Gate (Vulnerabilities Found):** If high-confidence vulnerabilities exist, write a \`.think-live/handover-context.json\` detailing the Exploit Scenarios and transition immediately back to **B.1 Coder** so the holes can be patched. (Skip the remaining steps).
 5.  **Routing Gate (Secure):** If the codebase is secure, draft a formal security sign-off report in the chat.
 6.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
@@ -370,26 +370,35 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
   git_guy: `# B.2 Git Guy (Programming Department)
 
 ## 1. Focus & Scope
-*   Acts as the Release Engineer.
-*   Enforces test execution, branch hygiene, and conventional commits.
-*   Updates \`.think-live/CHANGELOG.md\`.
-*   Manages branches, stage files, commits changes, and pushes remote pull requests.
+*   Acts as the Release & DevOps Engineer.
+*   Enforces test execution, branch hygiene, conventional commits, and automated GitHub PR creation.
+*   Reads active issues and links them in commits (\`Fixes #<issue_number>\`).
+*   Manages branches, stages files, commits changes, and opens remote Pull Requests directly via GitHub REST API.
 
 ## 2. Guidelines (DOs & DONTs)
+*   **DO (Branch Management):** Always create and checkout a clean, descriptive feature branch before working on a sprint (e.g. \`feat/issue-12-bento-dashboard\` or \`fix/passcode-lockout\`).
+*   **DO (GitHub API Authentication):** Read \`.think-live/github-creds.json\` if present. Use the \`github_token\`, \`github_username\`, and \`github_repo\` variables to interact with the API.
+*   **DO (GitHub Pull Request Creation):** Use \`curl\` to open a Pull Request automatically after pushing your feature branch:
+    \\\`\\\`\\\`bash
+    curl -X POST -H "Authorization: token <TOKEN>" -H "Accept: application/vnd.github+json" \\\\
+      https://api.github.com/repos/<OWNER>/<REPO>/pulls \\\\
+      -d '{"title":"feat: <Sprint Title>","head":"<FEATURE_BRANCH>","base":"main","body":"Automated PR submitted by think.live Git Guy."}'
+    \\\`\\\`\\\`
+*   **DO (GitHub Issue Closing):** Include \`Fixes #<issue_number>\` in the commit message or PR description to close related issues automatically when merged.
 *   **DO (Test Enforcement):** Autonomously run the project's build/compile/test command before committing any changes. If tests fail, abort and route back to Coder.
-*   **DO (Changelog Updates):** Automatically append the latest updates to \`.think-live/CHANGELOG.md\` based on the PR description.
-*   **DO:** Enforce Conventional Commits format for all commits.
+*   **DO (Changelog Updates):** Automatically append the latest updates to \`.think-live/CHANGELOG.md\`.
 *   **DO NOT:** Run \`git push --force\` or overwrite commit history without explicit user permission.
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read \`.think-live/handover-context.json\` to load session metadata.
 2.  Read \`approved_docs/[feature_name].pr-request.md\`. Run automated tests/build steps.
-3.  Update \`.think-live/CHANGELOG.md\`.
-4.  Draft the exact git commands you plan to execute in the chat.
-5.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work and proceed to the next step immediately. If \`"autonomous": false\`, wait for the user to review and reply with "Approved" or "Yes".
-6.  **Execute & Update:** Execute the commands. Update the task checklist status in \`approved_docs/[feature_name].tasks.md\`.
-7.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing what you decided and assumptions made. Transition to standby or next target agent.
-`,
+3.  Read \`.think-live/github-creds.json\` if available.
+4.  Checkout a feature branch, commit changes with conventional commit syntax, push to remote repository.
+5.  Create a Pull Request via GitHub REST API.
+6.  Update \`.think-live/CHANGELOG.md\`.
+7.  **Gate:** Read \`.think-live/state.json\`. If \`"autonomous": true\`, self-approve your work. If \`"autonomous": false\`, wait for user approval.
+8.  **Execute & Update:** Execute commands and update task checklist in \`approved_docs/[feature_name].tasks.md\`.
+9.  **Handoff:** Write a \`.think-live/handover-context.json\` detailing PR URL and branch created. Transition to standby.`,
 
   memory_archivist: `# D.4 Memory Archivist (Product & Quality Department)
 
@@ -399,7 +408,10 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 *   Distills the architectural decisions, design tokens, and user preferences from the sprint into \`.think-live/memory-graph.json\`.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO (Graph Updates):** Read the existing \`.think-live/memory-graph.json\`. Add new \`entities\` and \`relationships\` to it based on the recent sprint.
+*   **DO (Strict Schema):** Follow this exact schema for \`.think-live/memory-graph.json\`:
+    *   \`entities\`: Array of objects: \`{"id": "unique-slug", "type": "technology|preference|architecture|agent", "name": "Human Name", "description": "Short explanation"}\`
+    *   \`relationships\`: Array of objects: \`{"source": "entity-id-1", "target": "entity-id-2", "type": "uses|prefers|depends-on|implements", "description": "Context"}\`
+*   **DO (Graph Updates):** Read the existing \`.think-live/memory-graph.json\`. Add new \`entities\` and \`relationships\` to it based on the recent sprint. Do not duplicate existing IDs.
 *   **DO (Strict JSON):** Ensure the updated graph is 100% valid JSON with no trailing commas.
 *   **DO (Focus on Reusability):** Only store high-level reusable knowledge (e.g., "User prefers Tailwind", "Database uses Supabase", "Auth uses JWT"). Do not store code snippets or granular task lists.
 *   **DO NOT:** Edit code files.
@@ -442,7 +454,7 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 ## 2. Guidelines (DOs & DONTs)
 *   **DO NOT (No UI Changes):** Strictly DO NOT clone files to a showcase folder, DO NOT wrap the UI in bezels, and DO NOT add entry animations to DOM elements. The original UI must remain 100% structurally intact.
 *   **DO (URL Demo Mode):** Inject a script into the main project (e.g., \`index.html\`) that checks the URL. The automated demo and GSAP libraries MUST ONLY load and execute if \`?demo=true\` is present in the URL.
-*   **DO (Expressive Virtual Cursor):** Inject a mock cursor element. Parse \`showcase-script.json\` and animate it. The cursor animations should be fun, fluid, bouncy, and highly expressive. It must clearly visually indicate different actions (e.g., left click, right click, scroll, pinch, pan, resize, type) using distinct, intuitive micro-animations.
+*   **DO (Expressive Virtual Cursor):** Inject a mock cursor element. Parse \`showcase-script.json\` and animate it. The cursor animations should be fun, fluid, bouncy, and highly expressive, visually indicating actions (left click, right click, scroll, pinch, pan, resize, type) using micro-animations. **CRITICAL:** If the user asks to modify the demo, those revisions MUST strictly be applied to the cursor animations and timeline, NEVER to the actual project layout or product UI files.
 *   **DO (Cinematic Camera & Smooth Panning):** The camera (viewport) MUST smoothly follow the cursor. DO NOT snap the camera instantly! When the cursor moves, simultaneously animate the camera's \`transformOrigin\` or \`x/y\` translations using a long duration (e.g., \`duration: 1.5, ease: "power3.out"\`). Make occasional **DRAMATIC** zooms (use \`scale: 1.5\` to \`2.0\`) so the user feels the depth.
 *   **DO (Mock Backends):** If in demo mode, replace active fetch calls with hardcoded mock responses so the animation runs perfectly static.
 
@@ -458,12 +470,16 @@ You are the Master Coordinator of this project. Your goal is to guide the develo
 
 For EVERY single user message, you MUST:
 1. Scan .think-live/state.json and approved_docs/ to evaluate the current state.
-2. Cross-reference with the State Decision Matrix in .think-live/agency.md to determine the target agent.
-3. Announce your transition in the format: 🔄 [Transition] Adopting persona: [Agent Name] ([Department Name])
-4. Update .think-live/state.json to reflect the active agent, last agent, active doc, and modified files.
-5. Locate and execute that agent's instructions at .think-live/departments/[agent_id]/instructions.md.
+2. If the user invokes a slash command, execute it immediately:
+   - \`/route [agent_id]\`: Transition to the specified agent ID, update the active_agent in state.json, announce it, and load their instructions.
+   - \`/exec [skill_id]\`: Read the skill instructions at .think-live/skills/[skill_id].md and adopt them as supplementary rules.
+   - \`/approve\`: Approve the current gate, update state.json to bypass approval blocks.
+3. If no command is run, evaluate the State Decision Matrix in .think-live/agency.md to determine the target agent.
+4. Announce transitions: 🔄 [Transition] Adopting persona: [Agent Name] ([Department Name])
+5. Update .think-live/state.json (active_agent, last_agent, active_doc, modified_files, tokens_used, active_model).
+6. Locate and execute that agent's instructions at .think-live/departments/[agent_id]/instructions.md.
 
-Never break character or ask "What should I do next?" without first adopting the correct persona and updating the state JSON.
+Never break character or ask "What should I do next?" without adopting the correct persona and updating the state JSON.
 `,
 
   // Tasks auto-run
@@ -506,16 +522,241 @@ node .think-live\\tui.js
 require('./.think-live/tui.js');
 `,
 
+  hooksRuntime: `const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+const WORKSPACE_DIR = path.resolve(__dirname, '..');
+const HOOKS_CONFIG_PATH = path.join(WORKSPACE_DIR, '.think-live', 'hooks.json');
+
+if (!fs.existsSync(HOOKS_CONFIG_PATH)) {
+  const defaultHooks = {
+    "coder": {
+      "post": "npm test"
+    },
+    "security_auditor": {
+      "pre": "node .think-live/scripts/security-audit.js"
+    }
+  };
+  fs.writeFileSync(HOOKS_CONFIG_PATH, JSON.stringify(defaultHooks, null, 2), 'utf8');
+}
+
+const fromAgent = process.argv[2];
+const toAgent = process.argv[3];
+
+if (!fromAgent || !toAgent) {
+  console.error("Usage: node hooks-runtime.js <fromAgent> <toAgent>");
+  process.exit(1);
+}
+
+let hooks = {};
+try {
+  hooks = JSON.parse(fs.readFileSync(HOOKS_CONFIG_PATH, 'utf8'));
+} catch (err) {
+  console.error("Failed to parse hooks.json:", err.message);
+}
+
+function runCommand(cmd) {
+  try {
+    console.log(\`Running hook command: \${cmd}\`);
+    execSync(cmd, { cwd: WORKSPACE_DIR, stdio: 'pipe' });
+    return { success: true };
+  } catch (err) {
+    const errorMsg = err.stdout ? err.stdout.toString() : "";
+    const errorStderr = err.stderr ? err.stderr.toString() : "";
+    return {
+      success: false,
+      error: (errorMsg + "\\n" + errorStderr + "\\n" + err.message).trim()
+    };
+  }
+}
+
+if (hooks[fromAgent] && hooks[fromAgent].post) {
+  const cmd = hooks[fromAgent].post;
+  if (cmd === 'npm test' && !fs.existsSync(path.join(WORKSPACE_DIR, 'package.json'))) {
+    console.log("No package.json found. Skipping npm test hook.");
+  } else {
+    const res = runCommand(cmd);
+    if (!res.success) {
+      console.error(\`Post-hook failed for \${fromAgent}:\`);
+      console.error(res.error);
+      process.exit(1);
+    }
+  }
+}
+
+if (hooks[toAgent] && hooks[toAgent].pre) {
+  const cmd = hooks[toAgent].pre;
+  if (cmd.includes('security-audit.js') && !fs.existsSync(path.join(WORKSPACE_DIR, '.think-live', 'scripts', 'security-audit.js'))) {
+    console.log("Security audit script not found. Skipping.");
+  } else {
+    const res = runCommand(cmd);
+    if (!res.success) {
+      console.error(\`Pre-hook failed for \${toAgent}:\`);
+      console.error(res.error);
+      process.exit(1);
+    }
+  }
+}
+
+console.log("All validation hooks passed successfully.");
+process.exit(0);
+`,
+
+  securityAudit: `const fs = require('fs');
+const path = require('path');
+
+const WORKSPACE_DIR = path.resolve(__dirname, '..', '..');
+const STATE_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'state.json');
+const REPORT_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'security-report.json');
+
+let filesToScan = [];
+try {
+  if (fs.existsSync(STATE_FILE_PATH)) {
+    const state = JSON.parse(fs.readFileSync(STATE_FILE_PATH, 'utf8'));
+    if (state.modified_files && state.modified_files.length > 0) {
+      filesToScan = state.modified_files.map(f => path.resolve(WORKSPACE_DIR, f));
+    }
+  }
+} catch (err) {
+  console.warn("Failed to read modified files from state.json:", err.message);
+}
+
+if (filesToScan.length === 0) {
+  function getFiles(dir) {
+    let results = [];
+    const list = fs.readdirSync(dir);
+    list.forEach(file => {
+      if (file.startsWith('.') || file === 'node_modules' || file === 'temp') return;
+      const fullPath = path.join(dir, file);
+      const stat = fs.statSync(fullPath);
+      if (stat && stat.isDirectory()) {
+        results = results.concat(getFiles(fullPath));
+      } else {
+        if (file.endsWith('.js') || file.endsWith('.html') || file.endsWith('.css')) {
+          results.push(fullPath);
+        }
+      }
+    });
+    return results;
+  }
+  filesToScan = getFiles(WORKSPACE_DIR);
+}
+
+const vulnerabilities = [];
+
+filesToScan.forEach(filePath => {
+  if (!fs.existsSync(filePath)) return;
+  const relPath = path.relative(WORKSPACE_DIR, filePath);
+  const content = fs.readFileSync(filePath, 'utf8');
+  const lines = content.split('\\n');
+
+  lines.forEach((line, idx) => {
+    const lineNum = idx + 1;
+
+    if (line.includes('innerHTML') && !line.includes('DOMPurify')) {
+      vulnerabilities.push({
+        file: relPath,
+        line: lineNum,
+        severity: 'HIGH',
+        type: 'XSS Risk (innerHTML)',
+        description: 'Possible Cross-Site Scripting (XSS) via innerHTML. Use textContent or DOMPurify.'
+      });
+    }
+    if (line.includes('eval(')) {
+      vulnerabilities.push({
+        file: relPath,
+        line: lineNum,
+        severity: 'HIGH',
+        type: 'Unsafe Code Execution (eval)',
+        description: 'Avoid using eval() for security reasons.'
+      });
+    }
+
+    const secretRegex = /(api[_-]?key|password|secret|token|private[_-]?key)\\s*=\\s*(["\`])[A-Za-z0-9_\\-\\.\\/]{8,}\\2/i;
+    if (secretRegex.test(line)) {
+      vulnerabilities.push({
+        file: relPath,
+        line: lineNum,
+        severity: 'CRITICAL',
+        type: 'Hardcoded Secret',
+        description: 'Possible hardcoded API key, token, or password found.'
+      });
+    }
+  });
+});
+
+const report = {
+  scan_time: new Date().toISOString(),
+  total_files_scanned: filesToScan.length,
+  vulnerabilities_found: vulnerabilities.length,
+  vulnerabilities: vulnerabilities
+};
+
+fs.writeFileSync(REPORT_FILE_PATH, JSON.stringify(report, null, 2), 'utf8');
+
+if (vulnerabilities.length > 0) {
+  console.log(\`Security Scan completed: Found \${vulnerabilities.length} vulnerabilities! Report written to security-report.json\`);
+  process.exit(1);
+} else {
+  console.log("Security Scan completed: No issues found!");
+  process.exit(0);
+}
+`,
+
+  skillGit: `# Git Management Skill
+
+This skill governs standard branching, committing, and conflict resolution protocols for this agency.
+
+## 1. Commit Messages
+- Format: \`<type>(<scope>): <short summary>\`
+- Types: \`feat\`, \`fix\`, \`docs\`, \`style\`, \`refactor\`, \`test\`, \`chore\`.
+- Keep the subject line under 50 characters.
+
+## 2. Safe Stashing
+- Before running pulls, stash any modified work using \`git stash\`.
+- Pop immediately after the merge: \`git stash pop\`.
+`,
+
+  skillUi: `# UI & Layout Bento Design Skill
+
+This skill governs styling patterns, responsiveness, and Bento layouts.
+
+## 1. Flex & Grid Bento Rules
+- Always use \`grid\` for major landing wrappers: \`display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;\`.
+- Set container \`overflow: hidden\` for glassmorphism panels.
+
+## 2. Styling Tokens
+- Canvas background: \`#ffffff\` (White Mode) or \`#0f172a\` (Dark Mode).
+- Colors: blue (\`#2285f2\`), orange-red (\`#ff4e20\`), yellow-gold (\`#ffa826\`), lime (\`#a4d800\`), purple (\`#9d4edd\`).
+- Typography: Use Google Fonts (Inter, Outfit) instead of browser defaults.
+`,
+
+  skillSecurity: `# Security & Input Sanitization Skill
+
+This skill governs safe coding patterns, client-side input validations, and threat mitigation.
+
+## 1. Cross-Site Scripting (XSS) Prevention
+- Never write raw \`element.innerHTML = user_input\` or \`document.write\`.
+- Always sanitize inputs or use \`element.textContent\` to prevent script execution.
+
+## 2. Defensive Bounds Validation
+- Always use \`.trim()\` on text inputs.
+- Validate bounds on number fields (e.g. \`Math.min\`, checking for negative values).
+`,
+
   // TUI Monitor source code template
   tui: `const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const { exec } = require('child_process');
+const http = require('http');
 
 // File paths for synchronization
 const WORKSPACE_DIR = path.resolve(__dirname, '..');
 const STATE_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'state.json');
 
-// Enable raw mode to capture 'q' or Ctrl+C to exit cleanly
+// Enable raw mode to capture keyboard shortcuts
 if (process.stdin.isTTY) {
   readline.emitKeypressEvents(process.stdin);
   process.stdin.setRawMode(true);
@@ -526,14 +767,19 @@ if (process.stdin.isTTY) {
       toggleAutonomousMode();
     } else if (key.name === 'g') {
       toggleGitMode();
+    } else if (key.name === 's') {
+      toggleLocalServer();
     }
   });
 }
 
 // Ensure clean exit (show cursor, clear screen, restore stdout)
 function cleanupAndExit() {
-  process.stdout.write('\\x1B[?25h'); // Show cursor
-  process.stdout.write('\\x1B[0m');    // Reset colors
+  process.stdout.write('\\x1B[?25h');
+  process.stdout.write('\\x1B[0m');
+  if (localServer) {
+    try { localServer.close(); } catch (e) {}
+  }
   console.clear();
   process.exit(0);
 }
@@ -551,6 +797,10 @@ let activeState = {
   autonomous: false,
   git_enabled: false
 };
+
+// Hook tracking variables
+let isRunningHooks = false;
+let hookError = '';
 
 // Department Structure Config
 const DEPARTMENTS = [
@@ -615,7 +865,7 @@ function toggleAutonomousMode() {
   try {
     const currentState = { ...activeState };
     currentState.autonomous = !currentState.autonomous;
-    fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(currentState, null, 2), \'utf8\');
+    fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(currentState, null, 2), 'utf8');
     activeState = currentState;
     renderTUI();
   } catch (err) {
@@ -627,7 +877,7 @@ function toggleGitMode() {
   try {
     const currentState = { ...activeState };
     currentState.git_enabled = !currentState.git_enabled;
-    fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(currentState, null, 2), \'utf8\');
+    fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(currentState, null, 2), 'utf8');
     activeState = currentState;
     renderTUI();
   } catch (err) {
@@ -635,21 +885,125 @@ function toggleGitMode() {
   }
 }
 
-function formatTokens(n) {
-  if (n >= 1000000) {
-    return (n / 1000000).toFixed(1) + \'M\';
+// Zero-dependency HTTP static server
+let localServer = null;
+let localServerPort = 3000;
+
+function startLocalServer() {
+  if (localServer) return;
+  const server = http.createServer((req, res) => {
+    let reqPath = decodeURIComponent(req.url);
+    let filePath = path.join(WORKSPACE_DIR, reqPath === '/' ? '' : reqPath);
+    if (!filePath.startsWith(WORKSPACE_DIR)) {
+      res.statusCode = 403;
+      res.end('Forbidden');
+      return;
+    }
+    if (fs.existsSync(filePath)) {
+      const stat = fs.statSync(filePath);
+      if (stat.isDirectory()) {
+        const indexHtml = path.join(filePath, 'index.html');
+        if (fs.existsSync(indexHtml)) {
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          fs.createReadStream(indexHtml).pipe(res);
+        } else {
+          const files = fs.readdirSync(filePath);
+          const projects = [];
+          files.forEach(f => {
+            if (f.startsWith('.') || f === 'node_modules' || f === 'temp') return;
+            const sub = path.join(filePath, f);
+            if (fs.statSync(sub).isDirectory()) {
+              if (fs.existsSync(path.join(sub, 'index.html'))) {
+                projects.push(f);
+              }
+            }
+          });
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(\`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>think.live Portal</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+              <style>
+                body { font-family: 'Outfit', sans-serif; background-color: #0f172a; color: #e2e8f0; margin: 0; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+                .container { max-width: 600px; width: 100%; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
+                h1 { margin-top: 0; color: #38bdf8; font-weight: 600; text-align: center; }
+                p { color: #94a3b8; text-align: center; }
+                .list { display: flex; flex-direction: column; gap: 15px; margin-top: 25px; }
+                .item { background: rgba(255, 255, 255, 0.05); padding: 18px 24px; border-radius: 16px; text-decoration: none; color: #f1f5f9; font-weight: 600; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease; border: 1px solid transparent; }
+                .item:hover { background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; transform: translateY(-2px); }
+                .arrow { color: #38bdf8; font-size: 18px; }
+                .badge { background: #0284c7; font-size: 11px; padding: 3px 8px; border-radius: 8px; color: white; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <h1>think.live Workspace Portal</h1>
+                <p>Select a project subfolder built by the agency below to run it:</p>
+                <div class="list">
+                  \\\${projects.map(p => \\\`
+                    <a href="/\\\${p}/" class="item">
+                      <span>📂 \\\${p}</span>
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="badge">Active Project</span>
+                        <span class="arrow">➔</span>
+                      </div>
+                    </a>
+                  \\\`).join('') || '<div style="text-align:center;color:#64748b;">No projects with index.html found. Start a sprint to generate one!</div>'}
+                </div>
+              </div>
+            </body>
+            </html>
+          \`);
+        }
+      } else if (stat.isFile()) {
+        const ext = path.extname(filePath).toLowerCase();
+        let contentType = 'text/plain';
+        if (ext === '.html') contentType = 'text/html';
+        else if (ext === '.css') contentType = 'text/css';
+        else if (ext === '.js') contentType = 'text/javascript';
+        else if (ext === '.json') contentType = 'application/json';
+        else if (ext === '.png') contentType = 'image/png';
+        else if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
+        else if (ext === '.svg') contentType = 'image/svg+xml';
+        res.writeHead(200, { 'Content-Type': contentType });
+        fs.createReadStream(filePath).pipe(res);
+      }
+    } else {
+      res.statusCode = 404;
+      res.end('Not Found');
+    }
+  });
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      localServerPort++;
+      server.listen(localServerPort);
+    }
+  });
+  server.listen(localServerPort, () => {
+    localServer = server;
+    renderTUI();
+  });
+}
+
+function toggleLocalServer() {
+  if (localServer) {
+    localServer.close(() => {
+      localServer = null;
+      renderTUI();
+    });
+  } else {
+    startLocalServer();
   }
-  if (n >= 1000) {
-    return (n / 1000).toFixed(1) + \'k\';
-  }
-  return n.toString();
 }
 
 function drawCircleBar(percent) {
   const total = 16;
   const filled = Math.min(total, Math.max(0, Math.round((percent / 100) * total)));
   const empty = total - filled;
-  return GREEN + \'◉ \'.repeat(filled) + RESET + DIM + \'□ \'.repeat(empty) + RESET;
+  return GREEN + '◉ '.repeat(filled) + RESET + DIM + '□ '.repeat(empty) + RESET;
 }
 
 const HANDOVER_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'handover-context.json');
@@ -661,17 +1015,64 @@ let activeHandover = null;
 let trackerStats = { exists: false, completed: 0, total: 0 };
 
 function checkState() {
+  if (isRunningHooks) return;
+
   try {
     let stateChanged = false;
     if (fs.existsSync(STATE_FILE_PATH)) {
       const data = fs.readFileSync(STATE_FILE_PATH, 'utf8');
       if (data !== lastJsonStr) {
+        const nextState = JSON.parse(data);
+        const prevAgent = activeState.active_agent;
+        const nextAgent = nextState.active_agent;
+        
+        hookError = '';
+
+        if (prevAgent && nextAgent && prevAgent !== nextAgent) {
+          isRunningHooks = true;
+          renderTUI();
+          
+          const hooksScript = path.join(WORKSPACE_DIR, '.think-live', 'hooks-runtime.js');
+          exec(\`node "\${hooksScript}" "\${prevAgent}" "\${nextAgent}"\`, (err, stdout, stderr) => {
+            isRunningHooks = false;
+            if (err) {
+              const revertedState = {
+                ...nextState,
+                active_agent: prevAgent,
+                last_agent: nextState.last_agent,
+                error_feedback: (stdout + '\\n' + stderr).trim()
+              };
+              fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(revertedState, null, 2), 'utf8');
+              
+              const errorFile = path.join(WORKSPACE_DIR, 'approved_docs', 'transition-failure.md');
+              fs.writeFileSync(errorFile, \`# 🔄 Transition Failure
+
+Transition from **\${prevAgent}** to **\${nextAgent}** was BLOCKED by automated verification hooks.
+
+### Output Log:
+\\\`\\\`\\\`
+\${stdout}
+\${stderr}
+\\\`\\\`\\\`
+
+Please address the issues before attempting the transition again.\`, 'utf8');
+              
+              hookError = \`Blocked transition from \${prevAgent} to \${nextAgent}!\`;
+              renderTUI();
+            } else {
+              lastJsonStr = data;
+              activeState = nextState;
+              renderTUI();
+            }
+          });
+          return;
+        }
+
         lastJsonStr = data;
-        activeState = JSON.parse(data);
+        activeState = nextState;
         stateChanged = true;
       }
     } else {
-      // Default empty state if file not created yet
       const defaultState = JSON.stringify({
         active_agent: null,
         last_agent: null,
@@ -722,12 +1123,9 @@ function checkState() {
     if (stateChanged) {
       renderTUI();
     }
-  } catch (err) {
-    // Ignore read/parse errors during write transition
-  }
+  } catch (err) {}
 }
 
-// ANSI Escape Codes for formatting
 const RESET = '\\x1b[0m';
 const BOLD = '\\x1b[1m';
 const DIM = '\\x1b[2m';
@@ -735,26 +1133,19 @@ const GREEN = '\\x1b[32m';
 const YELLOW = '\\x1b[33m';
 const BLUE = '\\x1b[34m';
 const MAGENTA = '\\x1b[35m';
-const CYAN = '\\x1b[36m';
 const RED = '\\x1b[31m';
-const GRAY = '\\x1b[90m';
-const BG_DARK_GRAY = '\\x1b[100m';
 
-// Format strings to fit column widths
 function padEnd(str, length) {
-  const cleanStr = str.replace(/\\x1b\\[[0-9;]*m/g, ''); // Remove ANSI codes for correct length calc
+  const cleanStr = str.replace(/\\x1b\\[[0-9;]*m/g, '');
   const diff = length - cleanStr.length;
   return str + (diff > 0 ? ' '.repeat(diff) : '');
 }
 
-// Draw the screen
 function renderTUI() {
-  // Clear the screen and move cursor to top-left
   process.stdout.write('\\x1B[2J\\x1B[H');
 
   const width = 80;
   
-  // Header Panel
   console.log(BOLD + BLUE + '┌' + '─'.repeat(width - 2) + '┐' + RESET);
   const leftHeader = '  think.live AGENCY MONITOR';
   const rightHeader = '● LIVE RUNNING';
@@ -762,9 +1153,7 @@ function renderTUI() {
   const gitLabel = activeState.git_enabled ? 'GIT: ON' : 'GIT: OFF';
   const modeColor = activeState.autonomous ? GREEN : YELLOW;
   const gitColor = activeState.git_enabled ? GREEN : RED;
-  const centerHeader = \'[\' + modeLabel + \'] [\' + gitLabel + \']\';
   const leftLen = leftHeader.length;
-  // centerLen matches uncolored string length: "[AUTONOMOUS ⚡] [GIT: OFF]"
   const modeLen = activeState.autonomous ? 15 : 11;
   const gitLen = activeState.git_enabled ? 10 : 11;
   const centerLen = modeLen + gitLen;
@@ -774,128 +1163,120 @@ function renderTUI() {
   const halfSpaces = Math.floor(totalSpaces / 2);
   const leftPadding = ' '.repeat(halfSpaces);
   const rightPadding = ' '.repeat(totalSpaces - halfSpaces);
-  console.log(BOLD + BLUE + '│' + RESET + BOLD + leftHeader + leftPadding + modeColor + \'[\' + modeLabel + \'] \' + gitColor + \'[\' + gitLabel + \']\' + RESET + BOLD + rightPadding + GREEN + rightHeader + ' ' + RESET + BOLD + BLUE + ' │' + RESET);
+  console.log(BOLD + BLUE + '│' + RESET + BOLD + leftHeader + leftPadding + modeColor + '[' + modeLabel + '] ' + gitColor + '[' + gitLabel + ']' + RESET + BOLD + rightPadding + GREEN + rightHeader + ' ' + RESET + BOLD + BLUE + ' │' + RESET);
   console.log(BOLD + BLUE + '└' + '─'.repeat(width - 2) + '┘' + RESET);
 
-  // Left Column (Departments) vs Right Column (Status details)
-  // Left col: 34 chars, Right col: 42 chars
   const separator = BOLD + BLUE + ' │ ' + RESET;
-
-  const lines = [];
-
-  // 1. Compile Department lists
   const deptLines = [];
   DEPARTMENTS.forEach(dept => {
-    deptLines.push(BOLD + CYAN + \'[\' + dept.name + \']\' + RESET);
+    deptLines.push(BOLD + MAGENTA + '[' + dept.name + ']' + RESET);
     dept.agents.forEach(agent => {
       const isActive = activeState.active_agent === agent.id;
       const isLast = activeState.last_agent === agent.id;
 
-      let prefix = \'  \';
-      let nameStr = agent.code + \' \' + agent.name;
-      let suffix = \'\';
+      let prefix = '  ';
+      let nameStr = agent.code + ' ' + agent.name;
+      let suffix = '';
 
       if (isActive) {
-        prefix = GREEN + \'▶ \' + RESET;
+        prefix = GREEN + '▶ ' + RESET;
         nameStr = BOLD + GREEN + nameStr + RESET;
-        suffix = BOLD + GREEN + \' (ACTIVE) 🤖\' + RESET;
+        suffix = BOLD + GREEN + ' (ACTIVE) 🤖' + RESET;
       } else if (isLast) {
-        prefix = YELLOW + \'↩ \' + RESET;
+        prefix = YELLOW + '↩ ' + RESET;
         nameStr = YELLOW + nameStr + RESET;
-        suffix = YELLOW + \' (LAST)\' + RESET;
+        suffix = YELLOW + ' (LAST)' + RESET;
       } else {
         nameStr = DIM + nameStr + RESET;
       }
-
       deptLines.push(prefix + nameStr + suffix);
     });
-    deptLines.push(\'\');
+    deptLines.push('');
   });
 
-  // 2. Compile Right side panels
   const rightLines = [];
-  rightLines.push(BOLD + MAGENTA + \'┌─ CURRENT RUN STATE ───────────────────────┐\' + RESET);
-  
+  rightLines.push(BOLD + BLUE + '┌─ CURRENT RUN STATE ───────────────────────┐' + RESET);
   const activeDetail = findAgentDetails(activeState.active_agent);
   const lastDetail = findAgentDetails(activeState.last_agent);
 
-  rightLines.push(BOLD + \'  Currently Active: \' + RESET + (activeDetail ? GREEN + BOLD + activeDetail.name + \' (\' + activeDetail.code + \') ⚡\' + RESET : DIM + \'Standby / Idle\' + RESET));
-  rightLines.push(BOLD + \'  Last Used Agent:  \' + RESET + (lastDetail ? YELLOW + lastDetail.name + \' (\' + lastDetail.code + \')\' + RESET : DIM + \'None\' + RESET));
-  rightLines.push(BOLD + \'  Active Spec Doc:  \' + RESET + BLUE + (activeState.active_doc || \'None\') + RESET);
-  rightLines.push(BOLD + MAGENTA + \'└───────────────────────────────────────────┘\' + RESET);
-  rightLines.push(\'\');
-
-  rightLines.push(BOLD + MAGENTA + \'┌─ RECENT CHANGED FILES ────────────────────┐\' + RESET);
-  if (activeState.modified_files && activeState.modified_files.length > 0) {
-    activeState.modified_files.slice(-5).forEach(file => {
-      rightLines.push(\'  \' + GREEN + \'✚\' + RESET + \' \' + file);
-    });
-    // Pad to 5 lines
-    for (let i = activeState.modified_files.length; i < 5; i++) {
-      rightLines.push(\'  \');
-    }
+  if (isRunningHooks) {
+    rightLines.push(BOLD + YELLOW + '  ▶ Status: RUNNING VERIFICATION HOOKS...   ' + RESET);
+  } else if (hookError) {
+    rightLines.push(BOLD + RED + '  ▶ Status: VERIFICATION BLOCKED            ' + RESET);
   } else {
-    rightLines.push(\'  \' + DIM + \'No files modified in last prompt.\' + RESET);
-    rightLines.push(\'  \');
-    rightLines.push(\'  \');
-    rightLines.push(\'  \');
-    rightLines.push(\'  \');
+    rightLines.push(BOLD + '  Currently Active: ' + RESET + (activeDetail ? GREEN + BOLD + activeDetail.name + ' (' + activeDetail.code + ') ⚡' + RESET : DIM + 'Standby / Idle' + RESET));
   }
-  rightLines.push(BOLD + MAGENTA + \'└───────────────────────────────────────────┘\' + RESET);
-  rightLines.push(\'\');
+  rightLines.push(BOLD + '  Last Used Agent:  ' + RESET + (lastDetail ? YELLOW + lastDetail.name + ' (' + lastDetail.code + ')' + RESET : DIM + 'None' + RESET));
+  rightLines.push(BOLD + '  Active Spec Doc:  ' + RESET + BLUE + (activeState.active_doc || 'None') + RESET);
+  rightLines.push(BOLD + '  Local App Server: ' + RESET + (localServer ? GREEN + BOLD + 'http://localhost:' + localServerPort + '/' + RESET : DIM + 'Offline [Press s]' + RESET));
+  rightLines.push(BOLD + BLUE + '└───────────────────────────────────────────┘' + RESET);
+  rightLines.push('');
 
-  rightLines.push(BOLD + MAGENTA + \'┌─ TASK PROGRESS ───────────────────────────┐\' + RESET);
+  rightLines.push(BOLD + BLUE + '┌─ RECENT CHANGED FILES ────────────────────┐' + RESET);
+  if (activeState.modified_files && activeState.modified_files.length > 0) {
+    activeState.modified_files.slice(-5).forEach(file => rightLines.push('  ' + GREEN + '✚' + RESET + ' ' + file));
+    for (let i = activeState.modified_files.length; i < 5; i++) rightLines.push('  ');
+  } else {
+    rightLines.push('  ' + DIM + 'No files modified in last prompt.' + RESET);
+    for (let i = 0; i < 4; i++) rightLines.push('  ');
+  }
+  rightLines.push(BOLD + BLUE + '└───────────────────────────────────────────┘' + RESET);
+  rightLines.push('');
+
+  rightLines.push(BOLD + BLUE + '┌─ TASK PROGRESS ───────────────────────────┐' + RESET);
   if (trackerStats.exists && trackerStats.total > 0) {
     const pct = ((trackerStats.completed / trackerStats.total) * 100).toFixed(0);
     rightLines.push(\`  \${BOLD}Tasks Done:\${RESET} \${GREEN}\${trackerStats.completed}\${RESET} / \${trackerStats.total} (\${pct}%)\`);
     rightLines.push(\`  \` + drawCircleBar(parseFloat(pct)));
-  } else if (trackerStats.exists) {
-    rightLines.push(\`  \${DIM}Task tracker exists but no tasks found.\${RESET}\`);
-    rightLines.push(\'  \');
   } else {
-    rightLines.push(\`  \${DIM}No task-tracker.md found yet.\${RESET}\`);
-    rightLines.push(\'  \');
+    rightLines.push(\`  \${DIM}No tasks found.\${RESET}\`);
+    rightLines.push('  ');
   }
-  rightLines.push(BOLD + MAGENTA + \'└───────────────────────────────────────────┘\' + RESET);
+  rightLines.push(BOLD + BLUE + '└───────────────────────────────────────────┘' + RESET);
 
-  // Merge columns
   const maxLines = Math.max(deptLines.length, rightLines.length);
-  for (let i = 0; i < maxLines; i++) {
-    const leftPart = padEnd(deptLines[i] || \'\', 34);
-    const rightPart = rightLines[i] || \'\';
-    console.log(leftPart + separator + rightPart);
-  }
+  for (let i = 0; i < maxLines; i++) console.log(padEnd(deptLines[i] || '', 34) + separator + (rightLines[i] || ''));
 
-  // Handover Context Box
-  console.log(BOLD + MAGENTA + \'┌─ LAST HANDOVER CONTEXT ──────────────────────────────────────────────────────┐\' + RESET);
-  if (activeHandover) {
+  console.log(BOLD + BLUE + '┌─ LAST HANDOVER CONTEXT ──────────────────────────────────────────────────────┐' + RESET);
+  if (isRunningHooks) {
+    console.log('  ' + BOLD + YELLOW + 'HOOKS RUNNING: Validating workspace changes...' + RESET);
+  } else if (hookError) {
+    console.log('  ' + BOLD + RED + 'VERIFICATION FAILED!' + RESET);
+    console.log('  ' + RED + 'Error report written to: approved_docs/transition-failure.md' + RESET);
+  } else if (activeHandover) {
     const fromDetail = findAgentDetails(activeHandover.last_agent);
     const toDetail = findAgentDetails(activeHandover.next_agent);
-    const fromName = fromDetail ? fromDetail.name + \' (\' + fromDetail.code + \')\' : (activeHandover.last_agent || \'Unknown\');
-    const toName = toDetail ? toDetail.name + \' (\' + toDetail.code + \')\' : (activeHandover.next_agent || \'Unknown\');
-    console.log(\'  \' + BOLD + \'Route:\' + RESET + \' \' + YELLOW + fromName + RESET + \' ➔ \' + GREEN + toName + RESET);
+    const fromName = fromDetail ? fromDetail.name + ' (' + fromDetail.code + ')' : (activeHandover.last_agent || 'Unknown');
+    const toName = toDetail ? toDetail.name + ' (' + toDetail.code + ')' : (activeHandover.next_agent || 'Unknown');
+    console.log('  ' + BOLD + 'Route:' + RESET + ' ' + YELLOW + fromName + RESET + ' ➔ ' + GREEN + toName + RESET);
     
-    if (activeHandover.what_was_tried && activeHandover.what_was_tried.length > 0) {
-      console.log(\'  \' + BOLD + \'What was tried:\' + RESET);
-      activeHandover.what_was_tried.slice(0, 3).forEach(item => {
-        console.log(\'    • \' + item.substring(0, 70));
+    if (activeHandover.what_was_tried) {
+      console.log('  ' + BOLD + 'What was tried:' + RESET);
+      const items = Array.isArray(activeHandover.what_was_tried)
+        ? activeHandover.what_was_tried
+        : [activeHandover.what_was_tried];
+      items.slice(0, 3).forEach(item => {
+        console.log('    • ' + String(item).substring(0, 70));
       });
     }
-    if (activeHandover.failures_or_warnings && activeHandover.failures_or_warnings.length > 0) {
-      console.log(\'  \' + BOLD + RED + \'Warnings/Failures:\' + RESET);
-      activeHandover.failures_or_warnings.slice(0, 2).forEach(item => {
-        console.log(\'    • \' + RED + item.substring(0, 70) + RESET);
+    if (activeHandover.failures_or_warnings) {
+      console.log('  ' + BOLD + RED + 'Warnings/Failures:' + RESET);
+      const items = Array.isArray(activeHandover.failures_or_warnings)
+        ? activeHandover.failures_or_warnings
+        : [activeHandover.failures_or_warnings];
+      items.slice(0, 2).forEach(item => {
+        console.log('    • ' + RED + String(item).substring(0, 70) + RESET);
       });
     }
   } else {
-    console.log(\'  \' + DIM + \'No active handover context. Waiting for next transition...\' + RESET);
+    console.log('  ' + DIM + 'No active handover context. Waiting for next transition...' + RESET);
   }
-  console.log(BOLD + MAGENTA + \'└──────────────────────────────────────────────────────────────────────────────┘\' + RESET);
+  console.log(BOLD + BLUE + '└──────────────────────────────────────────────────────────────────────────────┘' + RESET);
 
   // Footer / Keyboard Help
-  console.log(BOLD + BLUE + \'┌\' + \'─\'.repeat(width - 2) + \'┐\' + RESET);
-  console.log(BOLD + BLUE + \'│\' + RESET + DIM + \'  Press [a] to toggle Autonomous Mode | [q] to exit.\' + \' \'.repeat(24) + RESET + BOLD + BLUE + \'│\' + RESET);
-  console.log(BOLD + BLUE + \'└\' + \'─\'.repeat(width - 2) + \'┘\' + RESET);
+  console.log(BOLD + BLUE + '┌' + '─'.repeat(width - 2) + '┐' + RESET);
+  console.log(BOLD + BLUE + '│' + RESET + DIM + '  Press [a] Autonomous | [s] Serve App | [q] to Exit' + ' '.repeat(27) + RESET + BOLD + BLUE + '│' + RESET);
+  console.log(BOLD + BLUE + '└' + '─'.repeat(width - 2) + '┘' + RESET);
 }
 
 // Initial draw
@@ -1179,6 +1560,41 @@ btnDeploy.addEventListener('click', async () => {
     }
   });
   tasks.push({
+    id: 'hooks_runtime', name: 'Write .think-live/hooks-runtime.js', type: 'file', parent: 'agency_dir', run: async (handles) => {
+      return await writeTextFile(handles.agency_dir, 'hooks-runtime.js', TEMPLATES.hooksRuntime);
+    }
+  });
+  tasks.push({
+    id: 'skills_dir', name: 'Create .think-live/skills/ folder', type: 'dir', parent: 'agency_dir', run: async (handles) => {
+      return await getOrCreateDir(handles.agency_dir, 'skills');
+    }
+  });
+  tasks.push({
+    id: 'skill_git', name: 'Write skills/git-management.md', type: 'file', parent: 'skills_dir', run: async (handles) => {
+      return await writeTextFile(handles.skills_dir, 'git-management.md', TEMPLATES.skillGit);
+    }
+  });
+  tasks.push({
+    id: 'skill_ui', name: 'Write skills/ui-styling.md', type: 'file', parent: 'skills_dir', run: async (handles) => {
+      return await writeTextFile(handles.skills_dir, 'ui-styling.md', TEMPLATES.skillUi);
+    }
+  });
+  tasks.push({
+    id: 'skill_security', name: 'Write skills/security-audit-guide.md', type: 'file', parent: 'skills_dir', run: async (handles) => {
+      return await writeTextFile(handles.skills_dir, 'security-audit-guide.md', TEMPLATES.skillSecurity);
+    }
+  });
+  tasks.push({
+    id: 'scripts_dir', name: 'Create .think-live/scripts/ folder', type: 'dir', parent: 'agency_dir', run: async (handles) => {
+      return await getOrCreateDir(handles.agency_dir, 'scripts');
+    }
+  });
+  tasks.push({
+    id: 'security_audit_script', name: 'Write scripts/security-audit.js', type: 'file', parent: 'scripts_dir', run: async (handles) => {
+      return await writeTextFile(handles.scripts_dir, 'security-audit.js', TEMPLATES.securityAudit);
+    }
+  });
+  tasks.push({
     id: 'state_json', name: 'Write .think-live/state.json', type: 'file', parent: 'agency_dir', run: async (handles) => {
       const initialState = {
         active_agent: null,
@@ -1193,10 +1609,56 @@ btnDeploy.addEventListener('click', async () => {
   tasks.push({
     id: 'memory_json', name: 'Write .think-live/memory-graph.json', type: 'file', parent: 'agency_dir', run: async (handles) => {
       const initialMemory = {
-        entities: [],
-        relationships: []
+        entities: [
+          {
+            id: "ui-styling",
+            type: "preference",
+            name: "UI Styling Preference",
+            description: "User prefers clean Vanilla CSS, custom Google Fonts, responsive layouts, and highly polished glassmorphism animations."
+          },
+          {
+            id: "vanilla-css",
+            type: "technology",
+            name: "Vanilla CSS",
+            description: "Handcrafted CSS rules declared inside index.css or style.css using CSS custom properties."
+          },
+          {
+            id: "google-fonts",
+            type: "preference",
+            name: "Google Fonts System",
+            description: "Preferred typography styling using Outfit and Inter Google Fonts pairing."
+          }
+        ],
+        relationships: [
+          {
+            source: "ui-styling",
+            target: "vanilla-css",
+            type: "prefers",
+            description: "Default visual styling approach is handcrafted Vanilla CSS rather than tailwindcss."
+          },
+          {
+            source: "ui-styling",
+            target: "google-fonts",
+            type: "uses",
+            description: "Default premium typography is configured via Outfit and Inter Google fonts."
+          }
+        ]
       };
       return await writeTextFile(handles.agency_dir, 'memory-graph.json', JSON.stringify(initialMemory, null, 2));
+    }
+  });
+  tasks.push({
+    id: 'github_creds_json', name: 'Write .think-live/github-creds.json', type: 'file', parent: 'agency_dir', run: async (handles) => {
+      const usernameInput = document.getElementById('txt-github-username');
+      const repoInput = document.getElementById('txt-github-repo');
+      const tokenInput = document.getElementById('txt-github-token');
+
+      const initialCreds = {
+        github_username: usernameInput ? usernameInput.value.trim() : "",
+        github_repo: repoInput ? repoInput.value.trim() : "",
+        github_token: tokenInput ? tokenInput.value.trim() : ""
+      };
+      return await writeTextFile(handles.agency_dir, 'github-creds.json', JSON.stringify(initialCreds, null, 2));
     }
   });
   tasks.push({

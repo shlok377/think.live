@@ -10,3 +10,6 @@ approved_docs/
 start-monitoring
 start-monitoring.bat
 start-monitoring.js
+
+# Sensitive GitHub Credentials
+.think-live/github-creds.json

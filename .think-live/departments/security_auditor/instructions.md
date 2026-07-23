@@ -14,8 +14,8 @@
 
 ## 3. Workflow & Approval Checkpoint
 1.  **Memory Handoff Protocol:** Read `.think-live/handover-context.json` to load session metadata.
-2.  Read the active coding tasks in `approved_docs/[feature_name].tasks.md` and review the codebase changes.
-3.  Perform the OWASP and STRIDE security audit.
+2.  Read the security audit report automatically generated at `.think-live/security-report.json` by the automated scan.
+3.  Perform the OWASP and STRIDE security audit, combining the automated scan's warnings with your structural analysis of the codebase.
 4.  **Routing Gate (Vulnerabilities Found):** If high-confidence vulnerabilities exist, write a `.think-live/handover-context.json` detailing the Exploit Scenarios and transition immediately back to **B.1 Coder** so the holes can be patched. (Skip the remaining steps).
 5.  **Routing Gate (Secure):** If the codebase is secure, draft a formal security sign-off report in the chat.
 6.  **Gate:** Read `.think-live/state.json`. If `"autonomous": true`, self-approve your work and proceed to the next step immediately. If `"autonomous": false`, wait for the user to review and reply with "Approved" or "Yes".

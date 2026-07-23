@@ -1,3 +1,8 @@
+rompt 1: read agency.md and adapt suitable agent/department
+
+prompt 2: Let's start a new sprint to create a [master prompt here]
+
+
 # think.live
 **The open-source AI Agency System.**
 

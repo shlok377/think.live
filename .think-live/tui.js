@@ -1,12 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const { exec } = require('child_process');
+const http = require('http');
 
 // File paths for synchronization
 const WORKSPACE_DIR = path.resolve(__dirname, '..');
 const STATE_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'state.json');
 
-// Enable raw mode to capture 'q' or Ctrl+C to exit cleanly
+// Enable raw mode to capture keyboard shortcuts
 if (process.stdin.isTTY) {
   readline.emitKeypressEvents(process.stdin);
   process.stdin.setRawMode(true);
@@ -17,14 +19,19 @@ if (process.stdin.isTTY) {
       toggleAutonomousMode();
     } else if (key.name === 'g') {
       toggleGitMode();
+    } else if (key.name === 's') {
+      toggleLocalServer();
     }
   });
 }
 
 // Ensure clean exit (show cursor, clear screen, restore stdout)
 function cleanupAndExit() {
-  process.stdout.write('\x1B[?25h'); // Show cursor
-  process.stdout.write('\x1B[0m');    // Reset colors
+  process.stdout.write('\x1B[?25h');
+  process.stdout.write('\x1B[0m');
+  if (localServer) {
+    try { localServer.close(); } catch (e) {}
+  }
   console.clear();
   process.exit(0);
 }
@@ -42,6 +49,10 @@ let activeState = {
   autonomous: false,
   git_enabled: false
 };
+
+// Hook tracking variables
+let isRunningHooks = false;
+let hookError = '';
 
 // Department Structure Config
 const DEPARTMENTS = [
@@ -78,7 +89,17 @@ const DEPARTMENTS = [
     icon: '🔍',
     agents: [
       { id: 'director', code: 'D.1', name: 'Director' },
-      { id: 'quality_tester', code: 'D.2', name: 'Quality Tester' }
+      { id: 'quality_tester', code: 'D.2', name: 'Quality Tester' },
+      { id: 'security_auditor', code: 'D.3', name: 'Security Auditor' },
+      { id: 'memory_archivist', code: 'D.4', name: 'Archivist' }
+    ]
+  },
+  {
+    name: 'Showcase & Promo',
+    icon: '🎬',
+    agents: [
+      { id: 'showcase_director', code: 'E.1', name: 'Showcase Dir' },
+      { id: 'showcase_animator', code: 'E.2', name: 'Animator' }
     ]
   }
 ];
@@ -116,21 +137,125 @@ function toggleGitMode() {
   }
 }
 
-function formatTokens(n) {
-  if (n >= 1000000) {
-    return (n / 1000000).toFixed(1) + 'M';
+// Zero-dependency HTTP static server
+let localServer = null;
+let localServerPort = 3000;
+
+function startLocalServer() {
+  if (localServer) return;
+  const server = http.createServer((req, res) => {
+    let reqPath = decodeURIComponent(req.url);
+    let filePath = path.join(WORKSPACE_DIR, reqPath === '/' ? '' : reqPath);
+    if (!filePath.startsWith(WORKSPACE_DIR)) {
+      res.statusCode = 403;
+      res.end('Forbidden');
+      return;
+    }
+    if (fs.existsSync(filePath)) {
+      const stat = fs.statSync(filePath);
+      if (stat.isDirectory()) {
+        const indexHtml = path.join(filePath, 'index.html');
+        if (fs.existsSync(indexHtml)) {
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          fs.createReadStream(indexHtml).pipe(res);
+        } else {
+          const files = fs.readdirSync(filePath);
+          const projects = [];
+          files.forEach(f => {
+            if (f.startsWith('.') || f === 'node_modules' || f === 'temp') return;
+            const sub = path.join(filePath, f);
+            if (fs.statSync(sub).isDirectory()) {
+              if (fs.existsSync(path.join(sub, 'index.html'))) {
+                projects.push(f);
+              }
+            }
+          });
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>think.live Portal</title>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+              <style>
+                body { font-family: 'Outfit', sans-serif; background-color: #0f172a; color: #e2e8f0; margin: 0; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+                .container { max-width: 600px; width: 100%; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); }
+                h1 { margin-top: 0; color: #38bdf8; font-weight: 600; text-align: center; }
+                p { color: #94a3b8; text-align: center; }
+                .list { display: flex; flex-direction: column; gap: 15px; margin-top: 25px; }
+                .item { background: rgba(255, 255, 255, 0.05); padding: 18px 24px; border-radius: 16px; text-decoration: none; color: #f1f5f9; font-weight: 600; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease; border: 1px solid transparent; }
+                .item:hover { background: rgba(56, 189, 248, 0.15); border-color: #38bdf8; transform: translateY(-2px); }
+                .arrow { color: #38bdf8; font-size: 18px; }
+                .badge { background: #0284c7; font-size: 11px; padding: 3px 8px; border-radius: 8px; color: white; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <h1>think.live Workspace Portal</h1>
+                <p>Select a project subfolder built by the agency below to run it:</p>
+                <div class="list">
+                  \${projects.map(p => \`
+                    <a href="/\${p}/" class="item">
+                      <span>📂 \${p}</span>
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="badge">Active Project</span>
+                        <span class="arrow">➔</span>
+                      </div>
+                    </a>
+                  \`).join('') || '<div style="text-align:center;color:#64748b;">No projects with index.html found. Start a sprint to generate one!</div>'}
+                </div>
+              </div>
+            </body>
+            </html>
+          `);
+        }
+      } else if (stat.isFile()) {
+        const ext = path.extname(filePath).toLowerCase();
+        let contentType = 'text/plain';
+        if (ext === '.html') contentType = 'text/html';
+        else if (ext === '.css') contentType = 'text/css';
+        else if (ext === '.js') contentType = 'text/javascript';
+        else if (ext === '.json') contentType = 'application/json';
+        else if (ext === '.png') contentType = 'image/png';
+        else if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
+        else if (ext === '.svg') contentType = 'image/svg+xml';
+        res.writeHead(200, { 'Content-Type': contentType });
+        fs.createReadStream(filePath).pipe(res);
+      }
+    } else {
+      res.statusCode = 404;
+      res.end('Not Found');
+    }
+  });
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      localServerPort++;
+      server.listen(localServerPort);
+    }
+  });
+  server.listen(localServerPort, () => {
+    localServer = server;
+    renderTUI();
+  });
+}
+
+function toggleLocalServer() {
+  if (localServer) {
+    localServer.close(() => {
+      localServer = null;
+      renderTUI();
+    });
+  } else {
+    startLocalServer();
   }
-  if (n >= 1000) {
-    return (n / 1000).toFixed(1) + 'k';
-  }
-  return n.toString();
 }
 
 function drawCircleBar(percent) {
   const total = 16;
   const filled = Math.min(total, Math.max(0, Math.round((percent / 100) * total)));
   const empty = total - filled;
-  return `${GREEN}${'◉ '.repeat(filled)}${RESET}${DIM}${'□ '.repeat(empty)}${RESET}`;
+  return GREEN + '◉ '.repeat(filled) + RESET + DIM + '□ '.repeat(empty) + RESET;
 }
 
 const HANDOVER_FILE_PATH = path.join(WORKSPACE_DIR, '.think-live', 'handover-context.json');
@@ -142,17 +267,64 @@ let activeHandover = null;
 let trackerStats = { exists: false, completed: 0, total: 0 };
 
 function checkState() {
+  if (isRunningHooks) return;
+
   try {
     let stateChanged = false;
     if (fs.existsSync(STATE_FILE_PATH)) {
       const data = fs.readFileSync(STATE_FILE_PATH, 'utf8');
       if (data !== lastJsonStr) {
+        const nextState = JSON.parse(data);
+        const prevAgent = activeState.active_agent;
+        const nextAgent = nextState.active_agent;
+        
+        hookError = '';
+
+        if (prevAgent && nextAgent && prevAgent !== nextAgent) {
+          isRunningHooks = true;
+          renderTUI();
+          
+          const hooksScript = path.join(WORKSPACE_DIR, '.think-live', 'hooks-runtime.js');
+          exec(`node "${hooksScript}" "${prevAgent}" "${nextAgent}"`, (err, stdout, stderr) => {
+            isRunningHooks = false;
+            if (err) {
+              const revertedState = {
+                ...nextState,
+                active_agent: prevAgent,
+                last_agent: nextState.last_agent,
+                error_feedback: (stdout + '\n' + stderr).trim()
+              };
+              fs.writeFileSync(STATE_FILE_PATH, JSON.stringify(revertedState, null, 2), 'utf8');
+              
+              const errorFile = path.join(WORKSPACE_DIR, 'approved_docs', 'transition-failure.md');
+              fs.writeFileSync(errorFile, `# 🔄 Transition Failure
+
+Transition from **${prevAgent}** to **${nextAgent}** was BLOCKED by automated verification hooks.
+
+### Output Log:
+\`\`\`
+${stdout}
+${stderr}
+\`\`\`
+
+Please address the issues before attempting the transition again.`, 'utf8');
+              
+              hookError = `Blocked transition from ${prevAgent} to ${nextAgent}!`;
+              renderTUI();
+            } else {
+              lastJsonStr = data;
+              activeState = nextState;
+              renderTUI();
+            }
+          });
+          return;
+        }
+
         lastJsonStr = data;
-        activeState = JSON.parse(data);
+        activeState = nextState;
         stateChanged = true;
       }
     } else {
-      // Default empty state if file not created yet
       const defaultState = JSON.stringify({
         active_agent: null,
         last_agent: null,
@@ -181,7 +353,7 @@ function checkState() {
       stateChanged = true;
     }
 
-    let newTrackerStats = { exists: false, completed: 0, total: 0, current_task: '' };
+    let newTrackerStats = { exists: false, completed: 0, total: 0 };
     if (fs.existsSync(TASK_TRACKER_PATH)) {
       const trackerData = fs.readFileSync(TASK_TRACKER_PATH, 'utf8');
       const lines = trackerData.split('\n');
@@ -189,12 +361,8 @@ function checkState() {
         if (line.match(/^\s*-\s*\[[xX]\]/)) {
           newTrackerStats.completed++;
           newTrackerStats.total++;
-        } else if (line.match(/^\s*-\s*\[\/\]/)) {
+        } else if (line.match(/^\s*-\s*\[\s\]/) || line.match(/^\s*-\s*\[\/\]/)) {
           newTrackerStats.total++;
-          if (!newTrackerStats.current_task) newTrackerStats.current_task = line.replace(/^\s*-\s*\[\/\]\s*/, '').substring(0, 36);
-        } else if (line.match(/^\s*-\s*\[\s\]/)) {
-          newTrackerStats.total++;
-          if (!newTrackerStats.current_task) newTrackerStats.current_task = line.replace(/^\s*-\s*\[\s\]\s*/, '').substring(0, 36);
         }
       }
       newTrackerStats.exists = true;
@@ -207,12 +375,9 @@ function checkState() {
     if (stateChanged) {
       renderTUI();
     }
-  } catch (err) {
-    // Ignore read/parse errors during write transition
-  }
+  } catch (err) {}
 }
 
-// ANSI Escape Codes for formatting
 const RESET = '\x1b[0m';
 const BOLD = '\x1b[1m';
 const DIM = '\x1b[2m';
@@ -220,26 +385,19 @@ const GREEN = '\x1b[32m';
 const YELLOW = '\x1b[33m';
 const BLUE = '\x1b[34m';
 const MAGENTA = '\x1b[35m';
-const CYAN = '\x1b[36m';
 const RED = '\x1b[31m';
-const GRAY = '\x1b[90m';
-const BG_DARK_GRAY = '\x1b[100m';
 
-// Format strings to fit column widths
 function padEnd(str, length) {
-  const cleanStr = str.replace(/\x1b\[[0-9;]*m/g, ''); // Remove ANSI codes for correct length calc
+  const cleanStr = str.replace(/\x1b\[[0-9;]*m/g, '');
   const diff = length - cleanStr.length;
   return str + (diff > 0 ? ' '.repeat(diff) : '');
 }
 
-// Draw the screen
 function renderTUI() {
-  // Clear the screen and move cursor to top-left
   process.stdout.write('\x1B[2J\x1B[H');
 
   const width = 80;
   
-  // Header Panel
   console.log(BOLD + BLUE + '┌' + '─'.repeat(width - 2) + '┐' + RESET);
   const leftHeader = '  think.live AGENCY MONITOR';
   const rightHeader = '● LIVE RUNNING';
@@ -247,9 +405,7 @@ function renderTUI() {
   const gitLabel = activeState.git_enabled ? 'GIT: ON' : 'GIT: OFF';
   const modeColor = activeState.autonomous ? GREEN : YELLOW;
   const gitColor = activeState.git_enabled ? GREEN : RED;
-  const centerHeader = `[${modeLabel}] [${gitLabel}]`;
   const leftLen = leftHeader.length;
-  // centerLen matches uncolored string length: "[AUTONOMOUS ⚡] [GIT: OFF]"
   const modeLen = activeState.autonomous ? 15 : 11;
   const gitLen = activeState.git_enabled ? 10 : 11;
   const centerLen = modeLen + gitLen;
@@ -262,22 +418,16 @@ function renderTUI() {
   console.log(BOLD + BLUE + '│' + RESET + BOLD + leftHeader + leftPadding + modeColor + '[' + modeLabel + '] ' + gitColor + '[' + gitLabel + ']' + RESET + BOLD + rightPadding + GREEN + rightHeader + ' ' + RESET + BOLD + BLUE + ' │' + RESET);
   console.log(BOLD + BLUE + '└' + '─'.repeat(width - 2) + '┘' + RESET);
 
-  // Left Column (Departments) vs Right Column (Status details)
-  // Left col: 34 chars, Right col: 42 chars
   const separator = BOLD + BLUE + ' │ ' + RESET;
-
-  const lines = [];
-
-  // 1. Compile Department lists
   const deptLines = [];
   DEPARTMENTS.forEach(dept => {
-    deptLines.push(BOLD + CYAN + `[${dept.name}]` + RESET);
+    deptLines.push(BOLD + MAGENTA + '[' + dept.name + ']' + RESET);
     dept.agents.forEach(agent => {
       const isActive = activeState.active_agent === agent.id;
       const isLast = activeState.last_agent === agent.id;
 
       let prefix = '  ';
-      let nameStr = `${agent.code} ${agent.name}`;
+      let nameStr = agent.code + ' ' + agent.name;
       let suffix = '';
 
       if (isActive) {
@@ -291,103 +441,93 @@ function renderTUI() {
       } else {
         nameStr = DIM + nameStr + RESET;
       }
-
       deptLines.push(prefix + nameStr + suffix);
     });
     deptLines.push('');
   });
 
-  // 2. Compile Right side panels
   const rightLines = [];
-  rightLines.push(BOLD + MAGENTA + '┌─ CURRENT RUN STATE ───────────────────────┐' + RESET);
-  
+  rightLines.push(BOLD + BLUE + '┌─ CURRENT RUN STATE ───────────────────────┐' + RESET);
   const activeDetail = findAgentDetails(activeState.active_agent);
   const lastDetail = findAgentDetails(activeState.last_agent);
 
-  rightLines.push(BOLD + '  Currently Active: ' + RESET + (activeDetail ? `${GREEN}${BOLD}${activeDetail.name} (${activeDetail.code}) ⚡${RESET}` : `${DIM}Standby / Idle${RESET}`));
-  rightLines.push(BOLD + '  Last Used Agent:  ' + RESET + (lastDetail ? `${YELLOW}${lastDetail.name} (${lastDetail.code})${RESET}` : `${DIM}None${RESET}`));
-  rightLines.push(BOLD + '  Active Spec Doc:  ' + RESET + `${BLUE}${activeState.active_doc || 'None'}${RESET}`);
-  rightLines.push(BOLD + MAGENTA + '└───────────────────────────────────────────┘' + RESET);
+  if (isRunningHooks) {
+    rightLines.push(BOLD + YELLOW + '  ▶ Status: RUNNING VERIFICATION HOOKS...   ' + RESET);
+  } else if (hookError) {
+    rightLines.push(BOLD + RED + '  ▶ Status: VERIFICATION BLOCKED            ' + RESET);
+  } else {
+    rightLines.push(BOLD + '  Currently Active: ' + RESET + (activeDetail ? GREEN + BOLD + activeDetail.name + ' (' + activeDetail.code + ') ⚡' + RESET : DIM + 'Standby / Idle' + RESET));
+  }
+  rightLines.push(BOLD + '  Last Used Agent:  ' + RESET + (lastDetail ? YELLOW + lastDetail.name + ' (' + lastDetail.code + ')' + RESET : DIM + 'None' + RESET));
+  rightLines.push(BOLD + '  Active Spec Doc:  ' + RESET + BLUE + (activeState.active_doc || 'None') + RESET);
+  rightLines.push(BOLD + '  Local App Server: ' + RESET + (localServer ? GREEN + BOLD + `http://localhost:${localServerPort}/` + RESET : DIM + 'Offline [Press s]' + RESET));
+  rightLines.push(BOLD + BLUE + '└───────────────────────────────────────────┘' + RESET);
   rightLines.push('');
 
-  rightLines.push(BOLD + MAGENTA + '┌─ RECENT CHANGED FILES ────────────────────┐' + RESET);
+  rightLines.push(BOLD + BLUE + '┌─ RECENT CHANGED FILES ────────────────────┐' + RESET);
   if (activeState.modified_files && activeState.modified_files.length > 0) {
-    activeState.modified_files.slice(-5).forEach(file => {
-      rightLines.push(`  ${GREEN}✚${RESET} ${file}`);
-    });
-    // Pad to 5 lines
-    for (let i = activeState.modified_files.length; i < 5; i++) {
-      rightLines.push('  ');
-    }
+    activeState.modified_files.slice(-5).forEach(file => rightLines.push('  ' + GREEN + '✚' + RESET + ' ' + file));
+    for (let i = activeState.modified_files.length; i < 5; i++) rightLines.push('  ');
   } else {
-    rightLines.push(`  ${DIM}No files modified in last prompt.${RESET}`);
-    rightLines.push('  ');
-    rightLines.push('  ');
-    rightLines.push('  ');
-    rightLines.push('  ');
+    rightLines.push('  ' + DIM + 'No files modified in last prompt.' + RESET);
+    for (let i = 0; i < 4; i++) rightLines.push('  ');
   }
-  rightLines.push(BOLD + MAGENTA + '└───────────────────────────────────────────┘' + RESET);
+  rightLines.push(BOLD + BLUE + '└───────────────────────────────────────────┘' + RESET);
+  rightLines.push('');
 
-
-
-  rightLines.push(BOLD + MAGENTA + '┌─ TASK PROGRESS ───────────────────────────┐' + RESET);
+  rightLines.push(BOLD + BLUE + '┌─ TASK PROGRESS ───────────────────────────┐' + RESET);
   if (trackerStats.exists && trackerStats.total > 0) {
     const pct = ((trackerStats.completed / trackerStats.total) * 100).toFixed(0);
-    rightLines.push(`  ${BOLD}Tasks Done:${RESET} ${GREEN}${trackerStats.completed}${RESET} / ${trackerStats.total} (${pct}%)`);
+    rightLines.push(`  \${BOLD}Tasks Done:\${RESET} \${GREEN}\${trackerStats.completed}\${RESET} / \${trackerStats.total} (\${pct}%)`);
     rightLines.push(`  ` + drawCircleBar(parseFloat(pct)));
-    rightLines.push('  ');
-    rightLines.push(`  ${BOLD}Current:${RESET} ${YELLOW}${trackerStats.current_task || 'None'}${RESET}`);
-  } else if (trackerStats.exists) {
-    rightLines.push(`  ${DIM}Task tracker exists but no tasks found.${RESET}`);
-    rightLines.push('  ');
   } else {
-    rightLines.push(`  ${DIM}No task-tracker.md found yet.${RESET}`);
+    rightLines.push(`  \${DIM}No tasks found.\${RESET}`);
     rightLines.push('  ');
   }
-  rightLines.push(BOLD + MAGENTA + '└───────────────────────────────────────────┘' + RESET);
+  rightLines.push(BOLD + BLUE + '└───────────────────────────────────────────┘' + RESET);
 
-  // Merge columns
   const maxLines = Math.max(deptLines.length, rightLines.length);
-  for (let i = 0; i < maxLines; i++) {
-    const leftPart = padEnd(deptLines[i] || '', 34);
-    const rightPart = rightLines[i] || '';
-    console.log(leftPart + separator + rightPart);
-  }
+  for (let i = 0; i < maxLines; i++) console.log(padEnd(deptLines[i] || '', 34) + separator + (rightLines[i] || ''));
 
-  // Handover Context Box
-  console.log(BOLD + MAGENTA + '┌─ LAST HANDOVER CONTEXT ──────────────────────────────────────────────────────┐' + RESET);
-  if (activeHandover) {
+  console.log(BOLD + BLUE + '┌─ LAST HANDOVER CONTEXT ──────────────────────────────────────────────────────┐' + RESET);
+  if (isRunningHooks) {
+    console.log('  ' + BOLD + YELLOW + 'HOOKS RUNNING: Validating workspace changes...' + RESET);
+  } else if (hookError) {
+    console.log('  ' + BOLD + RED + 'VERIFICATION FAILED!' + RESET);
+    console.log('  ' + RED + 'Error report written to: approved_docs/transition-failure.md' + RESET);
+  } else if (activeHandover) {
     const fromDetail = findAgentDetails(activeHandover.last_agent);
     const toDetail = findAgentDetails(activeHandover.next_agent);
-    const fromName = fromDetail ? `${fromDetail.name} (${fromDetail.code})` : (activeHandover.last_agent || 'Unknown');
-    const toName = toDetail ? `${toDetail.name} (${toDetail.code})` : (activeHandover.next_agent || 'Unknown');
-    console.log(`  ${BOLD}Route:${RESET} ${YELLOW}${fromName}${RESET} ➔ ${GREEN}${toName}${RESET}`);
+    const fromName = fromDetail ? fromDetail.name + ' (' + fromDetail.code + ')' : (activeHandover.last_agent || 'Unknown');
+    const toName = toDetail ? toDetail.name + ' (' + toDetail.code + ')' : (activeHandover.next_agent || 'Unknown');
+    console.log('  ' + BOLD + 'Route:' + RESET + ' ' + YELLOW + fromName + RESET + ' ➔ ' + GREEN + toName + RESET);
     
-    if (activeHandover.what_was_tried && activeHandover.what_was_tried.length > 0) {
-      console.log(`  ${BOLD}What was tried:${RESET}`);
-      activeHandover.what_was_tried.slice(0, 3).forEach(item => {
-        console.log(`    • ${item.substring(0, 70)}`);
+    if (activeHandover.what_was_tried) {
+      console.log('  ' + BOLD + 'What was tried:' + RESET);
+      const items = Array.isArray(activeHandover.what_was_tried)
+        ? activeHandover.what_was_tried
+        : [activeHandover.what_was_tried];
+      items.slice(0, 3).forEach(item => {
+        console.log('    • ' + String(item).substring(0, 70));
       });
     }
-    if (activeHandover.failures_or_warnings && activeHandover.failures_or_warnings.length > 0) {
-      console.log(`  ${BOLD}${RED}Warnings/Failures:${RESET}`);
-      activeHandover.failures_or_warnings.slice(0, 2).forEach(item => {
-        console.log(`    • ${RED}${item.substring(0, 70)}${RESET}`);
+    if (activeHandover.failures_or_warnings) {
+      console.log('  ' + BOLD + RED + 'Warnings/Failures:' + RESET);
+      const items = Array.isArray(activeHandover.failures_or_warnings)
+        ? activeHandover.failures_or_warnings
+        : [activeHandover.failures_or_warnings];
+      items.slice(0, 2).forEach(item => {
+        console.log('    • ' + RED + String(item).substring(0, 70) + RESET);
       });
     }
   } else {
-    console.log(`  ${DIM}No active handover context. Waiting for next transition...${RESET}`);
+    console.log('  ' + DIM + 'No active handover context. Waiting for next transition...' + RESET);
   }
-  console.log(BOLD + MAGENTA + '└──────────────────────────────────────────────────────────────────────────────┘' + RESET);
+  console.log(BOLD + BLUE + '└──────────────────────────────────────────────────────────────────────────────┘' + RESET);
 
-  // Footer / Keyboard Help
-  console.log(BOLD + BLUE + '┌' + '─'.repeat(width - 2) + '┐' + RESET);
-  console.log(BOLD + BLUE + '│' + RESET + DIM + '  Press [a] to toggle Autonomous Mode | [q] to exit.' + ' '.repeat(24) + RESET + BOLD + BLUE + '│' + RESET);
+  console.log(BOLD + BLUE + '│' + RESET + DIM + '  Press [a] Autonomous | [s] Serve App | [q] to Exit' + ' '.repeat(27) + RESET + BOLD + BLUE + '│' + RESET);
   console.log(BOLD + BLUE + '└' + '─'.repeat(width - 2) + '┘' + RESET);
 }
 
-// Initial draw
 renderTUI();
-
-// Check for updates every 500ms
 setInterval(checkState, 500);

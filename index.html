@@ -176,6 +176,31 @@
         </div>
       </div>
 
+      <!-- GitHub Credentials Box (Span 2 Columns) -->
+      <div id="bento-github" class="md:col-span-2 bento-card p-bento-padding flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-black" style="font-size: 20px;">code</span>
+            <h3 class="font-label-caps text-label-caps text-black">GITHUB INTEGRATION (OPTIONAL)</h3>
+          </div>
+          <p class="text-xs text-black/70 mb-3">Provide credentials to allow the agency to read/write issues and open PRs autonomously.</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-black uppercase mb-1">Username</label>
+              <input id="txt-github-username" type="text" placeholder="e.g. shlok377" class="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 font-terminal-sm text-xs text-on-surface focus:outline-none focus:border-secondary" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-black uppercase mb-1">Repository</label>
+              <input id="txt-github-repo" type="text" placeholder="e.g. think.live" class="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 font-terminal-sm text-xs text-on-surface focus:outline-none focus:border-secondary" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-black uppercase mb-1">PAT Token</label>
+              <input id="txt-github-token" type="password" placeholder="ghp_xxxx..." class="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 font-terminal-sm text-xs text-on-surface focus:outline-none focus:border-secondary" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 3. Target Directory (Span 1 Column) -->
       <div id="bento-folder" class="md:col-span-1 bento-card p-bento-padding flex flex-col justify-between">
         <div>

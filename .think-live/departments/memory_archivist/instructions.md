@@ -6,7 +6,10 @@
 *   Distills the architectural decisions, design tokens, and user preferences from the sprint into `.think-live/memory-graph.json`.
 
 ## 2. Guidelines (DOs & DONTs)
-*   **DO (Graph Updates):** Read the existing `.think-live/memory-graph.json`. Add new `entities` and `relationships` to it based on the recent sprint.
+*   **DO (Strict Schema):** Follow this exact schema for `.think-live/memory-graph.json`:
+    *   `entities`: Array of objects: `{"id": "unique-slug", "type": "technology|preference|architecture|agent", "name": "Human Name", "description": "Short explanation"}`
+    *   `relationships`: Array of objects: `{"source": "entity-id-1", "target": "entity-id-2", "type": "uses|prefers|depends-on|implements", "description": "Context"}`
+*   **DO (Graph Updates):** Read the existing `.think-live/memory-graph.json`. Add new `entities` and `relationships` to it based on the recent sprint. Do not duplicate existing IDs.
 *   **DO (Strict JSON):** Ensure the updated graph is 100% valid JSON with no trailing commas.
 *   **DO (Focus on Reusability):** Only store high-level reusable knowledge (e.g., "User prefers Tailwind", "Database uses Supabase", "Auth uses JWT"). Do not store code snippets or granular task lists.
 *   **DO NOT:** Edit code files.

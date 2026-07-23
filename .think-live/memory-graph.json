@@ -1,4 +1,36 @@
 {
-  "entities": [],
-  "relationships": []
+  "entities": [
+    {
+      "id": "ui-styling",
+      "type": "preference",
+      "name": "UI Styling Preference",
+      "description": "User prefers clean Vanilla CSS, custom Google Fonts, responsive layouts, and highly polished glassmorphism animations."
+    },
+    {
+      "id": "vanilla-css",
+      "type": "technology",
+      "name": "Vanilla CSS",
+      "description": "Handcrafted CSS rules declared inside index.css or style.css using CSS custom properties."
+    },
+    {
+      "id": "google-fonts",
+      "type": "preference",
+      "name": "Google Fonts System",
+      "description": "Preferred typography styling using Outfit and Inter Google Fonts pairing."
+    }
+  ],
+  "relationships": [
+    {
+      "source": "ui-styling",
+      "target": "vanilla-css",
+      "type": "prefers",
+      "description": "Default visual styling approach is handcrafted Vanilla CSS rather than tailwindcss."
+    },
+    {
+      "source": "ui-styling",
+      "target": "google-fonts",
+      "type": "uses",
+      "description": "Default premium typography is configured via Outfit and Inter Google fonts."
+    }
+  ]
 }
