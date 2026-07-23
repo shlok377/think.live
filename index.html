@@ -103,105 +103,11 @@
   <main class="w-full max-w-7xl mx-auto px-grid-margin py-8">
 
 
-    <!-- Bento Grid 4x3 Desktop / Stacked Mobile -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-grid-gutter auto-rows-min">
-      <!-- 1. Terminal Output (Span 2 Columns, Span 2 Rows) -->
-      <div id="bento-log" class="md:col-span-2 md:row-span-2 bento-card overflow-hidden flex flex-col">
-        <div class="px-bento-padding py-3 border-b border-black/15 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-black" style="font-size: 18px;">terminal</span>
-            <span class="font-label-caps text-label-caps text-black">SETUP_LOGS</span>
-          </div>
-          <div class="flex gap-1.5">
-            <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
-            <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
-            <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
-          </div>
-        </div>
-        <div id="terminal-output"
-          class="bg-primary-container p-bento-padding flex-grow terminal-scroll overflow-y-auto font-terminal-sm text-terminal-sm text-on-primary-container leading-relaxed h-[340px]">
-          <div class="opacity-50 mb-1">$ think-live --install</div>
-          <div class="text-on-primary mb-1">[INFO] Setup wizard initialized. Standby...</div>
-          <div class="text-on-primary mb-1">[INFO] Awaiting target directory selection.</div>
-        </div>
-      </div>
+    <!-- Bento Grid 3-Row Desktop / Stacked Mobile (Grid-cols-3) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-grid-gutter auto-rows-min">
 
-      <!-- 2. Select IDE (Span 1 Column, Span 2 Rows) -->
-      <div id="bento-ides" class="md:col-span-1 md:row-span-2 bento-card p-bento-padding flex flex-col">
-        <div class="flex items-center gap-2 mb-4">
-          <span class="material-symbols-outlined text-black" style="font-size: 20px;">developer_mode_tv</span>
-          <h3 class="font-label-caps text-label-caps text-black">IDE INTEGRATIONS</h3>
-        </div>
-        <div class="space-y-3 flex-grow flex flex-col justify-center py-2">
-          <label
-            class="flex items-center justify-between p-4 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
-            <div class="flex flex-col">
-              <span class="text-sm font-bold text-on-surface">Setup For Cursor</span>
-            </div>
-            <input type="checkbox" id="chk-cursor" class="m3-checkbox" />
-          </label>
-
-          <label
-            class="flex items-center justify-between p-4 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
-            <div class="flex flex-col">
-              <span class="text-sm font-bold text-on-surface">Setup For VS Code</span>
-            </div>
-            <input type="checkbox" id="chk-vscode" class="m3-checkbox" />
-          </label>
-
-          <label
-            class="flex items-center justify-between p-4 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
-            <div class="flex flex-col">
-              <span class="text-sm font-bold text-on-surface">Setup For Antigravity</span>
-              <span class="text-[9px] text-on-surface-variant/70 italic mt-0.5">Supports both IDE + CLI</span>
-            </div>
-            <input type="checkbox" id="chk-antigravity" class="m3-checkbox" />
-          </label>
-
-          <label
-            class="flex items-center justify-between p-4 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
-            <div class="flex flex-col">
-              <span class="text-sm font-bold text-on-surface">Setup For Windsurf</span>
-            </div>
-            <input type="checkbox" id="chk-windsurf" class="m3-checkbox" />
-          </label>
-
-          <label
-            class="flex items-center justify-between p-4 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
-            <div class="flex flex-col">
-              <span class="text-sm font-bold text-on-surface">Claude Code (Beta)</span>
-            </div>
-            <input type="checkbox" id="chk-roo" class="m3-checkbox" />
-          </label>
-        </div>
-      </div>
-
-      <!-- GitHub Credentials Box (Span 2 Columns) -->
-      <div id="bento-github" class="md:col-span-2 bento-card p-bento-padding flex flex-col justify-between">
-        <div>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="material-symbols-outlined text-black" style="font-size: 20px;">code</span>
-            <h3 class="font-label-caps text-label-caps text-black">GITHUB INTEGRATION (OPTIONAL)</h3>
-          </div>
-          <p class="text-xs text-black/70 mb-3">Provide credentials to allow the agency to read/write issues and open PRs autonomously.</p>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div>
-              <label class="block text-[10px] font-bold text-black uppercase mb-1">Username</label>
-              <input id="txt-github-username" type="text" placeholder="e.g. shlok377" class="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 font-terminal-sm text-xs text-on-surface focus:outline-none focus:border-secondary" />
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-black uppercase mb-1">Repository</label>
-              <input id="txt-github-repo" type="text" placeholder="e.g. think.live" class="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 font-terminal-sm text-xs text-on-surface focus:outline-none focus:border-secondary" />
-            </div>
-            <div>
-              <label class="block text-[10px] font-bold text-black uppercase mb-1">PAT Token</label>
-              <input id="txt-github-token" type="password" placeholder="ghp_xxxx..." class="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 font-terminal-sm text-xs text-on-surface focus:outline-none focus:border-secondary" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. Target Directory (Span 1 Column) -->
+      <!-- ==================== ROW 1: SETUP & CONFIGURATION ==================== -->
+      <!-- 1. Target Directory (Span 1 Column) -->
       <div id="bento-folder" class="md:col-span-1 bento-card p-bento-padding flex flex-col justify-between">
         <div>
           <div class="flex items-center gap-2 mb-3">
@@ -232,62 +138,160 @@
         </div>
       </div>
 
-      <!-- 4. Install Button (Span 1 Column) -->
-      <div id="bento-deploy"
-        class="md:col-span-1 bento-card p-bento-padding flex flex-col justify-center items-center text-center">
-        <button id="btn-deploy" disabled
-          class="btn btn-success group w-full h-full min-h-[120px] flex flex-col items-center justify-center gap-2 transition-all">
-          <span class="material-symbols-outlined group-hover:animate-bounce" style="font-size: 32px;">bolt</span>
-          <span class="text-base font-bold tracking-wide">Install Now</span>
-        </button>
-      </div>
-
-      <!-- 5. Progress & Items (Span 2 Columns) -->
-      <div class="md:col-span-2 bento-card progress-fill relative overflow-hidden flex flex-col justify-between">
-        <!-- Elastic background progress bar fill -->
-        <div id="progress-bar-fill"></div>
-        <div class="relative z-10 flex justify-between gap-6 h-full items-center">
-          <!-- Installed Column -->
-          <div class="flex-1 h-full flex flex-col justify-start">
-            <div class="flex items-center gap-1.5 mb-2">
-              <span class="material-symbols-outlined text-black" style="font-size: 16px;">task_alt</span>
-              <h3 class="font-label-caps text-[10px] tracking-wider text-black uppercase">INSTALLED</h3>
-            </div>
-            <ul id="installed-list" class="space-y-1 text-xs max-h-[100px] overflow-y-auto text-black font-medium">
-              <!-- Dynamically populated -->
-              <li class="flex items-center gap-1.5 text-muted opacity-40">
-                <span class="material-symbols-outlined text-[14px]">radio_button_unchecked</span>
-                None
-              </li>
-            </ul>
+      <!-- 2. GitHub Credentials Box (Span 1 Column) -->
+      <div id="bento-github" class="md:col-span-1 bento-card p-bento-padding flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="material-symbols-outlined text-black" style="font-size: 20px;">code</span>
+            <h3 class="font-label-caps text-label-caps text-black">GITHUB (OPTIONAL)</h3>
           </div>
-
-          <div class="w-px h-full bg-black/15"></div>
-
-          <!-- Remaining Column -->
-          <div class="flex-1 h-full flex flex-col justify-start">
-            <div class="flex items-center gap-1.5 mb-2">
-              <span class="material-symbols-outlined text-black" style="font-size: 16px;">pending</span>
-              <h3 class="font-label-caps text-[10px] tracking-wider text-black uppercase">PENDING</h3>
+          <p class="text-[11px] text-black/70 mb-3">Sync issues and create remote PRs automatically.</p>
+          <div class="space-y-2">
+            <div>
+              <label class="block text-[9px] font-bold text-black uppercase mb-0.5">Username</label>
+              <input id="txt-github-username" type="text" placeholder="e.g. shlok377" class="w-full bg-surface-container border border-outline-variant rounded-lg px-2.5 py-1 font-terminal-sm text-xs text-on-surface focus:outline-none focus:border-secondary" />
             </div>
-            <ul id="remaining-list" class="space-y-1 text-xs max-h-[100px] overflow-y-auto text-black">
-              <!-- Dynamically populated -->
-              <li class="flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-[14px]">radio_button_unchecked</span>
-                Awaiting install
-              </li>
-            </ul>
-          </div>
-
-          <div class="flex flex-col items-center justify-center min-w-[90px] border-l border-black/15 pl-4 h-full">
-            <span id="progress-percentage" class="text-3xl font-bold text-black">0%</span>
-            <span class="text-[9px] uppercase font-bold tracking-wider text-black">Progress</span>
+            <div>
+              <label class="block text-[9px] font-bold text-black uppercase mb-0.5">Repository</label>
+              <input id="txt-github-repo" type="text" placeholder="e.g. think.live" class="w-full bg-surface-container border border-outline-variant rounded-lg px-2.5 py-1 font-terminal-sm text-xs text-on-surface focus:outline-none focus:border-secondary" />
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-black uppercase mb-0.5">PAT Token</label>
+              <input id="txt-github-token" type="password" placeholder="ghp_xxxx..." class="w-full bg-surface-container border border-outline-variant rounded-lg px-2.5 py-1 font-terminal-sm text-xs text-on-surface focus:outline-none focus:border-secondary" />
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 6. Agency Departments Selector (Span 2 Columns) -->
-      <div id="bento-depts" class="md:col-span-2 bento-card p-bento-padding flex flex-col">
+      <!-- 3. Install Button (Span 1 Column) -->
+      <div id="bento-deploy"
+        class="md:col-span-1 bento-card p-bento-padding flex flex-col justify-center items-center text-center">
+        <button id="btn-deploy" disabled
+          class="btn btn-success group w-full h-full min-h-[140px] flex flex-col items-center justify-center gap-2 transition-all">
+          <span class="material-symbols-outlined group-hover:animate-bounce" style="font-size: 36px;">bolt</span>
+          <span class="text-lg font-bold tracking-wide">Install Now</span>
+        </button>
+      </div>
+
+      <!-- ==================== ROW 2: ENVIRONMENT & PROGRESS ==================== -->
+      <!-- 4. Select IDE (Span 1 Column) -->
+      <div id="bento-ides" class="md:col-span-1 bento-card p-bento-padding flex flex-col">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="material-symbols-outlined text-black" style="font-size: 20px;">developer_mode_tv</span>
+          <h3 class="font-label-caps text-label-caps text-black">IDE INTEGRATIONS</h3>
+        </div>
+        <div class="space-y-2 flex-grow flex flex-col justify-center">
+          <label
+            class="flex items-center justify-between p-3 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
+            <div class="flex flex-col">
+              <span class="text-xs font-bold text-on-surface">Setup For Cursor</span>
+            </div>
+            <input type="checkbox" id="chk-cursor" class="m3-checkbox" />
+          </label>
+
+          <label
+            class="flex items-center justify-between p-3 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
+            <div class="flex flex-col">
+              <span class="text-xs font-bold text-on-surface">Setup For VS Code</span>
+            </div>
+            <input type="checkbox" id="chk-vscode" class="m3-checkbox" />
+          </label>
+
+          <label
+            class="flex items-center justify-between p-3 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
+            <div class="flex flex-col">
+              <span class="text-xs font-bold text-on-surface">Setup For Antigravity</span>
+              <span class="text-[8px] text-on-surface-variant/70 italic mt-0.5">Supports both IDE + CLI</span>
+            </div>
+            <input type="checkbox" id="chk-antigravity" class="m3-checkbox" />
+          </label>
+
+          <label
+            class="flex items-center justify-between p-3 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
+            <div class="flex flex-col">
+              <span class="text-xs font-bold text-on-surface">Setup For Windsurf</span>
+            </div>
+            <input type="checkbox" id="chk-windsurf" class="m3-checkbox" />
+          </label>
+
+          <label
+            class="flex items-center justify-between p-3 rounded-xl border border-outline-variant hover:border-secondary transition-all cursor-pointer bg-slate-900/40 group">
+            <div class="flex flex-col">
+              <span class="text-xs font-bold text-on-surface">Claude Code (Beta)</span>
+            </div>
+            <input type="checkbox" id="chk-roo" class="m3-checkbox" />
+          </label>
+        </div>
+      </div>
+
+      <!-- 5. Setup Logs & Installation Progress Bar (Span 2 Columns) -->
+      <div id="bento-log-and-progress" class="md:col-span-2 flex flex-col gap-grid-gutter">
+        <!-- Terminal Output -->
+        <div id="bento-log" class="bento-card overflow-hidden flex flex-col flex-grow">
+          <div class="px-bento-padding py-2.5 border-b border-black/15 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-black" style="font-size: 18px;">terminal</span>
+              <span class="font-label-caps text-label-caps text-black">SETUP_LOGS</span>
+            </div>
+            <div class="flex gap-1.5">
+              <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
+              <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+            </div>
+          </div>
+          <div id="terminal-output"
+            class="bg-primary-container p-bento-padding flex-grow terminal-scroll overflow-y-auto font-terminal-sm text-terminal-sm text-on-primary-container leading-relaxed h-[180px]">
+            <div class="opacity-50 mb-1">$ think-live --install</div>
+            <div class="text-on-primary mb-1">[INFO] Setup wizard initialized. Standby...</div>
+            <div class="text-on-primary mb-1">[INFO] Awaiting target directory selection.</div>
+          </div>
+        </div>
+
+        <!-- Progress Bar Fill -->
+        <div class="bento-card progress-fill relative overflow-hidden flex flex-col justify-between p-bento-padding">
+          <div id="progress-bar-fill"></div>
+          <div class="relative z-10 flex justify-between gap-6 items-center">
+            <!-- Installed Column -->
+            <div class="flex-1 flex flex-col justify-start">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="material-symbols-outlined text-black" style="font-size: 16px;">task_alt</span>
+                <h3 class="font-label-caps text-[10px] tracking-wider text-black uppercase">INSTALLED</h3>
+              </div>
+              <ul id="installed-list" class="space-y-0.5 text-xs max-h-[60px] overflow-y-auto text-black font-medium">
+                <li class="flex items-center gap-1.5 text-muted opacity-40">
+                  <span class="material-symbols-outlined text-[14px]">radio_button_unchecked</span>
+                  None
+                </li>
+              </ul>
+            </div>
+
+            <div class="w-px h-12 bg-black/15"></div>
+
+            <!-- Remaining Column -->
+            <div class="flex-1 flex flex-col justify-start">
+              <div class="flex items-center gap-1.5 mb-1">
+                <span class="material-symbols-outlined text-black" style="font-size: 16px;">pending</span>
+                <h3 class="font-label-caps text-[10px] tracking-wider text-black uppercase">PENDING</h3>
+              </div>
+              <ul id="remaining-list" class="space-y-0.5 text-xs max-h-[60px] overflow-y-auto text-black">
+                <li class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[14px]">radio_button_unchecked</span>
+                  Awaiting install
+                </li>
+              </ul>
+            </div>
+
+            <div class="flex flex-col items-center justify-center min-w-[80px] border-l border-black/15 pl-4">
+              <span id="progress-percentage" class="text-2xl font-bold text-black">0%</span>
+              <span class="text-[8px] uppercase font-bold tracking-wider text-black">Progress</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== ROW 3: AGENCY DEPARTMENTS CONFIGURATOR ==================== -->
+      <!-- 6. Agency Departments Selector (Span 3 Columns) -->
+      <div id="bento-depts" class="md:col-span-3 bento-card p-bento-padding flex flex-col">
         <div
           class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3 mb-3">
           <div class="flex items-center gap-2">
@@ -307,7 +311,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 flex-grow">
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 flex-grow">
           <!-- A.0 Creative Director -->
           <div class="dept-item dept-creative-director active border border-outline-variant p-2.5 rounded-2xl bg-slate-900/40 flex flex-col justify-between cursor-pointer select-none transition-all" data-dept="creative_director">
             <div class="flex justify-between items-start">
