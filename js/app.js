@@ -1451,6 +1451,10 @@ btnBrowse.addEventListener('click', async () => {
     });
 
     txtDirPath.value = targetDirectoryHandle.name;
+    const txtGithubRepo = document.getElementById('txt-github-repo');
+    if (txtGithubRepo && (!txtGithubRepo.value || txtGithubRepo.value.trim() === '')) {
+      txtGithubRepo.value = targetDirectoryHandle.name;
+    }
     updateDeployButtonState();
 
     logToTerminal(`Target directory set to "${targetDirectoryHandle.name}".`, 'secondary-fixed-dim');
@@ -1653,8 +1657,13 @@ btnDeploy.addEventListener('click', async () => {
       const repoInput = document.getElementById('txt-github-repo');
       const tokenInput = document.getElementById('txt-github-token');
 
+      const usernameVal = usernameInput ? usernameInput.value.trim() : "";
+      if (usernameVal) {
+        try { localStorage.setItem('think_live_github_username', usernameVal); } catch (e) {}
+      }
+
       const initialCreds = {
-        github_username: usernameInput ? usernameInput.value.trim() : "",
+        github_username: usernameVal,
         github_repo: repoInput ? repoInput.value.trim() : "",
         github_token: tokenInput ? tokenInput.value.trim() : ""
       };
@@ -1832,4 +1841,15 @@ btnDeploy.addEventListener('click', async () => {
     btnBrowse.disabled = false;
     updateDeployButtonState();
   }
+});
+
+// Load saved GitHub username on page initialization
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const savedUsername = localStorage.getItem('think_live_github_username');
+    const usernameInput = document.getElementById('txt-github-username');
+    if (savedUsername && usernameInput && (!usernameInput.value || usernameInput.value.trim() === '')) {
+      usernameInput.value = savedUsername;
+    }
+  } catch (e) {}
 });

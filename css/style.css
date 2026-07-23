@@ -169,15 +169,15 @@ body {
   font-weight: 600;
 }
 #btn-deploy {
-  background: #000000 !important;
+  background: #1e4d00 !important;
   color: #ffffff !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 6px 20px rgba(30, 77, 0, 0.25) !important;
   border-radius: 100px;
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s, box-shadow 0.2s;
 }
 #btn-deploy:hover:not(:disabled) {
-  background: #1e1e1e !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+  background: #2d7300 !important;
+  box-shadow: 0 8px 24px rgba(45, 115, 0, 0.35) !important;
   transform: scale(1.04);
 }
 #btn-deploy:active:not(:disabled) {
